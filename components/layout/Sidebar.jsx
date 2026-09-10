@@ -12,6 +12,8 @@ import {
   X,
 } from "lucide-react";
 
+import { usePathname } from "next/navigation";
+
 const menuItems = [
   {
     title: "صفحه اصلی",
@@ -56,6 +58,15 @@ export default function Sidebar({
   mobileOpen,
   onClose,
 }) {
+  const pathname = usePathname();
+
+  function isActive(href) {
+    if (href === "/") {
+      return pathname === "/";
+    }
+
+    return pathname.startsWith(href);
+  }
 
   return (
     <>
@@ -77,21 +88,31 @@ export default function Sidebar({
             : ""
         }`}
       >
-        {/* HEADER SIDEBAR */}
+
+        {/* Header */}
+
         <div className="sidebar-header">
+
           <div className="brand">
-            <div className="brand-icon">T</div>
+
+            <div className="brand-icon">
+              T
+            </div>
 
             <div className="brand-text">
-              <h2>سرویس حمل‌ونقل</h2>
+              <h2>
+                سرویس حمل‌ونقل
+              </h2>
 
               <span>
                 سرویس حمل‌ونقل باربری
               </span>
             </div>
+
           </div>
 
-          {/* دکمه بستن در بالای Sidebar */}
+          {/* Close button - Desktop */}
+
           <button
             className="sidebar-close-top"
             onClick={() =>
@@ -103,7 +124,8 @@ export default function Sidebar({
             <X size={20} />
           </button>
 
-          {/* دکمه موبایل */}
+          {/* Close button - Mobile */}
+
           <button
             className="sidebar-close"
             onClick={onClose}
@@ -111,63 +133,98 @@ export default function Sidebar({
           >
             <X size={21} />
           </button>
+
         </div>
 
-        {/* MENU */}
+
+        {/* Navigation */}
+
         <nav className="sidebar-nav">
+
           <div className="nav-section-title">
             منوی اصلی
           </div>
 
           {menuItems.map((item) => {
+
             const Icon = item.icon;
+
+            const active = isActive(
+              item.href
+            );
 
             return (
               <a
                 href={item.href}
                 key={item.title}
                 className={`nav-item ${
-                  item.href === "/"
+                  active
                     ? "nav-item-active"
                     : ""
                 }`}
                 title={item.title}
               >
+
                 <Icon
                   size={21}
                   strokeWidth={1.8}
                 />
 
-                <span>{item.title}</span>
+                <span>
+                  {item.title}
+                </span>
+
               </a>
             );
           })}
+
         </nav>
 
-        {/* BOTTOM */}
+
+        {/* Bottom */}
+
         <div className="sidebar-bottom">
+
           <a
             href="/settings"
-            className="nav-item"
+            className={`nav-item ${
+              isActive("/settings")
+                ? "nav-item-active"
+                : ""
+            }`}
             title="تنظیمات"
           >
+
             <Settings
               size={21}
               strokeWidth={1.8}
             />
 
-            <span>تنظیمات</span>
+            <span>
+              تنظیمات
+            </span>
+
           </a>
 
+
           <div className="sidebar-footer">
+
             <div className="server-status-dot" />
 
             <div>
-              <span>وضعیت سرور</span>
-              <strong>متصل</strong>
+              <span>
+                وضعیت سرور
+              </span>
+
+              <strong>
+                متصل
+              </strong>
             </div>
+
           </div>
+
         </div>
+
       </aside>
     </>
   );
