@@ -1,6 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useState,
+} from "react";
 
 import Sidebar from "@/components/layout/Sidebar";
 import Header from "@/components/layout/Header";
@@ -8,30 +11,43 @@ import Header from "@/components/layout/Header";
 export default function DashboardLayout({
   children,
 }) {
+  const [sidebarOpen, setSidebarOpen] =
+    useState(true);
+
   const [mobileOpen, setMobileOpen] =
     useState(false);
 
   useEffect(() => {
-    function handleOpen() {
+    function handleOpenMobileMenu() {
       setMobileOpen(true);
     }
 
     window.addEventListener(
       "open-mobile-menu",
-      handleOpen
+      handleOpenMobileMenu
     );
 
     return () => {
       window.removeEventListener(
         "open-mobile-menu",
-        handleOpen
+        handleOpenMobileMenu
       );
     };
   }, []);
 
   return (
-    <div className="app-shell">
+    <div
+      className={`app-shell ${
+        sidebarOpen
+          ? "sidebar-is-open"
+          : "sidebar-is-closed"
+      }`}
+    >
       <Sidebar
+        sidebarOpen={sidebarOpen}
+        setSidebarOpen={
+          setSidebarOpen
+        }
         mobileOpen={mobileOpen}
         onClose={() =>
           setMobileOpen(false)
@@ -39,7 +55,12 @@ export default function DashboardLayout({
       />
 
       <div className="main-wrapper">
-        <Header />
+        <Header
+          sidebarOpen={sidebarOpen}
+          setSidebarOpen={
+            setSidebarOpen
+          }
+        />
 
         {children}
       </div>
