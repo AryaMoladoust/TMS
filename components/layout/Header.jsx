@@ -36,11 +36,7 @@ const persianMonths = [
   "اسفند",
 ];
 
-function gregorianToJalali(
-  gy,
-  gm,
-  gd
-) {
+function gregorianToJalali(gy, gm, gd) {
   const gdm = [
     0,
     31,
@@ -66,63 +62,36 @@ function gregorianToJalali(
     gy -= 621;
   }
 
-  const gy2 =
-    gm > 2 ? gy + 1 : gy;
+  const gy2 = gm > 2 ? gy + 1 : gy;
 
   let days =
     365 * gy +
-    Math.floor(
-      (gy2 + 3) / 4
-    ) -
-    Math.floor(
-      (gy2 + 99) / 100
-    ) +
-    Math.floor(
-      (gy2 + 399) / 400
-    ) -
+    Math.floor((gy2 + 3) / 4) -
+    Math.floor((gy2 + 99) / 100) +
+    Math.floor((gy2 + 399) / 400) -
     80 +
     gd +
     gdm[gm - 1];
 
-  jy +=
-    33 *
-    Math.floor(
-      days / 12053
-    );
+  jy += 33 * Math.floor(days / 12053);
 
   days %= 12053;
 
-  jy +=
-    4 *
-    Math.floor(
-      days / 1461
-    );
+  jy += 4 * Math.floor(days / 1461);
 
   days %= 1461;
 
   if (days > 365) {
-    jy += Math.floor(
-      (days - 1) / 365
-    );
-
-    days =
-      (days - 1) % 365;
+    jy += Math.floor((days - 1) / 365);
+    days = (days - 1) % 365;
   }
 
   let jm;
 
   if (days < 186) {
-    jm =
-      1 +
-      Math.floor(
-        days / 31
-      );
+    jm = 1 + Math.floor(days / 31);
   } else {
-    jm =
-      7 +
-      Math.floor(
-        (days - 186) / 30
-      );
+    jm = 7 + Math.floor((days - 186) / 30);
   }
 
   const jd =
@@ -131,58 +100,44 @@ function gregorianToJalali(
       ? days % 31
       : (days - 186) % 30);
 
-  return [
-    jy,
-    jm,
-    jd,
-  ];
+  return [jy, jm, jd];
 }
 
-function toPersianNumber(
-  number
-) {
+function toPersianNumber(number) {
   return String(number).replace(
     /\d/g,
-    (digit) =>
-      "۰۱۲۳۴۵۶۷۸۹"[digit]
+    (digit) => "۰۱۲۳۴۵۶۷۸۹"[digit]
   );
 }
 
 function getLiveDate() {
   const now = new Date();
 
-  const [
-    jy,
-    jm,
-    jd,
-  ] = gregorianToJalali(
+  const [jy, jm, jd] = gregorianToJalali(
     now.getFullYear(),
     now.getMonth() + 1,
     now.getDate()
   );
 
   const weekday =
-    persianWeekdays[
-      now.getDay()
-    ];
+    persianWeekdays[now.getDay()];
 
-  const time =
-    now.toLocaleTimeString(
-      "fa-IR",
-      {
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-      }
-    );
+  const time = now.toLocaleTimeString(
+    "fa-IR",
+    {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
+    }
+  );
 
   return {
     date: `${weekday}، ${toPersianNumber(
       jd
-    )} ${
-      persianMonths[jm - 1]
-    } ${toPersianNumber(jy)}`,
-
+    )} ${persianMonths[jm - 1]} ${toPersianNumber(
+      jy
+    )}`,
     time,
   };
 }
@@ -194,46 +149,33 @@ export default function Header({
   const [darkMode, setDarkMode] =
     useState(false);
 
-  const [liveDate, setLiveDate] =
-    useState({
-      date: "",
-      time: "",
-    });
+  const [liveDate, setLiveDate] = useState({
+    date: "",
+    time: "",
+  });
 
   useEffect(() => {
     const savedTheme =
-      localStorage.getItem(
-        "tms-theme"
-      );
+      localStorage.getItem("tms-theme");
 
-    if (
-      savedTheme === "dark"
-    ) {
+    if (savedTheme === "dark") {
       setDarkMode(true);
-
       document.documentElement.classList.add(
         "dark"
       );
     }
 
-    setLiveDate(
-      getLiveDate()
-    );
+    setLiveDate(getLiveDate());
 
-    const timer =
-      setInterval(() => {
-        setLiveDate(
-          getLiveDate()
-        );
-      }, 1000);
+    const timer = setInterval(() => {
+      setLiveDate(getLiveDate());
+    }, 1000);
 
-    return () =>
-      clearInterval(timer);
+    return () => clearInterval(timer);
   }, []);
 
   function toggleTheme() {
-    const nextMode =
-      !darkMode;
+    const nextMode = !darkMode;
 
     setDarkMode(nextMode);
 
@@ -260,9 +202,7 @@ export default function Header({
 
   function openMobileMenu() {
     window.dispatchEvent(
-      new CustomEvent(
-        "open-mobile-menu"
-      )
+      new CustomEvent("open-mobile-menu")
     );
   }
 
@@ -272,8 +212,11 @@ export default function Header({
 
   return (
     <header className="header">
+
+      {/* سمت راست هدر */}
+
       <div className="header-right">
-        {/* موبایل */}
+
         <button
           className="mobile-menu-button"
           onClick={openMobileMenu}
@@ -282,7 +225,6 @@ export default function Header({
           <Menu size={23} />
         </button>
 
-        {/* دسکتاپ - وقتی Sidebar بسته است */}
         {!sidebarOpen && (
           <button
             className="desktop-sidebar-open-button"
@@ -290,44 +232,58 @@ export default function Header({
             aria-label="باز کردن منوی کناری"
             title="باز کردن منو"
           >
-            <PanelRightOpen
-              size={21}
-            />
+            <PanelRightOpen size={21} />
           </button>
         )}
 
         <div className="header-title">
           <h2>
-            سرویس حمل‌ونقل باربری
-          </h2>
+            موسسه حمل و نقل کامران               </h2>
 
           <span>
             سیستم مدیریت حمل‌ونقل
           </span>
         </div>
+
       </div>
 
+      {/* سمت چپ هدر */}
+
       <div className="header-left">
+
+        {/* تاریخ و ساعت */}
+
         <div className="header-date">
+
           <CalendarDays size={18} />
 
           <div className="live-date-content">
-            <span>
+
+            <span className="live-date">
               {liveDate.date}
             </span>
 
-            <strong>
+            <strong className="live-time">
               {liveDate.time}
             </strong>
+
           </div>
+
         </div>
 
+        {/* وضعیت سرور */}
+
         <div className="connection-status">
+
           <Wifi size={18} />
+
           <span>
             سرور متصل
           </span>
+
         </div>
+
+        {/* تم */}
 
         <button
           className="theme-button"
@@ -340,7 +296,9 @@ export default function Header({
             <Moon size={20} />
           )}
         </button>
+
       </div>
+
     </header>
   );
 }

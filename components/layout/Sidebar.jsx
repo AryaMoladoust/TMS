@@ -3,6 +3,7 @@
 import {
   LayoutDashboard,
   Users,
+  UserCheck,
   Package,
   Building2,
   FileText,
@@ -24,6 +25,11 @@ const menuItems = [
     title: "رانندگان",
     href: "/drivers",
     icon: Users,
+  },
+  {
+    title: "ورود روزانه رانندگان",
+    href: "/daily-drivers",
+    icon: UserCheck,
   },
   {
     title: "بارها",
@@ -78,15 +84,13 @@ export default function Sidebar({
       )}
 
       <aside
-        className={`sidebar ${
-          sidebarOpen
-            ? "sidebar-open"
-            : "sidebar-closed"
-        } ${
-          mobileOpen
+        className={`sidebar ${sidebarOpen
+          ? "sidebar-open"
+          : "sidebar-closed"
+          } ${mobileOpen
             ? "sidebar-mobile-open"
             : ""
-        }`}
+          }`}
       >
 
         {/* Header */}
@@ -96,17 +100,18 @@ export default function Sidebar({
           <div className="brand">
 
             <div className="brand-icon">
-              T
+              <img
+                src="/icons/favicon.png"
+                alt="لوگوی سرویس حمل‌ونقل"
+              />
             </div>
 
             <div className="brand-text">
               <h2>
-                سرویس حمل‌ونقل
-              </h2>
+موسسه حمل و نقل کامران              </h2>
 
               <span>
-                سرویس حمل‌ونقل باربری
-              </span>
+                            </span>
             </div>
 
           </div>
@@ -157,11 +162,10 @@ export default function Sidebar({
               <a
                 href={item.href}
                 key={item.title}
-                className={`nav-item ${
-                  active
-                    ? "nav-item-active"
-                    : ""
-                }`}
+                className={`nav-item ${active
+                  ? "nav-item-active"
+                  : ""
+                  }`}
                 title={item.title}
               >
 
@@ -187,11 +191,10 @@ export default function Sidebar({
 
           <a
             href="/settings"
-            className={`nav-item ${
-              isActive("/settings")
-                ? "nav-item-active"
-                : ""
-            }`}
+            className={`nav-item ${isActive("/settings")
+              ? "nav-item-active"
+              : ""
+              }`}
             title="تنظیمات"
           >
 
