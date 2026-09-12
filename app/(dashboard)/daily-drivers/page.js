@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ArrowRight,
   Users,
@@ -14,39 +14,62 @@ import {
   Plus,
 } from "lucide-react";
 
+import DriverSearchSelect from "@/components/daily-drivers/DriverSearchSelect";
+
 const registeredDrivers = [
   {
     id: "DRV-1001",
     name: "علی رضایی",
+    phone: "09121234567",
+    vehicleType: "تریلی",
   },
   {
     id: "DRV-1002",
     name: "محمد کریمی",
+    phone: "09129876543",
+    vehicleType: "کامیون",
   },
   {
     id: "DRV-1003",
     name: "رضا احمدی",
+    phone: "09121112233",
+    vehicleType: "کامیونت",
   },
   {
     id: "DRV-1004",
     name: "حسین مرادی",
+    phone: "09124445566",
+    vehicleType: "تریلی",
   },
   {
     id: "DRV-1005",
     name: "امیر حسینی",
+    phone: "09123334455",
+    vehicleType: "وانت",
   },
   {
     id: "DRV-1006",
     name: "مجتبی اکبری",
+    phone: "09125556677",
+    vehicleType: "کامیون",
   },
 ];
 
-function getTodayKey() {
-  const now = new Date();
+const vehicleTypes = [
+  { value: "تریلی", label: "تریلی" },
+  { value: "کامیون", label: "کامیون" },
+  { value: "کامیونت", label: "کامیونت" },
+  { value: "وانت", label: "وانت" },
+  { value: "نیسان", label: "نیسان" },
+  { value: "ون", label: "ون" },
+];
 
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, "0");
-  const day = String(now.getDate()).padStart(2, "0");
+function getTodayKey() {
+  const today = new Date();
+
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, "0");
+  const day = String(today.getDate()).padStart(2, "0");
 
   return `${year}-${month}-${day}`;
 }
@@ -60,23 +83,31 @@ function getInitialDrivers() {
     "daily-drivers-date"
   );
 
-  if (savedDate !== getTodayKey()) {
+  const today = getTodayKey();
+
+  if (savedDate !== today) {
     return [];
   }
 
   try {
-    return JSON.parse(
-      localStorage.getItem("daily-drivers") || "[]"
+    const savedDrivers = localStorage.getItem(
+      "daily-drivers"
     );
+
+    return savedDrivers
+      ? JSON.parse(savedDrivers)
+      : [];
   } catch {
     return [];
   }
 }
 
 export default function DailyDriversPage() {
-  const [driverMode, setDriverMode] = useState("registered");
+  const [driverMode, setDriverMode] =
+    useState("registered");
 
-  const [selectedDriver, setSelectedDriver] = useState("");
+  const [selectedDriver, setSelectedDriver] =
+    useState("");
 
   const [guestDriver, setGuestDriver] = useState({
     name: "",
@@ -84,38 +115,24 @@ export default function DailyDriversPage() {
     vehicleType: "",
   });
 
-  const [dailyDrivers, setDailyDrivers] = useState(
-    getInitialDrivers
-  );
+  const [dailyDrivers, setDailyDrivers] =
+    useState(getInitialDrivers);
 
-  function saveDrivers(drivers) {
-    setDailyDrivers(drivers);
-
-    localStorage.setItem(
-      "daily-drivers",
-      JSON.stringify(drivers)
-    );
-
+  useEffect(() => {
     localStorage.setItem(
       "daily-drivers-date",
       getTodayKey()
     );
 
-    window.dispatchEvent(
-      new Event("daily-drivers-updated")
+    localStorage.setItem(
+      "daily-drivers",
+      JSON.stringify(dailyDrivers)
     );
-  }
 
-  function changeMode(mode) {
-    setDriverMode(mode);
-    setSelectedDriver("");
-
-    setGuestDriver({
-      name: "",
-      phone: "",
-      vehicleType: "",
-    });
-  }
+    window.dispatchEvent(
+      new CustomEvent("daily-drivers-updated")
+    );
+  }, [dailyDrivers]);
 
   function addRegisteredDriver() {
     if (!selectedDriver) {
@@ -127,28 +144,32 @@ export default function DailyDriversPage() {
       (item) => item.id === selectedDriver
     );
 
-    if (!driver) return;
+    if (!driver) {
+      return;
+    }
 
     const alreadyExists = dailyDrivers.some(
-      (item) => item.driverId === driver.id
+      (item) =>
+        item.driverId === driver.id &&
+        item.type === "main"
     );
 
     if (alreadyExists) {
-      alert("این راننده امروز قبلاً ثبت شده است.");
+      alert("این راننده قبلاً برای امروز ثبت شده است.");
       return;
     }
 
     const newDriver = {
-      id: Date.now().toString(),
+      id: Date.now(),
       driverId: driver.id,
-      type: "registered",
       name: driver.name,
-      phone: "-",
-      vehicleType: "-",
+      phone: driver.phone || "-",
+      vehicleType: driver.vehicleType || "-",
+      type: "main",
     };
 
-    saveDrivers([
-      ...dailyDrivers,
+    setDailyDrivers((previous) => [
+      ...previous,
       newDriver,
     ]);
 
@@ -156,28 +177,23 @@ export default function DailyDriversPage() {
   }
 
   function addGuestDriver() {
-    const name = guestDriver.name.trim();
-    const phone = guestDriver.phone.trim();
-    const vehicleType = guestDriver.vehicleType.trim();
-
-    if (!name || !phone || !vehicleType) {
-      alert(
-        "لطفاً نام، شماره موبایل و نوع ماشین را وارد کنید."
-      );
+    if (!guestDriver.name.trim()) {
+      alert("نام راننده مهمان را وارد کنید.");
       return;
     }
 
     const newDriver = {
-      id: Date.now().toString(),
-      driverId: null,
+      id: Date.now(),
+      driverId: `GUEST-${Date.now()}`,
+      name: guestDriver.name.trim(),
+      phone: guestDriver.phone.trim() || "-",
+      vehicleType:
+        guestDriver.vehicleType || "-",
       type: "guest",
-      name,
-      phone,
-      vehicleType,
     };
 
-    saveDrivers([
-      ...dailyDrivers,
+    setDailyDrivers((previous) => [
+      ...previous,
       newDriver,
     ]);
 
@@ -189,77 +205,67 @@ export default function DailyDriversPage() {
   }
 
   function removeDriver(id) {
-    const updated = dailyDrivers.filter(
-      (driver) => driver.id !== id
+    setDailyDrivers((previous) =>
+      previous.filter((driver) => driver.id !== id)
     );
-
-    saveDrivers(updated);
   }
 
   function resetToday() {
-    if (dailyDrivers.length === 0) {
+    const confirmed = window.confirm(
+      "آیا مطمئن هستید که لیست ورود امروز پاک شود؟"
+    );
+
+    if (!confirmed) {
       return;
     }
 
-    const confirmed = window.confirm(
-      "آیا مطمئن هستید لیست رانندگان امروز پاک شود؟"
+    setDailyDrivers([]);
+    setSelectedDriver("");
+
+    localStorage.removeItem(
+      "daily-drivers-date"
     );
 
-    if (!confirmed) return;
-
-    saveDrivers([]);
+    localStorage.removeItem("daily-drivers");
   }
 
   return (
     <main className="main-content">
-
       <div className="page-heading">
-        <div className="page-back-link">
-          <Link href="/">
-            <ArrowRight size={17} />
-            بازگشت به صفحه اصلی
-          </Link>
+        <div>
+          <h1>ورود روزانه رانندگان</h1>
+          <p>
+            ثبت رانندگان حاضر در سرویس امروز
+          </p>
         </div>
-
-        <h1>ورود روزانه رانندگان</h1>
-
-        <p>
-          ثبت رانندگانی که امروز به شرکت مراجعه کرده‌اند
-        </p>
       </div>
 
       <section className="daily-entry-page">
-
-        {/* Header */}
-
         <div className="daily-entry-page-header">
           <div className="daily-entry-page-icon">
-            <Users size={25} />
+            <UserCheck size={25} />
           </div>
 
           <div>
-            <h2>ثبت راننده امروز</h2>
+            <h2>ثبت ورود راننده</h2>
 
             <p>
-              نوع راننده را انتخاب کرده و اطلاعات موردنیاز را وارد کنید.
+              رانندگان اصلی یا مهمان حاضر در امروز را
+              ثبت کنید.
             </p>
           </div>
         </div>
 
-        {/* Driver type */}
-
         <div className="daily-entry-mode">
-
           <div>
             <strong>نوع راننده</strong>
 
             <span>
-              راننده اصلی یا راننده مهمان
+              راننده ثبت‌شده در سیستم یا راننده مهمان
             </span>
           </div>
 
           <div className="daily-entry-switch">
-
             <button
               type="button"
               className={
@@ -268,10 +274,10 @@ export default function DailyDriversPage() {
                   : ""
               }
               onClick={() =>
-                changeMode("registered")
+                setDriverMode("registered")
               }
             >
-              <UserCheck size={18} />
+              <UserCheck size={15} />
               راننده اصلی
             </button>
 
@@ -283,115 +289,74 @@ export default function DailyDriversPage() {
                   : ""
               }
               onClick={() =>
-                changeMode("guest")
+                setDriverMode("guest")
               }
             >
-              <UserPlus size={18} />
+              <UserPlus size={15} />
               راننده مهمان
             </button>
-
           </div>
-
         </div>
 
-        {/* Registered driver */}
-
-        {driverMode === "registered" && (
+        {driverMode === "registered" ? (
           <div className="daily-entry-form">
-
             <div className="daily-entry-form-title">
-
-              <UserCheck size={20} />
+              <UserRound size={18} />
 
               <div>
                 <strong>
-                  انتخاب راننده ثبت‌شده
+                  انتخاب راننده اصلی
                 </strong>
 
                 <span>
-                  فقط نام راننده را از لیست انتخاب کنید.
+                  می‌توانید نام راننده را تایپ کنید تا
+                  لیست محدود شود.
                 </span>
               </div>
-
             </div>
 
             <div className="daily-entry-form-row">
-
-              <div className="daily-entry-input">
-
-                <UserRound size={18} />
-
-                <select
-                  value={selectedDriver}
-                  onChange={(event) =>
-                    setSelectedDriver(
-                      event.target.value
-                    )
-                  }
-                >
-                  <option value="">
-                    انتخاب نام راننده
-                  </option>
-
-                  {registeredDrivers.map(
-                    (driver) => (
-                      <option
-                        key={driver.id}
-                        value={driver.id}
-                      >
-                        {driver.name}
-                      </option>
-                    )
-                  )}
-                </select>
-
-              </div>
+              <DriverSearchSelect
+                drivers={registeredDrivers}
+                value={selectedDriver}
+                onChange={setSelectedDriver}
+                placeholder="نام راننده را جستجو کنید..."
+              />
 
               <button
                 type="button"
                 className="daily-entry-add"
-                onClick={
-                  addRegisteredDriver
-                }
+                onClick={addRegisteredDriver}
               >
-                <Plus size={19} />
-                افزودن راننده
+                <Plus size={17} />
+                ثبت ورود
               </button>
-
             </div>
-
           </div>
-        )}
-
-        {/* Guest driver */}
-
-        {driverMode === "guest" && (
+        ) : (
           <div className="daily-entry-form">
-
             <div className="daily-entry-form-title">
-
-              <UserPlus size={20} />
+              <UserPlus size={18} />
 
               <div>
                 <strong>
-                  ورود راننده مهمان
+                  ثبت راننده مهمان
                 </strong>
 
                 <span>
-                  اطلاعات راننده عبوری را وارد کنید.
+                  اطلاعات راننده‌ای که در سیستم ثبت
+                  نشده است را وارد کنید.
                 </span>
               </div>
-
             </div>
 
             <div className="daily-entry-form-row guest">
-
               <div className="daily-entry-input">
-
-                <UserRound size={18} />
+                <UserRound size={17} />
 
                 <input
                   type="text"
+                  placeholder="نام راننده"
                   value={guestDriver.name}
                   onChange={(event) =>
                     setGuestDriver({
@@ -399,17 +364,15 @@ export default function DailyDriversPage() {
                       name: event.target.value,
                     })
                   }
-                  placeholder="نام راننده"
                 />
-
               </div>
 
               <div className="daily-entry-input">
-
-                <Phone size={18} />
+                <Phone size={17} />
 
                 <input
                   type="tel"
+                  placeholder="شماره تماس"
                   value={guestDriver.phone}
                   onChange={(event) =>
                     setGuestDriver({
@@ -417,14 +380,11 @@ export default function DailyDriversPage() {
                       phone: event.target.value,
                     })
                   }
-                  placeholder="شماره موبایل"
                 />
-
               </div>
 
               <div className="daily-entry-input">
-
-                <Truck size={18} />
+                <Truck size={17} />
 
                 <select
                   value={guestDriver.vehicleType}
@@ -440,23 +400,15 @@ export default function DailyDriversPage() {
                     نوع ماشین
                   </option>
 
-                  <option value="کامیون">
-                    کامیون
-                  </option>
-
-                  <option value="تریلی">
-                    تریلی
-                  </option>
-
-                  <option value="نیسان">
-                    نیسان
-                  </option>
-
-                  <option value="وانت">
-                    وانت
-                  </option>
+                  {vehicleTypes.map((vehicle) => (
+                    <option
+                      key={vehicle.value}
+                      value={vehicle.value}
+                    >
+                      {vehicle.label}
+                    </option>
+                  ))}
                 </select>
-
               </div>
 
               <button
@@ -464,61 +416,54 @@ export default function DailyDriversPage() {
                 className="daily-entry-add"
                 onClick={addGuestDriver}
               >
-                <Plus size={19} />
-                افزودن
+                <Plus size={17} />
+                ثبت ورود
               </button>
-
             </div>
-
           </div>
         )}
 
-        {/* Today's list */}
-
         <div className="daily-entry-list">
-
           <div className="daily-entry-list-header">
-
             <div>
               <h3>
-                لیست رانندگان امروز
+                رانندگان ثبت‌شده امروز
               </h3>
 
               <p>
-                {dailyDrivers.length} راننده ثبت شده است
+                {dailyDrivers.length} راننده برای امروز
+                ثبت شده است.
               </p>
             </div>
 
-            <button
-              type="button"
-              className="daily-entry-reset"
-              onClick={resetToday}
-            >
-              <RotateCcw size={17} />
-              ریست امروز
-            </button>
-
+            {dailyDrivers.length > 0 && (
+              <button
+                type="button"
+                className="daily-entry-reset"
+                onClick={resetToday}
+              >
+                <RotateCcw size={14} />
+                پاک کردن ورود امروز
+              </button>
+            )}
           </div>
 
           {dailyDrivers.length === 0 ? (
             <div className="daily-entry-empty">
-
-              <Users size={32} />
+              <Users size={34} />
 
               <strong>
                 هنوز راننده‌ای ثبت نشده است
               </strong>
 
               <span>
-                اولین راننده امروز را از بخش بالا اضافه کنید.
+                یک راننده اصلی یا مهمان را از بالا
+                ثبت کنید.
               </span>
-
             </div>
           ) : (
             <div className="daily-entry-table-wrapper">
-
               <table className="daily-entry-table">
-
                 <thead>
                   <tr>
                     <th>نام راننده</th>
@@ -530,88 +475,73 @@ export default function DailyDriversPage() {
                 </thead>
 
                 <tbody>
-
-                  {dailyDrivers.map(
-                    (driver, index) => (
-                      <tr key={driver.id}>
-
-                        <td>
-                          <div className="daily-entry-name">
-
-                            <div className="daily-entry-avatar">
-                              <UserRound size={18} />
-                            </div>
-
-                            <div>
-                              <strong>
-                                {driver.name}
-                              </strong>
-
-                              <span>
-                                نفر {index + 1}
-                              </span>
-                            </div>
-
+                  {dailyDrivers.map((driver) => (
+                    <tr key={driver.id}>
+                      <td>
+                        <div className="daily-entry-name">
+                          <div className="daily-entry-avatar">
+                            <UserRound size={16} />
                           </div>
-                        </td>
 
-                        <td>
-                          {driver.phone}
-                        </td>
+                          <div>
+                            <strong>
+                              {driver.name}
+                            </strong>
 
-                        <td>
+                            <span>
+                              {driver.driverId}
+                            </span>
+                          </div>
+                        </div>
+                      </td>
+
+                      <td>{driver.phone}</td>
+
+                      <td>
+                        <span>
                           {driver.vehicleType}
-                        </td>
+                        </span>
+                      </td>
 
-                        <td>
+                      <td>
+                        <span
+                          className={`daily-entry-type ${driver.type === "main"
+                              ? "main"
+                              : "guest"
+                            }`}
+                        >
+                          {driver.type === "main"
+                            ? "اصلی"
+                            : "مهمان"}
+                        </span>
+                      </td>
 
-                          <span
-                            className={
-                              driver.type ===
-                              "registered"
-                                ? "daily-entry-type main"
-                                : "daily-entry-type guest"
-                            }
-                          >
-                            {driver.type ===
-                            "registered"
-                              ? "اصلی"
-                              : "مهمان"}
-                          </span>
-
-                        </td>
-
-                        <td>
-
-                          <button
-                            type="button"
-                            className="daily-entry-remove"
-                            onClick={() =>
-                              removeDriver(
-                                driver.id
-                              )
-                            }
-                          >
-                            حذف
-                          </button>
-
-                        </td>
-
-                      </tr>
-                    )
-                  )}
-
+                      <td>
+                        <button
+                          type="button"
+                          className="daily-entry-remove"
+                          onClick={() =>
+                            removeDriver(driver.id)
+                          }
+                        >
+                          حذف
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
-
               </table>
-
             </div>
           )}
-
         </div>
-
       </section>
 
+      <div className="daily-entry-back">
+        <Link href="/">
+          <ArrowRight size={16} />
+          بازگشت به صفحه اصلی
+        </Link>
+      </div>
     </main>
   );
 }
