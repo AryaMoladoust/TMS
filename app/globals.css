@@ -6,6 +6,7 @@
   --surface-soft: #f8fafc;
 
   --text: #172033;
+  --text-primary: var(--text);
   --text-secondary: #667085;
   --text-muted: #98a2b3;
 
@@ -350,7 +351,7 @@ a {
   direction: rtl;
 }
 
-.header-date > svg {
+.header-date>svg {
   flex-shrink: 0;
   color: var(--text-muted);
 }
@@ -473,7 +474,7 @@ a {
     gap: 7px;
   }
 
-  .header-date > svg {
+  .header-date>svg {
     width: 16px;
     height: 16px;
   }
@@ -486,6 +487,7 @@ a {
     font-size: 11px;
   }
 }
+
 /* =========================
    MOBILE
 ========================= */
@@ -4444,6 +4446,7 @@ body {
     font-size: 12px;
   }
 }
+
 /* =========================================================
    INVOICE FORM - ADD INVOICE
    ========================================================= */
@@ -5406,7 +5409,7 @@ body {
   color: var(--primary);
 }
 
-.daily-driver-entry-title > svg {
+.daily-driver-entry-title>svg {
   flex-shrink: 0;
 }
 
@@ -6135,14 +6138,14 @@ body {
   border-radius: 12px;
 }
 
-.daily-entry-mode > div:first-child strong {
+.daily-entry-mode>div:first-child strong {
   display: block;
   color: var(--text-primary);
   font-size: 13px;
   font-weight: 700;
 }
 
-.daily-entry-mode > div:first-child span {
+.daily-entry-mode>div:first-child span {
   display: block;
   margin-top: 4px;
   color: var(--text-muted);
@@ -6208,7 +6211,7 @@ body {
   color: var(--primary);
 }
 
-.daily-entry-form-title > svg {
+.daily-entry-form-title>svg {
   flex-shrink: 0;
 }
 
@@ -6733,7 +6736,7 @@ body {
   color: var(--primary);
 }
 
-.display-date > div {
+.display-date>div {
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -6796,7 +6799,7 @@ body {
   color: #16a34a;
 }
 
-.display-stat > div:last-child {
+.display-stat>div:last-child {
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -7143,7 +7146,7 @@ body {
   font-size: 9px;
 }
 
-.display-footer > div {
+.display-footer>div {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -7482,7 +7485,7 @@ body {
   color: #0891b2;
 }
 
-.reports-summary-card > div:last-child {
+.reports-summary-card>div:last-child {
   min-width: 0;
 }
 
@@ -8092,5 +8095,609 @@ body {
 
   .driver-picker-dropdown {
     max-height: 300px;
+  }
+}
+
+/* =========================================================
+   FINAL FORM TEXT COLOR FIX
+   فقط رنگ متن داخل فیلدها
+   هیچ تغییری در اندازه، فاصله، layout یا ظاهر نمی‌دهد
+   ========================================================= */
+
+/* =========================
+   LOADS - SEARCH
+   ========================= */
+
+.load-search-box input,
+.load-status-select,
+.load-type-select,
+.load-vehicle-select {
+  color: var(--text-primary) !important;
+}
+
+.load-search-box input::placeholder {
+  color: var(--text-muted) !important;
+}
+
+
+/* =========================
+   COMPANIES - SEARCH
+   ========================= */
+
+.company-search-box input {
+  color: var(--text-primary) !important;
+}
+
+.company-search-box input::placeholder {
+  color: var(--text-muted) !important;
+}
+
+
+/* =========================
+   REPORTS - FILTERS
+   ========================= */
+
+.report-select-wrapper select,
+.report-date-wrapper input {
+  color: var(--text-primary) !important;
+}
+
+.report-select-wrapper select option {
+  color: var(--text-primary) !important;
+  background: var(--surface) !important;
+}
+
+.report-date-wrapper input::placeholder {
+  color: var(--text-muted) !important;
+}
+
+
+/* =========================
+   DAILY DRIVERS - MAIN
+   ========================= */
+
+.daily-entry-input input,
+.daily-entry-input select {
+  color: var(--text-primary) !important;
+}
+
+.daily-entry-input input::placeholder {
+  color: var(--text-muted) !important;
+}
+
+.daily-entry-input select option {
+  color: var(--text-primary) !important;
+  background: var(--surface) !important;
+}
+
+
+/* =========================
+   DAILY DRIVERS - GUEST
+   ========================= */
+
+.daily-driver-input-wrapper input,
+.daily-driver-input-wrapper select,
+.daily-driver-select-wrapper select {
+  color: var(--text-primary) !important;
+}
+
+.daily-driver-input-wrapper input::placeholder {
+  color: var(--text-muted) !important;
+}
+
+.daily-driver-input-wrapper option,
+.daily-driver-select-wrapper option {
+  color: var(--text-primary) !important;
+  background: var(--surface) !important;
+}
+
+
+/* =========================
+   DRIVER SEARCH
+   ========================= */
+
+.driver-search-box input,
+.driver-search-select,
+.driver-status-select {
+  color: var(--text-primary) !important;
+}
+
+.driver-search-box input::placeholder {
+  color: var(--text-muted) !important;
+}
+
+
+/* =========================
+   DRIVER PICKER
+   ========================= */
+
+.driver-picker-box input {
+  color: var(--text-primary) !important;
+}
+
+.driver-picker-box input::placeholder {
+  color: var(--text-muted) !important;
+}
+
+.driver-picker-selected {
+  color: var(--text-primary) !important;
+}
+
+
+/* =========================
+   GENERAL FORM FIELDS
+   ========================= */
+
+.company-input-wrapper input,
+.company-input-wrapper textarea,
+.driver-input-wrapper input,
+.driver-input-wrapper textarea,
+.driver-input-wrapper select,
+.load-input-wrapper input,
+.load-input-wrapper textarea,
+.load-input-wrapper select,
+.invoice-input-wrapper input,
+.invoice-input-wrapper textarea,
+.invoice-input-wrapper select {
+  color: var(--text-primary) !important;
+}
+
+.company-input-wrapper input::placeholder,
+.company-input-wrapper textarea::placeholder,
+.driver-input-wrapper input::placeholder,
+.driver-input-wrapper textarea::placeholder,
+.load-input-wrapper input::placeholder,
+.load-input-wrapper textarea::placeholder,
+.invoice-input-wrapper input::placeholder,
+.invoice-input-wrapper textarea::placeholder {
+  color: var(--text-muted) !important;
+}
+
+
+/* =========================
+   INVOICE SEARCH
+   ========================= */
+
+.invoice-search-input-wrapper input {
+  color: var(--text-primary) !important;
+}
+
+.invoice-search-input-wrapper input::placeholder {
+  color: var(--text-muted) !important;
+}
+
+
+/* =========================
+   PERSIAN DATE INPUT
+   ========================= */
+
+.persian-date-input {
+  color: var(--text-primary) !important;
+}
+
+.persian-date-input::placeholder {
+  color: var(--text-muted) !important;
+}
+
+
+/* =========================================================
+   INVOICES PAGE
+   ========================================================= */
+
+.invoice-page-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.invoice-add-button {
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 0 18px;
+  border-radius: 10px;
+  background: var(--primary);
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 700;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    background 0.18s ease;
+}
+
+.invoice-add-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.22);
+}
+
+.invoice-add-button:active {
+  transform: translateY(0);
+}
+
+
+/* فیلتر */
+
+.invoice-filter-card,
+.invoice-list-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.invoice-filter-card {
+  margin-bottom: 22px;
+  padding: 20px;
+}
+
+.invoice-filter-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  margin-bottom: 18px;
+}
+
+.invoice-filter-title {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.invoice-filter-title > svg {
+  color: var(--primary);
+}
+
+.invoice-filter-title h2 {
+  margin: 0;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 750;
+}
+
+.invoice-filter-title span {
+  display: block;
+  margin-top: 4px;
+  color: var(--text-muted);
+  font-size: 10px;
+}
+
+.invoice-clear-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 34px;
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--background);
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: 10px;
+  cursor: pointer;
+  transition: 0.18s ease;
+}
+
+.invoice-clear-filter:hover {
+  color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.25);
+  background: rgba(239, 68, 68, 0.05);
+}
+
+.invoice-filter-grid {
+  display: grid;
+  grid-template-columns: 2fr repeat(4, 1fr);
+  gap: 12px;
+}
+
+.invoice-filter-field {
+  min-width: 0;
+}
+
+.invoice-filter-field label {
+  display: block;
+  margin-bottom: 7px;
+  color: var(--text-secondary);
+  font-size: 10px;
+  font-weight: 650;
+}
+
+.invoice-input-with-icon,
+.invoice-select-wrapper {
+  position: relative;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.invoice-input-with-icon:focus-within,
+.invoice-select-wrapper:focus-within {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-soft);
+}
+
+.invoice-input-with-icon > svg {
+  flex-shrink: 0;
+  margin-right: 12px;
+  color: var(--text-muted);
+}
+
+.invoice-input-with-icon input,
+.invoice-select-wrapper select {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 11px;
+}
+
+.invoice-input-with-icon input {
+  padding: 0 9px;
+}
+
+.invoice-input-with-icon input::placeholder {
+  color: var(--text-muted);
+}
+
+.invoice-select-wrapper select {
+  appearance: none;
+  padding: 0 12px;
+  cursor: pointer;
+}
+
+.invoice-select-wrapper > svg {
+  position: absolute;
+  left: 11px;
+  pointer-events: none;
+  color: var(--text-muted);
+}
+
+.invoice-select-wrapper select option {
+  background: var(--surface);
+  color: var(--text-primary);
+}
+
+
+/* لیست */
+
+.invoice-list-card {
+  overflow: hidden;
+}
+
+.invoice-list-header {
+  min-height: 68px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.invoice-list-header h2 {
+  margin: 0;
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 750;
+}
+
+.invoice-list-header span {
+  display: block;
+  margin-top: 4px;
+  color: var(--text-muted);
+  font-size: 10px;
+}
+
+.invoice-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.invoice-table {
+  width: 100%;
+  min-width: 1000px;
+  border-collapse: collapse;
+}
+
+.invoice-table th {
+  height: 46px;
+  padding: 0 13px;
+  background: var(--surface-soft);
+  border-bottom: 1px solid var(--border);
+  color: var(--text-secondary);
+  font-size: 10px;
+  font-weight: 700;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.invoice-table td {
+  height: 66px;
+  padding: 8px 13px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-secondary);
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.invoice-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.invoice-table tbody tr {
+  transition: background 0.15s ease;
+}
+
+.invoice-table tbody tr:hover {
+  background: var(--surface-soft);
+}
+
+.invoice-number {
+  color: var(--primary);
+  font-size: 11px;
+}
+
+.invoice-driver {
+  color: var(--text);
+  font-weight: 650;
+}
+
+.invoice-route {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.invoice-route-arrow {
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.invoice-amount {
+  color: var(--text);
+  font-size: 11px;
+}
+
+.invoice-amount small {
+  color: var(--text-muted);
+  font-size: 8px;
+  font-weight: 500;
+}
+
+.invoice-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 27px;
+  padding: 0 9px;
+  border-radius: 7px;
+  background: var(--success-soft);
+  color: var(--success);
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.invoice-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.invoice-print-button {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--background);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition:
+    background 0.18s ease,
+    color 0.18s ease,
+    border-color 0.18s ease,
+    transform 0.18s ease;
+}
+
+.invoice-print-button:hover {
+  color: var(--primary);
+  border-color: var(--primary);
+  background: var(--primary-soft);
+  transform: translateY(-1px);
+}
+
+
+/* حالت خالی */
+
+.invoice-empty {
+  min-height: 280px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.invoice-empty svg {
+  margin-bottom: 12px;
+  color: var(--primary);
+}
+
+.invoice-empty h3 {
+  margin: 0;
+  color: var(--text);
+  font-size: 14px;
+}
+
+.invoice-empty p {
+  margin: 7px 0 0;
+  color: var(--text-muted);
+  font-size: 10px;
+}
+
+
+/* موبایل */
+
+@media (max-width: 1050px) {
+  .invoice-filter-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .invoice-search-field {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 750px) {
+  .invoice-page-heading {
+    flex-direction: column;
+  }
+
+  .invoice-add-button {
+    width: 100%;
+  }
+
+  .invoice-filter-card {
+    padding: 15px;
+  }
+
+  .invoice-filter-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .invoice-filter-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .invoice-search-field {
+    grid-column: auto;
+  }
+
+  .invoice-clear-filter {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .invoice-list-header {
+    padding: 0 15px;
   }
 }
