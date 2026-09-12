@@ -1,3 +1,4 @@
+import Link from "next/link";
 import {
   Users,
   Package,
@@ -13,6 +14,7 @@ const stats = [
     description: "تعداد کل رانندگان",
     icon: Users,
     type: "blue",
+    href: "/drivers",
   },
   {
     title: "بارها",
@@ -20,6 +22,7 @@ const stats = [
     description: "بارهای ثبت شده",
     icon: Package,
     type: "orange",
+    href: "/loads",
   },
   {
     title: "فاکتورها",
@@ -27,6 +30,7 @@ const stats = [
     description: "فاکتورهای این ماه",
     icon: FileText,
     type: "green",
+    href: "/invoices",
   },
   {
     title: "شرکت‌ها",
@@ -34,6 +38,7 @@ const stats = [
     description: "شرکت‌های طرف قرارداد",
     icon: Building2,
     type: "purple",
+    href: "/companies",
   },
 ];
 
@@ -44,7 +49,11 @@ export default function StatsCards() {
         const Icon = stat.icon;
 
         return (
-          <div className="stat-card" key={stat.title}>
+          <Link
+            href={stat.href}
+            className="stat-card stat-card-clickable"
+            key={stat.title}
+          >
             <div className="stat-card-top">
               <div className={`stat-icon stat-icon-${stat.type}`}>
                 <Icon size={22} />
@@ -57,10 +66,12 @@ export default function StatsCards() {
 
             <div className="stat-info">
               <span>{stat.title}</span>
+
               <strong>{stat.value}</strong>
+
               <small>{stat.description}</small>
             </div>
-          </div>
+          </Link>
         );
       })}
     </section>
