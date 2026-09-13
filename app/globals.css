@@ -8701,3 +8701,314 @@ body {
     padding: 0 15px;
   }
 }
+/* =========================================
+   MAP PICKER
+========================================= */
+
+.map-select-button {
+    margin-top: 10px;
+
+    width: 100%;
+
+    height: 42px;
+
+    border: 1px solid #dbe3ef;
+
+    border-radius: 10px;
+
+    background: #f8fafc;
+
+    color: #2563eb;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    font-family: inherit;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: all 0.2s ease;
+}
+
+.map-select-button:hover {
+    background: #eff6ff;
+
+    border-color: #2563eb;
+}
+
+
+/* بخش نقشه */
+
+.load-map-section {
+    margin-top: 8px;
+
+    padding: 18px;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 14px;
+
+    background: #f8fafc;
+}
+
+
+/* Header نقشه */
+
+.map-section-header {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+    margin-bottom: 14px;
+}
+
+.map-section-header > div {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    color: #1e293b;
+}
+
+.map-section-header span {
+    color: #64748b;
+
+    font-size: 12px;
+}
+
+
+/* خود نقشه */
+
+.map-picker-container {
+    width: 100%;
+}
+
+.load-map {
+    width: 100%;
+
+    height: 400px;
+
+    border-radius: 12px;
+
+    overflow: hidden;
+
+    z-index: 1;
+}
+
+
+/* مختصات */
+
+.map-coordinates {
+    margin-top: 10px;
+
+    display: flex;
+
+    gap: 10px;
+}
+
+.map-coordinates > div {
+    flex: 1;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 10px;
+
+    padding: 10px 12px;
+
+    background: white;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 9px;
+}
+
+.map-coordinates span {
+    color: #64748b;
+
+    font-size: 12px;
+}
+
+.map-coordinates strong {
+    color: #0f172a;
+
+    direction: ltr;
+
+    font-size: 12px;
+}
+
+
+/* محل انتخاب شده */
+
+.selected-location {
+    margin-top: 12px;
+
+    padding: 13px;
+
+    border-radius: 10px;
+
+    background: #eff6ff;
+
+    border: 1px solid #bfdbfe;
+
+    color: #1d4ed8;
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 10px;
+}
+
+.selected-location > div {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 4px;
+}
+
+.selected-location strong {
+    font-size: 13px;
+}
+
+.selected-location span {
+    direction: ltr;
+
+    text-align: right;
+
+    font-size: 12px;
+
+    color: #475569;
+}
+
+
+/* Loading */
+
+.map-loading {
+    width: 100%;
+
+    height: 400px;
+
+    border-radius: 12px;
+
+    background: #f1f5f9;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    color: #64748b;
+
+    font-size: 14px;
+}
+
+
+/* =========================================
+   DARK MODE
+========================================= */
+
+.dark .map-select-button {
+    background: #111827;
+
+    border-color: #334155;
+
+    color: #60a5fa;
+}
+
+.dark .map-select-button:hover {
+    background: #172554;
+
+    border-color: #3b82f6;
+}
+
+.dark .load-map-section {
+    background: #111827;
+
+    border-color: #334155;
+}
+
+.dark .map-section-header > div {
+    color: #e2e8f0;
+}
+
+.dark .map-section-header span {
+    color: #94a3b8;
+}
+
+.dark .map-coordinates > div {
+    background: #0f172a;
+
+    border-color: #334155;
+}
+
+.dark .map-coordinates span {
+    color: #94a3b8;
+}
+
+.dark .map-coordinates strong {
+    color: #e2e8f0;
+}
+
+.dark .selected-location {
+    background: #172554;
+
+    border-color: #1d4ed8;
+}
+
+.dark .selected-location span {
+    color: #cbd5e1;
+}
+
+.dark .map-loading {
+    background: #111827;
+
+    color: #94a3b8;
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 800px) {
+
+    .map-section-header {
+        align-items: flex-start;
+
+        flex-direction: column;
+    }
+
+    .map-section-header span {
+        font-size: 11px;
+    }
+
+    .load-map {
+        height: 320px;
+    }
+
+    .map-coordinates {
+        flex-direction: column;
+    }
+
+}
