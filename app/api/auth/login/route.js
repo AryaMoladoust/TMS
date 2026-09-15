@@ -1,0 +1,125 @@
+import { NextResponse } from "next/server";
+
+import connectToDatabase from "@/lib/mongodb";
+import User from "@/models/User";
+import { createSession } from "@/lib/auth";
+
+export async function POST(request) {
+  try {
+    await connectToDatabase();
+
+    const body = await request.json();
+
+    const username = body.username?.trim().toLowerCase();
+    const password = body.password;
+
+    if (!username || !password) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "نام کاربری و رمز عبور را وارد کنید.",
+        },
+        { status: 400 }
+      );
+    }
+
+    let user = await User.findOne({ username });
+
+    /*
+     * اولین ورود سیستم
+     *
+     * اگر هنوز هیچ کاربری وجود نداشته باشد،
+     * فقط admin / 1234 اجازه ساخت اولین کاربر را دارد.
+     */
+
+    if (!user) {
+      const usersCount = await User.countDocuments();
+
+      if (usersCount === 0) {
+        if (username !== "admin" || password !== "1234") {
+          return NextResponse.json(
+            {
+              success: false,
+              message: "اطلاعات ورود اولیه صحیح نیست.",
+            },
+            { status: 401 }
+          );
+        }
+
+        user = await User.create({
+          username: "admin",
+          password: "1234",
+          role: "owner",
+        });
+      }
+    }
+
+    if (!user) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "نام کاربری یا رمز عبور اشتباه است.",
+        },
+        { status: 401 }
+      );
+    }
+
+    /*
+     * بررسی رمز
+     */
+    if (user.password !== password) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "نام کاربری یا رمز عبور اشتباه است.",
+        },
+        { status: 401 }
+      );
+    }
+
+    /*
+     * ساخت Session
+     */
+    const session = await createSession(user._id);
+
+    const response = NextResponse.json({
+      success: true,
+
+      user: {
+        id: user._id.toString(),
+        username: user.username,
+        role: user.role,
+      },
+    });
+
+    /*
+     * ذخیره Session در Cookie
+     */
+    response.cookies.set({
+      name: "tms_session",
+      value: session.token,
+
+      httpOnly: true,
+
+      sameSite: "lax",
+
+      secure: process.env.NODE_ENV === "production",
+
+      path: "/",
+
+      expires: session.expiresAt,
+    });
+
+    return response;
+  } catch (error) {
+    console.error("LOGIN_ERROR:", error);
+
+    return NextResponse.json(
+      {
+        success: false,
+        message: "خطایی هنگام ورود به سیستم رخ داد.",
+      },
+      { status: 500 }
+    );
+  }
+}
