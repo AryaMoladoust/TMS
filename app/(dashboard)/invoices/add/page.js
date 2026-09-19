@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import PersianDatePicker from "@/components/drivers/PersianDatePicker";
+import InvoicePreview from "@/components/invoices/InvoicePreview";
 
 import {
     ArrowRight,
@@ -22,14 +23,12 @@ import {
     HardHat,
     Scale,
     CircleStop,
-    QrCode,
     UserCheck,
     Save,
 } from "lucide-react";
 
 /* =========================================================
    MOCK DRIVERS
-   بعداً از MongoDB / API دریافت می‌شوند
    ========================================================= */
 
 const mockDrivers = [
@@ -61,7 +60,6 @@ const mockDrivers = [
 
 /* =========================================================
    MOCK LOADS
-   بعداً از MongoDB / API دریافت می‌شوند
    ========================================================= */
 
 const mockLoads = [
@@ -97,7 +95,31 @@ const mockLoads = [
     },
 ];
 
+/* =========================================================
+   COMPANY INFORMATION
+   فعلاً Mock
+   بعداً از MongoDB دریافت می‌شود
+   ========================================================= */
+
+const companyData = {
+    name: "موسسه حمل و نقل کامران",
+    manager: "کامران احمدی",
+    phone: "021-12345678",
+    address: "تهران، خیابان آزادی، پلاک ۱۲۳",
+};
+
+/* =========================================================
+   PAGE
+   ========================================================= */
+
 export default function AddInvoicePage() {
+
+    /* =======================================================
+       PREVIEW STATE
+       ======================================================= */
+
+    const [preview, setPreview] = useState(false);
+
     /* =======================================================
        DRIVER STATE
        ======================================================= */
@@ -305,50 +327,160 @@ export default function AddInvoicePage() {
     }
 
     /* =======================================================
+       PREVIEW DATA
+       ======================================================= */
+
+    function getPreviewInvoice() {
+
+        const mainCost = Number(invoiceData.cost || 0);
+
+        const insurance = Number(
+            invoiceData.insuranceCost || 0
+        );
+
+        const total = mainCost + insurance;
+
+        return {
+
+            /* -----------------------------
+               COMPANY
+            ----------------------------- */
+
+            companyName: companyData.name,
+
+            companyManager: companyData.manager,
+
+            companyPhone: companyData.phone,
+
+            companyAddress: companyData.address,
+
+            /* -----------------------------
+               INVOICE
+            ----------------------------- */
+
+            number:
+                invoiceData.invoiceId ||
+                "1404-0032",
+
+            date:
+                invoiceDate
+                    ? invoiceDate.format("YYYY/MM/DD")
+                    : "—",
+
+            /* -----------------------------
+               DRIVER
+            ----------------------------- */
+
+            driver:
+                driverData.name || "—",
+
+            vehicle:
+                driverData.vehicleType || "—",
+
+            /* -----------------------------
+               LOAD
+            ----------------------------- */
+
+            origin:
+                loadData.origin || "—",
+
+            destination:
+                loadData.destination || "—",
+
+            distance:
+                loadData.distance
+                    ? `${loadData.distance} کیلومتر`
+                    : "—",
+
+            /* -----------------------------
+               COST
+            ----------------------------- */
+
+            cost: mainCost.toLocaleString("fa-IR"),
+
+            insurance: insurance.toLocaleString("fa-IR"),
+
+            workerCost: Number(invoiceData.workerCost || 0).toLocaleString("fa-IR"),
+
+            scaleCost: Number(invoiceData.scaleCost || 0).toLocaleString("fa-IR"),
+
+            stopCost: Number(invoiceData.stopCost || 0).toLocaleString("fa-IR"),
+
+            total: (
+                mainCost +
+                insurance +
+                Number(invoiceData.workerCost || 0) +
+                Number(invoiceData.scaleCost || 0) +
+                Number(invoiceData.stopCost || 0)
+            ).toLocaleString("fa-IR"),
+        };
+    }
+
+    /* =======================================================
        SUBMIT
        ======================================================= */
 
     function handleSubmit(event) {
+
         event.preventDefault();
 
         const invoicePayload = {
+
+            company: companyData,
+
             driver: driverData,
 
             load: loadData,
 
             invoice: {
+
                 ...invoiceData,
 
-                date: invoiceDate
-                    ? invoiceDate.format("YYYY/MM/DD")
-                    : "",
+                date:
+                    invoiceDate
+                        ? invoiceDate.format("YYYY/MM/DD")
+                        : "",
             },
         };
 
-        console.log("Invoice payload:", invoicePayload);
+        console.log(
+            "Invoice payload:",
+            invoicePayload
+        );
 
-        alert("فاکتور آماده ارسال به دیتابیس است.");
+        alert(
+            "فاکتور آماده ارسال به دیتابیس است."
+        );
     }
+
+    /* =======================================================
+       RENDER
+       ======================================================= */
 
     return (
         <main className="main-content">
 
-            {/* =====================================================
-          PAGE HEADING
-      ====================================================== */}
+            {/* PAGE HEADING */}
 
             <div className="page-heading page-heading-with-action">
 
                 <div>
 
                     <div className="page-back-link">
+
                         <Link href="/invoices">
+
                             <ArrowRight size={17} />
+
                             بازگشت به فاکتورها
+
                         </Link>
+
                     </div>
 
-                    <h1>ثبت فاکتور</h1>
+                    <h1>
+                        ثبت فاکتور
+                    </h1>
 
                     <p>
                         اطلاعات راننده، بار، هزینه و گیرنده را وارد کنید
@@ -358,29 +490,35 @@ export default function AddInvoicePage() {
 
             </div>
 
-            {/* =====================================================
-          FORM PANEL
-      ====================================================== */}
+
+            {/* FORM PANEL */}
 
             <section className="invoice-form-panel">
 
-                {/* Header */}
+                {/* HEADER */}
 
                 <div className="invoice-form-header">
 
                     <div className="invoice-form-header-icon">
+
                         <FileText size={24} />
+
                     </div>
 
                     <div>
-                        <h2>اطلاعات فاکتور</h2>
+
+                        <h2>
+                            اطلاعات فاکتور
+                        </h2>
 
                         <p>
                             اطلاعات موردنیاز فاکتور و حواله راننده
                         </p>
+
                     </div>
 
                 </div>
+
 
                 <form
                     className="invoice-form"
@@ -388,15 +526,21 @@ export default function AddInvoicePage() {
                 >
 
                     {/* =================================================
-              DRIVER SECTION
-          ================================================== */}
+                        DRIVER
+                    ================================================== */}
 
                     <div className="invoice-form-section-title">
+
                         <UserRound size={19} />
-                        <span>اطلاعات راننده</span>
+
+                        <span>
+                            اطلاعات راننده
+                        </span>
+
                     </div>
 
-                    {/* Driver Search */}
+
+                    {/* DRIVER SEARCH */}
 
                     <div className="invoice-search-group invoice-form-full">
 
@@ -405,6 +549,7 @@ export default function AddInvoicePage() {
                         </label>
 
                         {!manualDriver && (
+
                             <div className="invoice-search-container">
 
                                 <div className="invoice-search-input-wrapper">
@@ -415,67 +560,109 @@ export default function AddInvoicePage() {
                                         type="text"
                                         value={driverSearch}
                                         onChange={(event) => {
-                                            setDriverSearch(event.target.value);
-                                            setDriverSearchOpen(true);
-                                            setSelectedDriver(null);
+
+                                            setDriverSearch(
+                                                event.target.value
+                                            );
+
+                                            setDriverSearchOpen(
+                                                true
+                                            );
+
+                                            setSelectedDriver(
+                                                null
+                                            );
+
                                         }}
-                                        onFocus={() => setDriverSearchOpen(true)}
+                                        onFocus={() =>
+                                            setDriverSearchOpen(
+                                                true
+                                            )
+                                        }
                                         placeholder="نام راننده را جستجو کنید..."
                                     />
 
                                 </div>
 
+
                                 {driverSearchOpen && (
+
                                     <div className="invoice-search-dropdown">
 
                                         {filteredDrivers.length > 0 ? (
-                                            filteredDrivers.map((driver) => (
 
-                                                <button
-                                                    type="button"
-                                                    key={driver.id}
-                                                    className="invoice-search-option"
-                                                    onClick={() => selectDriver(driver)}
-                                                >
+                                            filteredDrivers.map(
+                                                (driver) => (
 
-                                                    <div className="invoice-option-icon">
-                                                        <UserRound size={18} />
-                                                    </div>
+                                                    <button
+                                                        type="button"
+                                                        key={driver.id}
+                                                        className="invoice-search-option"
+                                                        onClick={() =>
+                                                            selectDriver(
+                                                                driver
+                                                            )
+                                                        }
+                                                    >
 
-                                                    <div>
-                                                        <strong>
-                                                            {driver.name}
-                                                        </strong>
+                                                        <div className="invoice-option-icon">
 
-                                                        <span>
-                                                            {driver.id} - {driver.vehicleType}
-                                                        </span>
-                                                    </div>
+                                                            <UserRound
+                                                                size={18}
+                                                            />
 
-                                                </button>
+                                                        </div>
 
-                                            ))
+                                                        <div>
+
+                                                            <strong>
+                                                                {driver.name}
+                                                            </strong>
+
+                                                            <span>
+                                                                {driver.id} -{" "}
+                                                                {driver.vehicleType}
+                                                            </span>
+
+                                                        </div>
+
+                                                    </button>
+
+                                                )
+                                            )
+
                                         ) : (
+
                                             <div className="invoice-search-empty">
+
                                                 راننده‌ای پیدا نشد
+
                                             </div>
+
                                         )}
+
 
                                         <button
                                             type="button"
                                             className="invoice-manual-button"
-                                            onClick={enableManualDriver}
+                                            onClick={
+                                                enableManualDriver
+                                            }
                                         >
                                             + ورود دستی اطلاعات راننده
                                         </button>
 
                                     </div>
+
                                 )}
 
                             </div>
+
                         )}
 
+
                         {manualDriver && (
+
                             <div className="invoice-manual-mode">
 
                                 <div className="invoice-manual-mode-header">
@@ -494,11 +681,13 @@ export default function AddInvoicePage() {
                                 </div>
 
                             </div>
+
                         )}
 
                     </div>
 
-                    {/* Driver ID */}
+
+                    {/* DRIVER ID */}
 
                     <div className="invoice-form-group">
 
@@ -526,7 +715,8 @@ export default function AddInvoicePage() {
 
                     </div>
 
-                    {/* Driver Name */}
+
+                    {/* DRIVER NAME */}
 
                     <div className="invoice-form-group">
 
@@ -554,7 +744,8 @@ export default function AddInvoicePage() {
 
                     </div>
 
-                    {/* National ID */}
+
+                    {/* NATIONAL ID */}
 
                     <div className="invoice-form-group">
 
@@ -582,7 +773,8 @@ export default function AddInvoicePage() {
 
                     </div>
 
-                    {/* License */}
+
+                    {/* LICENSE */}
 
                     <div className="invoice-form-group">
 
@@ -610,7 +802,8 @@ export default function AddInvoicePage() {
 
                     </div>
 
-                    {/* Vehicle ID */}
+
+                    {/* VEHICLE ID */}
 
                     <div className="invoice-form-group">
 
@@ -638,7 +831,8 @@ export default function AddInvoicePage() {
 
                     </div>
 
-                    {/* Vehicle Type */}
+
+                    {/* VEHICLE TYPE */}
 
                     <div className="invoice-form-group">
 
@@ -687,9 +881,10 @@ export default function AddInvoicePage() {
 
                     </div>
 
+
                     {/* =================================================
-              INVOICE INFORMATION
-          ================================================== */}
+                        INVOICE INFORMATION
+                    ================================================== */}
 
                     <div className="invoice-form-section-title invoice-form-full">
 
@@ -699,11 +894,10 @@ export default function AddInvoicePage() {
                             اطلاعات فاکتور
                         </span>
 
-
-
                     </div>
 
-                    {/* Persian Date */}
+
+                    {/* DATE */}
 
                     <div className="invoice-form-group">
 
@@ -725,7 +919,8 @@ export default function AddInvoicePage() {
 
                     </div>
 
-                    {/* Start Time */}
+
+                    {/* START TIME */}
 
                     <div className="invoice-form-group">
 
@@ -739,7 +934,9 @@ export default function AddInvoicePage() {
 
                             <input
                                 type="time"
-                                value={invoiceData.startTime}
+                                value={
+                                    invoiceData.startTime
+                                }
                                 onChange={(event) =>
                                     editInvoiceField(
                                         "startTime",
@@ -752,9 +949,10 @@ export default function AddInvoicePage() {
 
                     </div>
 
+
                     {/* =================================================
-              LOAD INFORMATION
-          ================================================== */}
+                        LOAD INFORMATION
+                    ================================================== */}
 
                     <div className="invoice-form-section-title invoice-form-full">
 
@@ -766,7 +964,8 @@ export default function AddInvoicePage() {
 
                     </div>
 
-                    {/* Load Search */}
+
+                    {/* LOAD SEARCH */}
 
                     <div className="invoice-search-group invoice-form-full">
 
@@ -775,6 +974,7 @@ export default function AddInvoicePage() {
                         </label>
 
                         {!manualLoad && (
+
                             <div className="invoice-search-container">
 
                                 <div className="invoice-search-input-wrapper">
@@ -785,70 +985,110 @@ export default function AddInvoicePage() {
                                         type="text"
                                         value={loadSearch}
                                         onChange={(event) => {
-                                            setLoadSearch(event.target.value);
-                                            setLoadSearchOpen(true);
-                                            setSelectedLoad(null);
+
+                                            setLoadSearch(
+                                                event.target.value
+                                            );
+
+                                            setLoadSearchOpen(
+                                                true
+                                            );
+
+                                            setSelectedLoad(
+                                                null
+                                            );
+
                                         }}
-                                        onFocus={() => setLoadSearchOpen(true)}
+                                        onFocus={() =>
+                                            setLoadSearchOpen(
+                                                true
+                                            )
+                                        }
                                         placeholder="عنوان بار را جستجو کنید..."
                                     />
 
                                 </div>
 
+
                                 {loadSearchOpen && (
+
                                     <div className="invoice-search-dropdown">
 
                                         {filteredLoads.length > 0 ? (
-                                            filteredLoads.map((load) => (
 
-                                                <button
-                                                    type="button"
-                                                    key={load.id}
-                                                    className="invoice-search-option"
-                                                    onClick={() => selectLoad(load)}
-                                                >
+                                            filteredLoads.map(
+                                                (load) => (
 
-                                                    <div className="invoice-option-icon">
-                                                        <Package size={18} />
-                                                    </div>
+                                                    <button
+                                                        type="button"
+                                                        key={load.id}
+                                                        className="invoice-search-option"
+                                                        onClick={() =>
+                                                            selectLoad(
+                                                                load
+                                                            )
+                                                        }
+                                                    >
 
-                                                    <div>
+                                                        <div className="invoice-option-icon">
 
-                                                        <strong>
-                                                            {load.title}
-                                                        </strong>
+                                                            <Package
+                                                                size={18}
+                                                            />
 
-                                                        <span>
-                                                            {load.companyName} - {load.origin} تا{" "}
-                                                            {load.destination}
-                                                        </span>
+                                                        </div>
 
-                                                    </div>
+                                                        <div>
 
-                                                </button>
+                                                            <strong>
+                                                                {load.title}
+                                                            </strong>
 
-                                            ))
+                                                            <span>
+                                                                {load.companyName} -{" "}
+                                                                {load.origin} تا{" "}
+                                                                {load.destination}
+                                                            </span>
+
+                                                        </div>
+
+                                                    </button>
+
+                                                )
+                                            )
+
                                         ) : (
+
                                             <div className="invoice-search-empty">
+
                                                 باری پیدا نشد
+
                                             </div>
+
                                         )}
+
 
                                         <button
                                             type="button"
                                             className="invoice-manual-button"
-                                            onClick={enableManualLoad}
+                                            onClick={
+                                                enableManualLoad
+                                            }
                                         >
                                             + ورود دستی اطلاعات بار
                                         </button>
 
                                     </div>
+
                                 )}
 
                             </div>
+
                         )}
 
+
                         {manualLoad && (
+
                             <div className="invoice-manual-mode">
 
                                 <div className="invoice-manual-mode-header">
@@ -867,11 +1107,13 @@ export default function AddInvoicePage() {
                                 </div>
 
                             </div>
+
                         )}
 
                     </div>
 
-                    {/* Load ID */}
+
+                    {/* LOAD ID */}
 
                     <div className="invoice-form-group">
 
@@ -899,7 +1141,8 @@ export default function AddInvoicePage() {
 
                     </div>
 
-                    {/* Load Title */}
+
+                    {/* LOAD TITLE */}
 
                     <div className="invoice-form-group">
 
@@ -927,7 +1170,8 @@ export default function AddInvoicePage() {
 
                     </div>
 
-                    {/* Bar Type */}
+
+                    {/* BAR TYPE */}
 
                     <div className="invoice-form-group">
 
@@ -980,7 +1224,8 @@ export default function AddInvoicePage() {
 
                     </div>
 
-                    {/* Company */}
+
+                    {/* COMPANY */}
 
                     <div className="invoice-form-group">
 
@@ -1008,7 +1253,8 @@ export default function AddInvoicePage() {
 
                     </div>
 
-                    {/* Origin */}
+
+                    {/* ORIGIN */}
 
                     <div className="invoice-form-group">
 
@@ -1036,7 +1282,8 @@ export default function AddInvoicePage() {
 
                     </div>
 
-                    {/* Destination */}
+
+                    {/* DESTINATION */}
 
                     <div className="invoice-form-group">
 
@@ -1064,7 +1311,8 @@ export default function AddInvoicePage() {
 
                     </div>
 
-                    {/* Distance */}
+
+                    {/* DISTANCE */}
 
                     <div className="invoice-form-group">
 
@@ -1096,7 +1344,8 @@ export default function AddInvoicePage() {
 
                     </div>
 
-                    {/* Address */}
+
+                    {/* ADDRESS */}
 
                     <div className="invoice-form-group invoice-form-full">
 
@@ -1124,9 +1373,10 @@ export default function AddInvoicePage() {
 
                     </div>
 
+
                     {/* =================================================
-              COSTS
-          ================================================== */}
+                        COSTS
+                    ================================================== */}
 
                     <div className="invoice-form-section-title invoice-form-full">
 
@@ -1138,7 +1388,8 @@ export default function AddInvoicePage() {
 
                     </div>
 
-                    {/* Main Cost */}
+
+                    {/* MAIN COST */}
 
                     <div className="invoice-form-group">
 
@@ -1170,7 +1421,8 @@ export default function AddInvoicePage() {
 
                     </div>
 
-                    {/* Payment Type */}
+
+                    {/* PAYMENT TYPE */}
 
                     <div className="invoice-form-group">
 
@@ -1206,7 +1458,8 @@ export default function AddInvoicePage() {
 
                     </div>
 
-                    {/* Insurance */}
+
+                    {/* INSURANCE */}
 
                     <div className="invoice-form-group">
 
@@ -1238,7 +1491,8 @@ export default function AddInvoicePage() {
 
                     </div>
 
-                    {/* Worker */}
+
+                    {/* WORKER */}
 
                     <div className="invoice-form-group">
 
@@ -1270,7 +1524,8 @@ export default function AddInvoicePage() {
 
                     </div>
 
-                    {/* Scale */}
+
+                    {/* SCALE */}
 
                     <div className="invoice-form-group">
 
@@ -1302,7 +1557,8 @@ export default function AddInvoicePage() {
 
                     </div>
 
-                    {/* Stop */}
+
+                    {/* STOP */}
 
                     <div className="invoice-form-group">
 
@@ -1334,9 +1590,10 @@ export default function AddInvoicePage() {
 
                     </div>
 
+
                     {/* =================================================
-              OTHER INFORMATION
-          ================================================== */}
+                        OTHER INFORMATION
+                    ================================================== */}
 
                     <div className="invoice-form-section-title invoice-form-full">
 
@@ -1348,7 +1605,8 @@ export default function AddInvoicePage() {
 
                     </div>
 
-                    {/* Receiver */}
+
+                    {/* RECEIVER */}
 
                     <div className="invoice-form-group">
 
@@ -1361,7 +1619,9 @@ export default function AddInvoicePage() {
                             <UserCheck size={18} />
 
                             <input
-                                value={invoiceData.receiverName}
+                                value={
+                                    invoiceData.receiverName
+                                }
                                 onChange={(event) =>
                                     editInvoiceField(
                                         "receiverName",
@@ -1373,10 +1633,10 @@ export default function AddInvoicePage() {
 
                         </div>
 
-
                     </div>
 
-                    {/* Description */}
+
+                    {/* DESCRIPTION */}
 
                     <div className="invoice-form-group invoice-form-full">
 
@@ -1390,7 +1650,9 @@ export default function AddInvoicePage() {
 
                             <textarea
                                 rows={4}
-                                value={invoiceData.description}
+                                value={
+                                    invoiceData.description
+                                }
                                 onChange={(event) =>
                                     editInvoiceField(
                                         "description",
@@ -1404,9 +1666,10 @@ export default function AddInvoicePage() {
 
                     </div>
 
+
                     {/* =================================================
-              ACTIONS
-          ================================================== */}
+                        ACTIONS
+                    ================================================== */}
 
                     <div className="invoice-form-actions">
 
@@ -1417,12 +1680,29 @@ export default function AddInvoicePage() {
                             انصراف
                         </Link>
 
+
                         <button
                             type="submit"
                             className="primary-action-button"
                         >
+
                             <Save size={19} />
-                            <span>ثبت فاکتور</span>
+
+                            <span>
+                                ثبت فاکتور
+                            </span>
+
+                        </button>
+
+
+                        <button
+                            type="button"
+                            className="primary-action-button"
+                            onClick={() =>
+                                setPreview(true)
+                            }
+                        >
+                            پیش‌نمایش فاکتور
                         </button>
 
                     </div>
@@ -1430,6 +1710,24 @@ export default function AddInvoicePage() {
                 </form>
 
             </section>
+
+
+            {/* =====================================================
+                INVOICE PREVIEW
+            ====================================================== */}
+
+            {preview && (
+
+                <InvoicePreview
+                    onClose={() =>
+                        setPreview(false)
+                    }
+                    invoice={
+                        getPreviewInvoice()
+                    }
+                />
+
+            )}
 
         </main>
     );

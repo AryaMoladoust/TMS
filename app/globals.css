@@ -8349,7 +8349,7 @@ body {
   gap: 11px;
 }
 
-.invoice-filter-title > svg {
+.invoice-filter-title>svg {
   color: var(--primary);
 }
 
@@ -8427,7 +8427,7 @@ body {
   box-shadow: 0 0 0 3px var(--primary-soft);
 }
 
-.invoice-input-with-icon > svg {
+.invoice-input-with-icon>svg {
   flex-shrink: 0;
   margin-right: 12px;
   color: var(--text-muted);
@@ -8460,7 +8460,7 @@ body {
   cursor: pointer;
 }
 
-.invoice-select-wrapper > svg {
+.invoice-select-wrapper>svg {
   position: absolute;
   left: 11px;
   pointer-events: none;
@@ -8701,226 +8701,227 @@ body {
     padding: 0 15px;
   }
 }
+
 /* =========================================
    MAP PICKER
 ========================================= */
 
 .map-select-button {
-    margin-top: 10px;
+  margin-top: 10px;
 
-    width: 100%;
+  width: 100%;
 
-    height: 42px;
+  height: 42px;
 
-    border: 1px solid #dbe3ef;
+  border: 1px solid #dbe3ef;
 
-    border-radius: 10px;
+  border-radius: 10px;
 
-    background: #f8fafc;
+  background: #f8fafc;
 
-    color: #2563eb;
+  color: #2563eb;
 
-    display: flex;
+  display: flex;
 
-    align-items: center;
+  align-items: center;
 
-    justify-content: center;
+  justify-content: center;
 
-    gap: 8px;
+  gap: 8px;
 
-    font-family: inherit;
+  font-family: inherit;
 
-    font-size: 13px;
+  font-size: 13px;
 
-    font-weight: 600;
+  font-weight: 600;
 
-    cursor: pointer;
+  cursor: pointer;
 
-    transition: all 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .map-select-button:hover {
-    background: #eff6ff;
+  background: #eff6ff;
 
-    border-color: #2563eb;
+  border-color: #2563eb;
 }
 
 
 /* بخش نقشه */
 
 .load-map-section {
-    margin-top: 8px;
+  margin-top: 8px;
 
-    padding: 18px;
+  padding: 18px;
 
-    border: 1px solid #e2e8f0;
+  border: 1px solid #e2e8f0;
 
-    border-radius: 14px;
+  border-radius: 14px;
 
-    background: #f8fafc;
+  background: #f8fafc;
 }
 
 
 /* Header نقشه */
 
 .map-section-header {
-    display: flex;
+  display: flex;
 
-    align-items: center;
+  align-items: center;
 
-    justify-content: space-between;
+  justify-content: space-between;
 
-    gap: 15px;
+  gap: 15px;
 
-    margin-bottom: 14px;
+  margin-bottom: 14px;
 }
 
-.map-section-header > div {
-    display: flex;
+.map-section-header>div {
+  display: flex;
 
-    align-items: center;
+  align-items: center;
 
-    gap: 8px;
+  gap: 8px;
 
-    color: #1e293b;
+  color: #1e293b;
 }
 
 .map-section-header span {
-    color: #64748b;
+  color: #64748b;
 
-    font-size: 12px;
+  font-size: 12px;
 }
 
 
 /* خود نقشه */
 
 .map-picker-container {
-    width: 100%;
+  width: 100%;
 }
 
 .load-map {
-    width: 100%;
+  width: 100%;
 
-    height: 400px;
+  height: 400px;
 
-    border-radius: 12px;
+  border-radius: 12px;
 
-    overflow: hidden;
+  overflow: hidden;
 
-    z-index: 1;
+  z-index: 1;
 }
 
 
 /* مختصات */
 
 .map-coordinates {
-    margin-top: 10px;
+  margin-top: 10px;
 
-    display: flex;
+  display: flex;
 
-    gap: 10px;
+  gap: 10px;
 }
 
-.map-coordinates > div {
-    flex: 1;
+.map-coordinates>div {
+  flex: 1;
 
-    display: flex;
+  display: flex;
 
-    align-items: center;
+  align-items: center;
 
-    justify-content: space-between;
+  justify-content: space-between;
 
-    gap: 10px;
+  gap: 10px;
 
-    padding: 10px 12px;
+  padding: 10px 12px;
 
-    background: white;
+  background: white;
 
-    border: 1px solid #e2e8f0;
+  border: 1px solid #e2e8f0;
 
-    border-radius: 9px;
+  border-radius: 9px;
 }
 
 .map-coordinates span {
-    color: #64748b;
+  color: #64748b;
 
-    font-size: 12px;
+  font-size: 12px;
 }
 
 .map-coordinates strong {
-    color: #0f172a;
+  color: #0f172a;
 
-    direction: ltr;
+  direction: ltr;
 
-    font-size: 12px;
+  font-size: 12px;
 }
 
 
 /* محل انتخاب شده */
 
 .selected-location {
-    margin-top: 12px;
+  margin-top: 12px;
 
-    padding: 13px;
+  padding: 13px;
 
-    border-radius: 10px;
+  border-radius: 10px;
 
-    background: #eff6ff;
+  background: #eff6ff;
 
-    border: 1px solid #bfdbfe;
+  border: 1px solid #bfdbfe;
 
-    color: #1d4ed8;
+  color: #1d4ed8;
 
-    display: flex;
+  display: flex;
 
-    align-items: flex-start;
+  align-items: flex-start;
 
-    gap: 10px;
+  gap: 10px;
 }
 
-.selected-location > div {
-    display: flex;
+.selected-location>div {
+  display: flex;
 
-    flex-direction: column;
+  flex-direction: column;
 
-    gap: 4px;
+  gap: 4px;
 }
 
 .selected-location strong {
-    font-size: 13px;
+  font-size: 13px;
 }
 
 .selected-location span {
-    direction: ltr;
+  direction: ltr;
 
-    text-align: right;
+  text-align: right;
 
-    font-size: 12px;
+  font-size: 12px;
 
-    color: #475569;
+  color: #475569;
 }
 
 
 /* Loading */
 
 .map-loading {
-    width: 100%;
+  width: 100%;
 
-    height: 400px;
+  height: 400px;
 
-    border-radius: 12px;
+  border-radius: 12px;
 
-    background: #f1f5f9;
+  background: #f1f5f9;
 
-    display: flex;
+  display: flex;
 
-    align-items: center;
+  align-items: center;
 
-    justify-content: center;
+  justify-content: center;
 
-    color: #64748b;
+  color: #64748b;
 
-    font-size: 14px;
+  font-size: 14px;
 }
 
 
@@ -8929,61 +8930,61 @@ body {
 ========================================= */
 
 .dark .map-select-button {
-    background: #111827;
+  background: #111827;
 
-    border-color: #334155;
+  border-color: #334155;
 
-    color: #60a5fa;
+  color: #60a5fa;
 }
 
 .dark .map-select-button:hover {
-    background: #172554;
+  background: #172554;
 
-    border-color: #3b82f6;
+  border-color: #3b82f6;
 }
 
 .dark .load-map-section {
-    background: #111827;
+  background: #111827;
 
-    border-color: #334155;
+  border-color: #334155;
 }
 
-.dark .map-section-header > div {
-    color: #e2e8f0;
+.dark .map-section-header>div {
+  color: #e2e8f0;
 }
 
 .dark .map-section-header span {
-    color: #94a3b8;
+  color: #94a3b8;
 }
 
-.dark .map-coordinates > div {
-    background: #0f172a;
+.dark .map-coordinates>div {
+  background: #0f172a;
 
-    border-color: #334155;
+  border-color: #334155;
 }
 
 .dark .map-coordinates span {
-    color: #94a3b8;
+  color: #94a3b8;
 }
 
 .dark .map-coordinates strong {
-    color: #e2e8f0;
+  color: #e2e8f0;
 }
 
 .dark .selected-location {
-    background: #172554;
+  background: #172554;
 
-    border-color: #1d4ed8;
+  border-color: #1d4ed8;
 }
 
 .dark .selected-location span {
-    color: #cbd5e1;
+  color: #cbd5e1;
 }
 
 .dark .map-loading {
-    background: #111827;
+  background: #111827;
 
-    color: #94a3b8;
+  color: #94a3b8;
 }
 
 
@@ -8993,23 +8994,23 @@ body {
 
 @media (max-width: 800px) {
 
-    .map-section-header {
-        align-items: flex-start;
+  .map-section-header {
+    align-items: flex-start;
 
-        flex-direction: column;
-    }
+    flex-direction: column;
+  }
 
-    .map-section-header span {
-        font-size: 11px;
-    }
+  .map-section-header span {
+    font-size: 11px;
+  }
 
-    .load-map {
-        height: 320px;
-    }
+  .load-map {
+    height: 320px;
+  }
 
-    .map-coordinates {
-        flex-direction: column;
-    }
+  .map-coordinates {
+    flex-direction: column;
+  }
 
 }
 
@@ -9018,19 +9019,19 @@ body {
 ========================================= */
 
 .map-picker-footer {
-    margin-top: 12px;
+  margin-top: 12px;
 
-    padding: 14px;
+  padding: 14px;
 
-    display: flex;
-    align-items: center;
-    gap: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
 
-    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
 }
 
 
@@ -9039,54 +9040,54 @@ body {
 ========================================= */
 
 .map-selected-info {
-    flex: 1;
+  flex: 1;
 
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
 
-    gap: 10px;
+  gap: 10px;
 }
 
-.map-selected-info > div {
-    min-height: 48px;
+.map-selected-info>div {
+  min-height: 48px;
 
-    padding: 7px 12px;
+  padding: 7px 12px;
 
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 
-    gap: 12px;
+  gap: 12px;
 
-    background: var(--background);
+  background: var(--background);
 
-    border: 1px solid var(--border);
+  border: 1px solid var(--border);
 
-    border-radius: 9px;
+  border-radius: 9px;
 }
 
 .map-selected-info span {
-    color: var(--text-muted);
+  color: var(--text-muted);
 
-    font-size: 10px;
+  font-size: 10px;
 
-    font-weight: 600;
+  font-weight: 600;
 
-    white-space: nowrap;
+  white-space: nowrap;
 }
 
 .map-selected-info strong {
-    color: var(--text);
+  color: var(--text);
 
-    direction: ltr;
+  direction: ltr;
 
-    font-size: 11px;
+  font-size: 11px;
 
-    font-weight: 700;
+  font-weight: 700;
 
-    letter-spacing: 0.2px;
+  letter-spacing: 0.2px;
 
-    white-space: nowrap;
+  white-space: nowrap;
 }
 
 
@@ -9095,30 +9096,30 @@ body {
 ========================================= */
 
 .map-hint {
-    flex: 1;
+  flex: 1;
 
-    margin: 0;
+  margin: 0;
 
-    min-height: 48px;
+  min-height: 48px;
 
-    padding: 0 14px;
+  padding: 0 14px;
 
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
 
-    background: var(--background);
+  background: var(--background);
 
-    border: 1px dashed var(--border);
+  border: 1px dashed var(--border);
 
-    border-radius: 9px;
+  border-radius: 9px;
 
-    color: var(--text-muted);
+  color: var(--text-muted);
 
-    font-size: 10px;
+  font-size: 10px;
 
-    line-height: 1.8;
+  line-height: 1.8;
 
-    text-align: right;
+  text-align: right;
 }
 
 
@@ -9127,57 +9128,57 @@ body {
 ========================================= */
 
 .map-confirm-button {
-    flex-shrink: 0;
+  flex-shrink: 0;
 
-    min-width: 135px;
+  min-width: 135px;
 
-    height: 48px;
+  height: 48px;
 
-    padding: 0 18px;
+  padding: 0 18px;
 
-    border: 0;
+  border: 0;
 
-    border-radius: 9px;
+  border-radius: 9px;
 
-    background: var(--primary);
+  background: var(--primary);
 
-    color: #ffffff;
+  color: #ffffff;
 
-    font-family: inherit;
+  font-family: inherit;
 
-    font-size: 11px;
+  font-size: 11px;
 
-    font-weight: 700;
+  font-weight: 700;
 
-    cursor: pointer;
+  cursor: pointer;
 
-    transition:
-        background 0.18s ease,
-        transform 0.18s ease,
-        box-shadow 0.18s ease,
-        opacity 0.18s ease;
+  transition:
+    background 0.18s ease,
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    opacity 0.18s ease;
 }
 
 .map-confirm-button:hover:not(:disabled) {
-    background: #1d4ed8;
+  background: #1d4ed8;
 
-    transform: translateY(-1px);
+  transform: translateY(-1px);
 
-    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.22);
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.22);
 }
 
 .map-confirm-button:active:not(:disabled) {
-    transform: translateY(0);
+  transform: translateY(0);
 }
 
 .map-confirm-button:disabled {
-    background: var(--border);
+  background: var(--border);
 
-    color: var(--text-muted);
+  color: var(--text-muted);
 
-    cursor: not-allowed;
+  cursor: not-allowed;
 
-    opacity: 0.8;
+  opacity: 0.8;
 }
 
 
@@ -9186,24 +9187,24 @@ body {
 ========================================= */
 
 .dark .map-picker-footer {
-    background: var(--surface);
+  background: var(--surface);
 
-    border-color: var(--border);
+  border-color: var(--border);
 
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
 }
 
-.dark .map-selected-info > div,
+.dark .map-selected-info>div,
 .dark .map-hint {
-    background: var(--background);
+  background: var(--background);
 
-    border-color: var(--border);
+  border-color: var(--border);
 }
 
 .dark .map-confirm-button:disabled {
-    background: var(--border);
+  background: var(--border);
 
-    color: var(--text-muted);
+  color: var(--text-muted);
 }
 
 
@@ -9213,36 +9214,173 @@ body {
 
 @media (max-width: 800px) {
 
-    .map-picker-footer {
-        flex-direction: column;
+  .map-picker-footer {
+    flex-direction: column;
 
-        align-items: stretch;
+    align-items: stretch;
 
-        padding: 12px;
-    }
+    padding: 12px;
+  }
 
-    .map-selected-info {
-        width: 100%;
+  .map-selected-info {
+    width: 100%;
 
-        grid-template-columns: 1fr;
-    }
+    grid-template-columns: 1fr;
+  }
 
-    .map-selected-info > div {
-        min-height: 46px;
-    }
+  .map-selected-info>div {
+    min-height: 46px;
+  }
 
-    .map-hint {
-        min-height: 46px;
+  .map-hint {
+    min-height: 46px;
 
-        justify-content: center;
+    justify-content: center;
 
-        text-align: center;
-    }
+    text-align: center;
+  }
 
-    .map-confirm-button {
-        width: 100%;
-    }
+  .map-confirm-button {
+    width: 100%;
+  }
 }
+
+.invoice-preview-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, .55);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 3000;
+  padding: 20px;
+}
+
+.invoice-preview-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.invoice-preview-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.invoice-a5 {
+  width: 148mm;
+  min-height: 210mm;
+  background: #fff;
+  color: #111827;
+  padding: 14mm;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, .25);
+}
+
+.invoice-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #2563eb;
+}
+
+.invoice-logo {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  background: #2563eb;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+}
+
+.invoice-section {
+  margin-top: 16px;
+  padding: 12px;
+  border: 1px solid #dbeafe;
+  border-radius: 12px;
+}
+
+.invoice-route-box {
+  margin-top: 16px;
+  padding: 14px;
+  border: 1px solid #dbeafe;
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.qr-placeholder {
+  width: 70px;
+  height: 70px;
+  background: #f3f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.invoice-cost-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 18px;
+}
+
+.invoice-cost-table td {
+  border: 1px solid #d1d5db;
+  padding: 10px;
+}
+
+.invoice-total td {
+  font-weight: 700;
+  background: #eff6ff;
+}
+
+.invoice-signatures {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px dashed #9ca3af;
+}
+
+@media print {
+
+  body * {
+    visibility: hidden;
+  }
+
+  #invoice-a5,
+  #invoice-a5 * {
+    visibility: visible;
+  }
+
+  #invoice-a5 {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 148mm;
+    min-height: 210mm;
+    box-shadow: none;
+    border-radius: 0;
+    padding: 14mm;
+  }
+
+  .invoice-preview-actions {
+    display: none;
+  }
+
+
+  .map-confirm-button {
+    width: 100%;
+  }
+}
+
 /* =========================================================
    LOGIN PAGE
    ========================================================= */
@@ -9551,4 +9689,963 @@ html.dark .login-submit-button:hover {
   .login-card-header p {
     font-size: 12px;
   }
+
+}
+
+
+/* ================================
+   Invoice Preview Overlay
+================================ */
+
+.invoice-preview-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+
+  width: 100vw;
+  height: 100vh;
+
+  background: rgba(15, 23, 42, 0.72);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 24px;
+
+  box-sizing: border-box;
+}
+
+
+/* ================================
+   Main Wrapper
+================================ */
+
+.invoice-preview-wrapper {
+  width: min(1100px, 100%);
+  height: min(92vh, 900px);
+
+  background: #eef1f6;
+
+  border-radius: 18px;
+
+  overflow: hidden;
+
+  display: flex;
+  flex-direction: column;
+
+  box-shadow:
+    0 25px 70px rgba(0, 0, 0, 0.25);
+}
+
+
+/* ================================
+   Toolbar
+================================ */
+
+.invoice-preview-toolbar {
+  flex-shrink: 0;
+
+  min-height: 76px;
+
+  padding: 14px 20px;
+
+  background: #ffffff;
+
+  border-bottom: 1px solid #e5e7eb;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  box-sizing: border-box;
+}
+
+
+/* ================================
+   Brand
+================================ */
+
+.invoice-preview-brand {
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  min-width: 0;
+}
+
+.invoice-preview-logo {
+  width: 44px;
+  height: 44px;
+
+  flex-shrink: 0;
+
+  border-radius: 12px;
+
+  background: #2563eb;
+
+  color: #ffffff;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.invoice-preview-brand-text {
+  display: flex;
+  flex-direction: column;
+
+  gap: 3px;
+}
+
+.invoice-preview-brand-text strong {
+  color: #111827;
+
+  font-size: 15px;
+}
+
+.invoice-preview-brand-text span {
+  color: #6b7280;
+
+  font-size: 12px;
+}
+
+
+/* ================================
+   Buttons
+================================ */
+
+.invoice-preview-buttons {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  flex-shrink: 0;
+}
+
+.invoice-preview-buttons button {
+  height: 44px;
+
+  border: none;
+  border-radius: 10px;
+
+  padding: 0 16px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+
+  font-family: inherit;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    background 0.15s ease;
+}
+
+.invoice-preview-buttons button:hover {
+  transform: translateY(-1px);
+}
+
+.invoice-preview-buttons button:active {
+  transform: translateY(0);
+}
+
+
+/* Print */
+
+.invoice-print-btn {
+  background: #111827;
+
+  color: #ffffff;
+
+  box-shadow:
+    0 4px 12px rgba(17, 24, 39, 0.18);
+}
+
+.invoice-print-btn:hover {
+  background: #1f2937;
+}
+
+
+/* Download */
+
+.invoice-download-btn {
+  background: #2563eb;
+
+  color: #ffffff;
+
+  box-shadow:
+    0 4px 12px rgba(37, 99, 235, 0.22);
+}
+
+.invoice-download-btn:hover {
+  background: #1d4ed8;
+}
+
+
+/* Close */
+
+.invoice-close-btn {
+  width: 44px;
+
+  padding: 0 !important;
+
+  background: #f1f5f9;
+
+  color: #475569;
+}
+
+.invoice-close-btn:hover {
+  background: #e2e8f0;
+}
+
+
+/* ================================
+   Invoice Scroll Area
+================================ */
+
+.invoice-preview-scroll {
+  flex: 1;
+
+  overflow: auto;
+
+  padding: 35px;
+
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+
+  box-sizing: border-box;
+}
+
+
+/* ================================
+   A5 Invoice
+================================ */
+
+.invoice-a5 {
+  width: 148mm;
+  min-width: 148mm;
+
+  height: 210mm;
+  min-height: 210mm;
+
+  background: #ffffff;
+
+  box-sizing: border-box;
+
+  padding: 16mm;
+
+  direction: rtl;
+
+  color: #111827;
+
+  font-family: "Vazirmatn", Arial, sans-serif;
+
+  box-shadow:
+    0 10px 35px rgba(0, 0, 0, 0.14);
+
+  flex-shrink: 0;
+}
+
+
+/* ================================
+   Invoice Header
+================================ */
+
+.invoice-head {
+  display: flex;
+
+  align-items: flex-start;
+  justify-content: space-between;
+
+  padding-bottom: 14px;
+
+  border-bottom: 2px solid #111827;
+}
+
+.invoice-head h1 {
+  margin: 0 0 10px;
+
+  font-size: 23px;
+
+  color: #111827;
+}
+
+.invoice-head p {
+  margin: 5px 0;
+
+  font-size: 12px;
+
+  color: #4b5563;
+}
+
+.invoice-logo {
+  width: 55px;
+  height: 55px;
+
+  border-radius: 14px;
+
+  background: #2563eb;
+
+  color: #ffffff;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 18px;
+  font-weight: 800;
+}
+
+
+/* ================================
+   Sections
+================================ */
+
+.invoice-section {
+  margin-top: 18px;
+
+  padding: 13px;
+
+  border: 1px solid #e5e7eb;
+
+  border-radius: 10px;
+}
+
+.invoice-section h3 {
+  margin: 0 0 10px;
+
+  font-size: 14px;
+
+  color: #2563eb;
+}
+
+.invoice-section p {
+  margin: 7px 0;
+
+  font-size: 12px;
+
+  color: #374151;
+}
+
+
+/* ================================
+   Route Box
+================================ */
+
+.invoice-route-box {
+  margin-top: 18px;
+
+  padding: 14px;
+
+  border-radius: 10px;
+
+  background: #f8fafc;
+
+  border: 1px solid #e2e8f0;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 14px;
+}
+
+.qr-placeholder {
+  width: 55px;
+  height: 55px;
+
+  flex-shrink: 0;
+
+  border: 2px dashed #94a3b8;
+
+  border-radius: 8px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #64748b;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.invoice-route-box{
+    margin-top:18px;
+    padding:16px;
+    border-radius:14px;
+    background:#f8fbff;
+    border:1px solid #dbeafe;
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:16px;
+}
+
+.invoice-route-info{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+}
+
+.invoice-route-info h3{
+    margin:0;
+    color:#1d4ed8;
+    font-size:15px;
+}
+
+.invoice-route-info p{
+    margin:0;
+    font-size:12px;
+    color:#64748b;
+}
+
+.invoice-route-destination{
+    margin-top:4px;
+    font-size:12px;
+    font-weight:700;
+    color:#0f172a;
+}
+
+.invoice-route-qr{
+    width:92px;
+    height:92px;
+    background:white;
+    border-radius:10px;
+    padding:5px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    border:1px solid #dbeafe;
+    flex-shrink:0;
+}
+
+
+/* ================================
+   Cost Table
+================================ */
+
+.invoice-cost-wrapper{
+    margin-top:20px;
+    border:1px solid #dbeafe;
+    border-radius:14px;
+    overflow:hidden;
+}
+
+.invoice-table-title{
+    background:#2563eb;
+    color:#fff;
+    padding:12px 16px;
+    font-size:14px;
+    font-weight:800;
+}
+
+.invoice-cost-table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:11px;
+}
+
+.invoice-cost-table th{
+    background:#eff6ff;
+    color:#1e3a8a;
+    padding:10px;
+    font-weight:800;
+    border-bottom:1px solid #dbeafe;
+}
+
+.invoice-cost-table td{
+    padding:10px;
+    border-bottom:1px solid #eef2f7;
+    text-align:center;
+}
+
+.invoice-cost-table tbody tr:nth-child(even){
+    background:#fafcff;
+}
+
+.invoice-total-row td{
+    background:#eff6ff;
+    color:#1d4ed8;
+    font-size:14px;
+    font-weight:900;
+    padding:14px;
+}
+
+
+/* ================================
+   Signatures
+================================ */
+
+.invoice-signatures {
+  margin-top: 25px;
+
+  display: flex;
+
+  justify-content: space-between;
+
+  gap: 20px;
+}
+
+.invoice-signatures div {
+  width: 45%;
+
+  height: 55px;
+
+  border-top: 1px solid #94a3b8;
+
+  padding-top: 8px;
+
+  text-align: center;
+
+  font-size: 11px;
+
+  color: #64748b;
+}
+
+
+/* ================================
+   Mobile
+================================ */
+
+@media (max-width: 800px) {
+
+  .invoice-preview-overlay {
+    padding: 0;
+  }
+
+  .invoice-preview-wrapper {
+    width: 100%;
+    height: 100%;
+
+    border-radius: 0;
+  }
+
+  .invoice-preview-toolbar {
+    padding: 10px 12px;
+
+    min-height: auto;
+
+    flex-wrap: wrap;
+  }
+
+  .invoice-preview-brand-text {
+    display: none;
+  }
+
+  .invoice-preview-buttons {
+    margin-right: auto;
+  }
+
+  .invoice-preview-buttons button {
+    padding: 0 12px;
+  }
+
+  .invoice-preview-buttons button span {
+    display: none;
+  }
+
+  .invoice-preview-buttons .invoice-print-btn,
+  .invoice-preview-buttons .invoice-download-btn {
+    width: 44px;
+
+    padding: 0;
+  }
+
+  .invoice-preview-scroll {
+    padding: 20px 10px;
+
+    justify-content: flex-start;
+  }
+
+}
+
+
+/* ================================
+   Print
+================================ */
+
+@media print {
+
+  body * {
+    visibility: hidden;
+  }
+
+  .invoice-a5,
+  .invoice-a5 * {
+    visibility: visible;
+  }
+
+  .invoice-a5 {
+    position: absolute;
+
+    top: 0;
+    left: 0;
+
+    width: 148mm;
+    height: 210mm;
+
+    min-width: 148mm;
+    min-height: 210mm;
+
+    margin: 0;
+
+    padding: 16mm;
+
+    box-shadow: none;
+  }
+
+  .invoice-preview-overlay {
+    position: static;
+
+    display: block;
+
+    width: auto;
+    height: auto;
+
+    background: none;
+
+    padding: 0;
+  }
+
+  .invoice-preview-wrapper {
+    width: auto;
+    height: auto;
+
+    overflow: visible;
+
+    background: none;
+  }
+
+  .invoice-preview-toolbar {
+    display: none;
+  }
+
+  .invoice-preview-scroll {
+    display: block;
+
+    padding: 0;
+
+    overflow: visible;
+  }
+}
+
+.invoice-header-modern {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: 14px;
+  border-bottom: 2px solid #2563eb;
+}
+
+.invoice-company {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.invoice-company h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #0f172a;
+}
+
+.invoice-company p {
+  margin-top: 4px;
+  color: #64748b;
+  font-size: 12px;
+}
+
+.invoice-title-side {
+  text-align: left;
+}
+
+.invoice-title-side h1 {
+  margin: 0 0 12px;
+  font-size: 30px;
+  font-weight: 900;
+  color: #0f172a;
+}
+
+.invoice-meta-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-bottom: 6px;
+  font-size: 13px;
+}
+
+.invoice-meta-row strong {
+  background: #eff6ff;
+  color: #2563eb;
+  padding: 4px 10px;
+  border-radius: 8px;
+}
+.invoice-info-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:12px;
+    margin-top:16px;
+}
+
+.invoice-info-card{
+    border:1px solid #dbeafe;
+    border-radius:14px;
+    padding:14px;
+    background:#fff;
+}
+
+.invoice-info-card h3{
+    margin:0 0 10px;
+    color:#1d4ed8;
+    font-size:15px;
+}
+
+.invoice-info-card p{
+    margin:8px 0;
+    font-size:12px;
+    color:#334155;
+}
+/* ===========================
+   Signature Area
+=========================== */
+
+.invoice-sign-area{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:16px;
+    margin-top:22px;
+}
+
+.invoice-sign-card{
+    border:1px solid #dbeafe;
+    border-radius:14px;
+    background:#fff;
+    height:110px;
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+}
+
+.invoice-sign-line{
+    width:90px;
+    border-top:2px solid #64748b;
+    margin-bottom:12px;
+}
+
+.invoice-sign-text{
+    font-size:12px;
+    color:#475569;
+    font-weight:600;
+}
+
+/* ===========================
+   Company Stamp
+=========================== */
+
+/* ===========================
+   Signature Area
+=========================== */
+
+.invoice-sign-area{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:18px;
+    margin-top:24px;
+}
+
+.invoice-sign-card{
+    height:120px;
+    border:1px dashed #94a3b8;
+    border-radius:14px;
+    background:#fff;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-end;
+    padding:16px;
+}
+
+.invoice-sign-line{
+    width:120px;
+    border-top:2px solid #475569;
+    margin-bottom:12px;
+}
+
+.invoice-sign-text{
+    font-size:12px;
+    color:#475569;
+    font-weight:700;
+    text-align:center;
+}ک
+
+/* ===========================
+   Notes
+=========================== */
+
+.invoice-note-box{
+    margin-top:18px;
+    padding:14px;
+    border:1px solid #dbeafe;
+    border-radius:14px;
+    background:#f8fbff;
+}
+
+.invoice-note-box h3{
+    margin:0 0 10px;
+    color:#1d4ed8;
+    font-size:14px;
+}
+
+.invoice-note-box p{
+    margin:0;
+    font-size:12px;
+    line-height:1.9;
+    color:#475569;
+}
+
+/* ===========================
+   Footer
+=========================== */
+
+.invoice-footer{
+    margin-top:18px;
+    padding-top:12px;
+    border-top:2px solid #dbeafe;
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    flex-wrap:wrap;
+
+    font-size:11px;
+    color:#475569;
+}
+
+.invoice-footer-item{
+    display:flex;
+    align-items:center;
+    gap:6px;
+}
+
+.invoice-footer-thanks{
+    color:#2563eb;
+    font-weight:700;
+}
+
+.invoice-freight-address {
+  margin-top: 18px;
+  padding: 12px 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #f8fafc;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  direction: rtl;
+}
+
+.invoice-freight-address-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #eff6ff;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.invoice-freight-address-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.invoice-freight-address-content h3 {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: #374151;
+}
+
+.invoice-freight-address-content p {
+  margin: 0;
+  font-size: 13px;
+  color: #6b7280;
+}
+.invoice-besmi {
+  width: 100%;
+  height: 24px;
+
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+
+  margin: 0;
+  padding: 0;
+
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 24px;
+
+  color: #111827;
+  direction: rtl;
+}
+/* ========================= */
+/* Watermark */
+/* ========================= */
+
+.invoice-a5 {
+  position: relative;
+}
+
+
+.invoice-watermark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+
+  transform: translate(-50%, -50%) rotate(-35deg);
+
+  font-family: "Vazirmatn", sans-serif !important;
+  font-size: 250px;
+  font-weight: 800;
+
+  color: #374151;
+  opacity: 0.12;
+
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+
+  z-index: 999;
+
+  direction: rtl;
+  unicode-bidi: normal;
+
+  letter-spacing: 0 !important;
+  word-spacing: 0 !important;
 }
