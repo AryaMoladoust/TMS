@@ -162,7 +162,7 @@ export default function InvoicePreview({ invoice, onClose }) {
 
                 <div>
                   <h3>{invoice.companyName}</h3>
-                  <p>سامانه مدیریت حمل‌ونقل</p>
+                  <p>مسئول فاکتور: {invoice.companyManager}</p>
                 </div>
 
               </div>
@@ -181,6 +181,11 @@ export default function InvoicePreview({ invoice, onClose }) {
                   <strong>{invoice.date}</strong>
                 </div>
 
+                <div className="invoice-meta-row">
+                  <span>ساعت:</span>
+                  <strong>{invoice.startTime}</strong>
+                </div>
+
               </div>
 
             </div>
@@ -189,10 +194,9 @@ export default function InvoicePreview({ invoice, onClose }) {
 
               <div className="invoice-info-card">
                 <h3>اطلاعات شرکت</h3>
-                <p><strong>نام:</strong> {invoice.companyName}</p>
-                <p><strong>مدیر:</strong> {invoice.companyManager}</p>
-                <p><strong>تلفن:</strong> {invoice.companyPhone}</p>
-                <p><strong>آدرس:</strong> {invoice.companyAddress}</p>
+                <p><strong>نام:</strong> {invoice.clientCompanyName || "—"}</p>
+                <p><strong>نوع بار:</strong> {invoice.cargoType || "—"}</p>
+                <p><strong>عنوان بار:</strong> {invoice.cargoTitle || "—"}</p>
               </div>
 
               <div className="invoice-info-card">
@@ -216,15 +220,10 @@ export default function InvoicePreview({ invoice, onClose }) {
                 <p><strong>مبدأ:</strong> {invoice.origin}</p>
                 <p><strong>مقصد:</strong> {invoice.destination}</p>
                 <p><strong>مسافت:</strong> {invoice.distance}</p>
+                <p><strong>آدرس بار:</strong> {invoice.loadAddress || "—"}</p>
               </div>
 
             </div>
-
-
-
-
-
-
 
             {/* ========================= */}
             {/* Cost Table */}
@@ -309,13 +308,13 @@ export default function InvoicePreview({ invoice, onClose }) {
 
                 <h3>مسیر راننده</h3>
 
-                <p>
-                  برای شروع مسیریابی، کد QR را اسکن کنید.
+                <p className="invoice-route-destination">
+                  <strong>مقصد:</strong> {invoice.destination}
                 </p>
 
-                <span className="invoice-route-destination">
-                  مقصد: {invoice.destination}
-                </span>
+                <p className="invoice-route-address-line">
+                  {invoice.loadAddress || "—"}
+                </p>
 
               </div>
 
@@ -324,7 +323,7 @@ export default function InvoicePreview({ invoice, onClose }) {
                 {mapLink ? (
                   <QRCode
                     value={mapLink}
-                    size={82}
+                    size={64}
                     bgColor="#ffffff"
                     fgColor="#111827"
                   />
@@ -366,35 +365,37 @@ export default function InvoicePreview({ invoice, onClose }) {
               </div>
 
             </div>
-            <div className="invoice-freight-address">
 
-              <div className="invoice-freight-address-icon">
-                📍
+            {/* ========================= */}
+            {/* Freight address + Notes side by side */}
+            {/* ========================= */}
+
+            <div className="invoice-footer-row">
+
+              <div className="invoice-freight-address">
+
+                <div className="invoice-freight-address-icon">
+                  📍
+                </div>
+
+                <div className="invoice-freight-address-content">
+                  <h3>آدرس باربری:</h3>
+                  <p>رشت، شهرک صنعتی، جنب هنرستان اشی مشی </p>
+                </div>
+
               </div>
 
-              <div className="invoice-freight-address-content">
-                <h3>آدرس باربری:</h3>
-                <p>رشت، شهرک صنعتی، جنب هنرستان اشی مشی </p>
+              <div className="invoice-note-box">
+
+                <h3>توضیحات</h3>
+
+                <p>
+                  {invoice.description || "—"}
+                </p>
+
               </div>
 
             </div>
-            <div className="invoice-note-box">
-
-              <h3>توضیحات</h3>
-
-              <p>
-                حمل این بار با رعایت کلیه اصول ایمنی و مقررات حمل‌ونقل انجام می‌شود.
-                در صورت بروز هرگونه مشکل با شماره‌های شرکت تماس حاصل فرمایید.
-              </p>
-
-            </div>
-
-            {/* ========================= */}
-            {/* Freight Company Address */}
-            {/* ========================= */}
-
-
-
 
           </div>
 

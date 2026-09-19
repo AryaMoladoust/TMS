@@ -39,6 +39,7 @@ const mockDrivers = [
         licenseNumber: "LIC-458721",
         vehicleId: "VEH-1001",
         vehicleType: "کامیون",
+        plate: "۱۲ ایران ۳۴۵ ب۶۷",
     },
     {
         id: "DRV-1002",
@@ -47,6 +48,7 @@ const mockDrivers = [
         licenseNumber: "LIC-784512",
         vehicleId: "VEH-1002",
         vehicleType: "تریلی",
+        plate: "۲۴ ایران ۱۱۲ ج۴۵",
     },
     {
         id: "DRV-1003",
@@ -55,6 +57,7 @@ const mockDrivers = [
         licenseNumber: "LIC-321654",
         vehicleId: "VEH-1003",
         vehicleType: "کامیون",
+        plate: "۳۳ ایران ۹۸۷ الف۲۲",
     },
 ];
 
@@ -137,6 +140,7 @@ export default function AddInvoicePage() {
         licenseNumber: "",
         vehicleId: "",
         vehicleType: "",
+        plate: "",
     });
 
     /* =======================================================
@@ -198,6 +202,7 @@ export default function AddInvoicePage() {
             licenseNumber: driver.licenseNumber,
             vehicleId: driver.vehicleId,
             vehicleType: driver.vehicleType,
+            plate: driver.plate,
         });
 
         setDriverSearch(driver.name);
@@ -215,6 +220,7 @@ export default function AddInvoicePage() {
             licenseNumber: "",
             vehicleId: "",
             vehicleType: "",
+            plate: "",
         });
 
         setDriverSearch("");
@@ -232,6 +238,7 @@ export default function AddInvoicePage() {
             licenseNumber: "",
             vehicleId: "",
             vehicleType: "",
+            plate: "",
         });
 
         setDriverSearch("");
@@ -367,6 +374,9 @@ export default function AddInvoicePage() {
                     ? invoiceDate.format("YYYY/MM/DD")
                     : "—",
 
+            startTime:
+                invoiceData.startTime || "—",
+
             /* -----------------------------
                DRIVER
             ----------------------------- */
@@ -376,6 +386,22 @@ export default function AddInvoicePage() {
 
             vehicle:
                 driverData.vehicleType || "—",
+
+            plate:
+                driverData.plate || "—",
+
+            /* -----------------------------
+               CLIENT / LOAD COMPANY
+            ----------------------------- */
+
+            clientCompanyName:
+                loadData.companyName || "—",
+
+            cargoType:
+                loadData.barType || "—",
+
+            cargoTitle:
+                loadData.title || "—",
 
             /* -----------------------------
                LOAD
@@ -391,6 +417,9 @@ export default function AddInvoicePage() {
                 loadData.distance
                     ? `${loadData.distance} کیلومتر`
                     : "—",
+
+            loadAddress:
+                loadData.address || "—",
 
             /* -----------------------------
                COST
@@ -413,6 +442,13 @@ export default function AddInvoicePage() {
                 Number(invoiceData.scaleCost || 0) +
                 Number(invoiceData.stopCost || 0)
             ).toLocaleString("fa-IR"),
+
+            /* -----------------------------
+               OTHER
+            ----------------------------- */
+
+            description:
+                invoiceData.description || "",
         };
     }
 
@@ -876,6 +912,35 @@ export default function AddInvoicePage() {
                                 </option>
 
                             </select>
+
+                        </div>
+
+                    </div>
+
+
+                    {/* PLATE */}
+
+                    <div className="invoice-form-group">
+
+                        <label>
+                            پلاک
+                        </label>
+
+                        <div className="invoice-input-wrapper">
+
+                            <CreditCard size={18} />
+
+                            <input
+                                value={driverData.plate}
+                                onChange={(event) =>
+                                    editDriverField(
+                                        "plate",
+                                        event.target.value
+                                    )
+                                }
+                                placeholder="مثلاً ۱۲ ایران ۳۴۵ ب۶۷"
+                                disabled={!!selectedDriver}
+                            />
 
                         </div>
 
