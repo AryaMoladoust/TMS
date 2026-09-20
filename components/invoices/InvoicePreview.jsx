@@ -87,7 +87,7 @@ export default function InvoicePreview({ invoice, onClose }) {
           {/* Brand */}
           <div className="invoice-preview-brand">
             <div className="invoice-preview-logo">
-              TMS
+              <img src="/icons/icon-192.png" alt="TMS" />
             </div>
 
             <div className="invoice-preview-brand-text">
@@ -142,7 +142,7 @@ export default function InvoicePreview({ invoice, onClose }) {
             {/* بسمی تعالی - ابتدای برگه */}
 
             <div className="invoice-besmi">
-              بسمی تعالی
+              بسمه تعالی
             </div>
             {/* Watermark */}
 
@@ -157,12 +157,14 @@ export default function InvoicePreview({ invoice, onClose }) {
               <div className="invoice-company">
 
                 <div className="invoice-logo">
-                  TMS
+                  <img src="/icons/icon-192.png" alt="TMS" />
                 </div>
 
                 <div>
                   <h3>{invoice.companyName}</h3>
-                  <p>مسئول فاکتور: {invoice.companyManager}</p>
+                  <p>مدیر مسئول: {invoice.companyManager}</p>
+                  <p className="invoice-company-phone">همراه: {invoice.companyMobile}</p>
+                  <p className="invoice-company-phone">ثابت: {invoice.companyPhone}</p>
                 </div>
 
               </div>
@@ -171,19 +173,10 @@ export default function InvoicePreview({ invoice, onClose }) {
 
                 <h1>فاکتور و رسید کالا</h1>
 
-                <div className="invoice-meta-row">
-                  <span>شماره:</span>
-                  <strong>{invoice.number}</strong>
-                </div>
-
-                <div className="invoice-meta-row">
-                  <span>تاریخ:</span>
-                  <strong>{invoice.date}</strong>
-                </div>
-
-                <div className="invoice-meta-row">
-                  <span>ساعت:</span>
-                  <strong>{invoice.startTime}</strong>
+                <div className="invoice-meta-line">
+                  <span><strong>شماره:</strong> {invoice.number}</span>
+                  <span><strong>تاریخ:</strong> {invoice.date}</span>
+                  <span><strong>ساعت:</strong> {invoice.startTime}</span>
                 </div>
 
               </div>
@@ -196,7 +189,6 @@ export default function InvoicePreview({ invoice, onClose }) {
                 <h3>اطلاعات شرکت</h3>
                 <p><strong>نام:</strong> {invoice.clientCompanyName || "—"}</p>
                 <p><strong>نوع بار:</strong> {invoice.cargoType || "—"}</p>
-                <p><strong>عنوان بار:</strong> {invoice.cargoTitle || "—"}</p>
               </div>
 
               <div className="invoice-info-card">
@@ -220,7 +212,6 @@ export default function InvoicePreview({ invoice, onClose }) {
                 <p><strong>مبدأ:</strong> {invoice.origin}</p>
                 <p><strong>مقصد:</strong> {invoice.destination}</p>
                 <p><strong>مسافت:</strong> {invoice.distance}</p>
-                <p><strong>آدرس بار:</strong> {invoice.loadAddress || "—"}</p>
               </div>
 
             </div>
@@ -242,7 +233,6 @@ export default function InvoicePreview({ invoice, onClose }) {
                     <th>ردیف</th>
                     <th>شرح هزینه</th>
                     <th>مبلغ (تومان)</th>
-                    <th>توضیحات</th>
                   </tr>
                 </thead>
 
@@ -252,35 +242,30 @@ export default function InvoicePreview({ invoice, onClose }) {
                     <td>۱</td>
                     <td>کرایه حمل بار</td>
                     <td>{invoice.cost}</td>
-                    <td>—</td>
                   </tr>
 
                   <tr>
                     <td>۲</td>
                     <td>بیمه بار</td>
                     <td>{invoice.insurance}</td>
-                    <td>—</td>
                   </tr>
 
                   <tr>
                     <td>۳</td>
                     <td>هزینه کارگر</td>
                     <td>{invoice.workerCost || "۰"}</td>
-                    <td>—</td>
                   </tr>
 
                   <tr>
                     <td>۴</td>
                     <td>هزینه باسکول</td>
                     <td>{invoice.scaleCost || "۰"}</td>
-                    <td>—</td>
                   </tr>
 
                   <tr>
                     <td>۵</td>
                     <td>هزینه توقف</td>
                     <td>{invoice.stopCost || "۰"}</td>
-                    <td>—</td>
                   </tr>
 
                 </tbody>
@@ -288,8 +273,8 @@ export default function InvoicePreview({ invoice, onClose }) {
                 <tfoot>
 
                   <tr className="invoice-total-row">
-                    <td colSpan={2}>جمع کل</td>
-                    <td colSpan={2}>{invoice.total} تومان</td>
+                    <td colSpan={2} className="invoice-total-label">مبلغ کل با احتساب مالیات و کمیسیون</td>
+                    <td className="invoice-total-value">{invoice.total} تومان</td>
                   </tr>
 
                 </tfoot>
@@ -345,8 +330,6 @@ export default function InvoicePreview({ invoice, onClose }) {
               {/* امضای راننده */}
               <div className="invoice-sign-card">
 
-                <div className="invoice-sign-line"></div>
-
                 <div className="invoice-sign-text">
                   امضای راننده
                 </div>
@@ -356,14 +339,20 @@ export default function InvoicePreview({ invoice, onClose }) {
               {/* مهر و امضای مسئول باربری */}
               <div className="invoice-sign-card">
 
-                <div className="invoice-sign-line"></div>
-
                 <div className="invoice-sign-text">
                   مهر و امضای مسئول باربری
                 </div>
 
               </div>
 
+            </div>
+
+            {/* ========================= */}
+            {/* Liability Notice */}
+            {/* ========================= */}
+
+            <div className="invoice-legal-notice">
+              <strong>توجه:</strong> شکستگی، روندگی، ضربه‌دیدگی و بیمه کالا از مبدأ تا مقصد، و رعایت حریم حمل بار (طول بار، ارتفاع بار) بر عهده صاحب کالا می‌باشد.
             </div>
 
             {/* ========================= */}

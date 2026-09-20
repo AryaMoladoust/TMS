@@ -25,6 +25,7 @@ import {
     CircleStop,
     UserCheck,
     Save,
+    Percent,
 } from "lucide-react";
 
 /* =========================================================
@@ -106,8 +107,9 @@ const mockLoads = [
 
 const companyData = {
     name: "موسسه حمل و نقل کامران",
-    manager: "کامران احمدی",
-    phone: "021-12345678",
+    manager: "کامران صمدیان بهدانی",
+    mobile: "09111328288",
+    phone: "33883484 - 33882084",
     address: "تهران، خیابان آزادی، پلاک ۱۲۳",
 };
 
@@ -179,6 +181,7 @@ export default function AddInvoicePage() {
         workerCost: "",
         scaleCost: "",
         stopCost: "",
+        commissionCost: "",
         description: "",
         receiverName: "",
     });
@@ -357,6 +360,8 @@ export default function AddInvoicePage() {
 
             companyManager: companyData.manager,
 
+            companyMobile: companyData.mobile,
+
             companyPhone: companyData.phone,
 
             companyAddress: companyData.address,
@@ -400,9 +405,6 @@ export default function AddInvoicePage() {
             cargoType:
                 loadData.barType || "—",
 
-            cargoTitle:
-                loadData.title || "—",
-
             /* -----------------------------
                LOAD
             ----------------------------- */
@@ -440,7 +442,8 @@ export default function AddInvoicePage() {
                 insurance +
                 Number(invoiceData.workerCost || 0) +
                 Number(invoiceData.scaleCost || 0) +
-                Number(invoiceData.stopCost || 0)
+                Number(invoiceData.stopCost || 0) +
+                Number(invoiceData.commissionCost || 0)
             ).toLocaleString("fa-IR"),
 
             /* -----------------------------
@@ -931,7 +934,7 @@ export default function AddInvoicePage() {
                             <CreditCard size={18} />
 
                             <input
-                                value={driverData.plate}
+                                value={driverData.plate ?? ""}
                                 onChange={(event) =>
                                     editDriverField(
                                         "plate",
@@ -1656,6 +1659,39 @@ export default function AddInvoicePage() {
                     </div>
 
 
+                    {/* COMMISSION */}
+
+                    <div className="invoice-form-group">
+
+                        <label>
+                            هزینه کمیسیون شرکت
+                        </label>
+
+                        <div className="invoice-input-wrapper">
+
+                            <Percent size={18} />
+
+                            <input
+                                type="number"
+                                value={invoiceData.commissionCost ?? ""}
+                                onChange={(event) =>
+                                    editInvoiceField(
+                                        "commissionCost",
+                                        event.target.value
+                                    )
+                                }
+                                placeholder="هزینه کمیسیون"
+                            />
+
+                            <span className="invoice-input-unit">
+                                تومان
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
                     {/* =================================================
                         OTHER INFORMATION
                     ================================================== */}
@@ -1715,6 +1751,7 @@ export default function AddInvoicePage() {
 
                             <textarea
                                 rows={4}
+                                maxLength={120}
                                 value={
                                     invoiceData.description
                                 }
@@ -1727,6 +1764,17 @@ export default function AddInvoicePage() {
                                 placeholder="توضیحات فاکتور..."
                             />
 
+                        </div>
+
+                        <div
+                            style={{
+                                fontSize: "11px",
+                                color: "#94a3b8",
+                                marginTop: "4px",
+                                textAlign: "left",
+                            }}
+                        >
+                            {invoiceData.description.length}/120
                         </div>
 
                     </div>
