@@ -13131,3 +13131,396 @@ html.dark .login-submit-button:hover {
     overflow: visible;
   }
 }
+
+/* =========================================
+   Driver Details
+========================================= */
+
+.driver-detail-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.driver-delete-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  background: #fff1f2;
+  color: #dc2626;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.driver-delete-button:hover {
+  background: #fee2e2;
+  border-color: #fca5a5;
+}
+
+.driver-delete-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+html.dark .driver-delete-button {
+  background: #3b1118;
+  border-color: #641b25;
+  color: #f87171;
+}
+
+html.dark .driver-delete-button:hover {
+  background: #4c151e;
+}
+
+.driver-detail-panel {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.driver-detail-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.driver-detail-avatar {
+  width: 58px;
+  height: 58px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary-soft);
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.driver-detail-header h2 {
+  margin: 0 0 6px;
+  color: var(--text);
+  font-size: 21px;
+  font-weight: 800;
+}
+
+.driver-detail-header span {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.driver-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  padding: 24px;
+}
+
+.driver-detail-card {
+  min-width: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 13px;
+  padding: 17px;
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  background: var(--surface-soft);
+}
+
+.driver-detail-card > svg {
+  color: var(--primary);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.driver-detail-card div {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.driver-detail-card span {
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.driver-detail-card strong {
+  color: var(--text);
+  font-size: 15px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+.driver-loading,
+.driver-error {
+  min-height: 260px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 14px;
+  padding: 30px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-secondary);
+}
+
+.driver-error p {
+  margin: 0;
+  color: var(--text);
+  font-weight: 600;
+}
+
+.loading-spinner {
+  animation: driver-spin 1s linear infinite;
+}
+
+@keyframes driver-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+/* =========================================
+   Driver Form
+========================================= */
+
+.driver-form-error {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 13px 15px;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  background: #fff1f2;
+  color: #dc2626;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+html.dark .driver-form-error {
+  background: #3b1118;
+  border-color: #641b25;
+  color: #f87171;
+}
+
+
+/* =========================================
+   Driver License Status
+========================================= */
+
+.driver-license-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 30px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.driver-license-status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* معتبر */
+
+.driver-license-valid {
+  color: #15803d;
+  background: #dcfce7;
+}
+
+html.dark .driver-license-valid {
+  color: #4ade80;
+  background: #052e16;
+}
+
+/* نزدیک به انقضا */
+
+.driver-license-warning {
+  color: #c2410c;
+  background: #ffedd5;
+}
+
+html.dark .driver-license-warning {
+  color: #fb923c;
+  background: #431407;
+}
+
+/* منقضی */
+
+.driver-license-expired {
+  color: #dc2626;
+  background: #fee2e2;
+}
+
+html.dark .driver-license-expired {
+  color: #f87171;
+  background: #3b1118;
+}
+
+
+/* =========================================
+   Responsive Driver Details
+========================================= */
+
+@media (max-width: 800px) {
+  .driver-detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .driver-detail-actions {
+    width: 100%;
+  }
+
+  .driver-detail-actions .primary-action-button,
+  .driver-detail-actions .driver-delete-button {
+    flex: 1;
+  }
+}
+
+@media (max-width: 560px) {
+  .driver-detail-header {
+    padding: 18px;
+  }
+
+  .driver-detail-grid {
+    padding: 16px;
+  }
+
+  .driver-detail-card {
+    padding: 14px;
+  }
+
+  .driver-detail-actions {
+    flex-direction: column;
+  }
+
+  .driver-detail-actions .primary-action-button,
+  .driver-detail-actions .driver-delete-button {
+    width: 100%;
+  }
+}
+/* =========================
+   دکمه‌های عملیات (مشاهده / ویرایش)
+========================= */
+.driver-table-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.driver-table-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background-color: #f3f4f6;
+  color: #6b7280;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.driver-table-action:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.driver-view-action {
+  background-color: #eef2ff;
+  color: #4f46e5;
+}
+
+.driver-view-action:hover {
+  background-color: #e0e7ff;
+  color: #4338ca;
+}
+
+.driver-edit-action {
+  background-color: #fff7ed;
+  color: #ea580c;
+}
+
+.driver-edit-action:hover {
+  background-color: #ffedd5;
+  color: #c2410c;
+}
+
+/* =========================
+   نشان وضعیت اعتبار (بج رنگی)
+========================= */
+.driver-license-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.driver-license-status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* نامعتبر (منقضی شده) */
+.driver-license-expired {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
+
+.driver-license-expired .driver-license-status-dot {
+  background-color: #dc2626;
+}
+
+/* در حال انقضا / تعداد روز مانده */
+.driver-license-warning {
+  background-color: #ffedd5;
+  color: #c2410c;
+}
+
+.driver-license-warning .driver-license-status-dot {
+  background-color: #ea580c;
+}
+
+/* معتبر */
+.driver-license-valid {
+  background-color: #dcfce7;
+  color: #15803d;
+}
+
+.driver-license-valid .driver-license-status-dot {
+  background-color: #22c55e;
+}

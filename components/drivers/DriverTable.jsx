@@ -1,220 +1,345 @@
 "use client";
 
 import Link from "next/link";
-import {
-  UserRound,
-  Phone,
-  Truck,
-  Eye,
-  Pencil,
-} from "lucide-react";
+import { Eye, Pencil, UserRound } from "lucide-react";
 
-const drivers = [
-  {
-    id: "DRV-1001",
-    name: "علی رضایی",
-    phone: "0912 123 4567",
-    nationalId: "۰۰۱۲۳۴۵۶۷۸",
-    vehicle: "کامیون",
-    plate: "۱۲۳ الف ۴۵",
-    status: "available",
-  },
-  {
-    id: "DRV-1002",
-    name: "محمد کریمی",
-    phone: "0911 456 7890",
-    nationalId: "۰۰۲۳۴۵۶۷۸۹",
-    vehicle: "تریلی",
-    plate: "۵۶۷ ب ۲۳",
-    status: "busy",
-  },
-  {
-    id: "DRV-1003",
-    name: "رضا احمدی",
-    phone: "0912 789 1234",
-    nationalId: "۰۰۳۴۵۶۷۸۹۰",
-    vehicle: "کامیون",
-    plate: "۸۹۰ ج ۱۱",
-    status: "available",
-  },
-  {
-    id: "DRV-1004",
-    name: "حسین مرادی",
-    phone: "0913 234 5678",
-    nationalId: "۰۰۴۵۶۷۸۹۰۱",
-    vehicle: "نیسان",
-    plate: "۲۴۵ د ۶۷",
-    status: "inactive",
-  },
-  {
-    id: "DRV-1005",
-    name: "امیر حسینی",
-    phone: "0910 345 6789",
-    nationalId: "۰۰۵۶۷۸۹۰۱۲",
-    vehicle: "تریلی",
-    plate: "۷۸۹ الف ۳۴",
-    status: "busy",
-  },
-  {
-    id: "DRV-1006",
-    name: "مجتبی اکبری",
-    phone: "0912 567 8901",
-    nationalId: "۰۰۶۷۸۹۰۱۲۳",
-    vehicle: "کامیون",
-    plate: "۴۵۶ ب ۸۹",
-    status: "available",
-  },
-];
+/* =========================
+   تبدیل اعداد فارسی به انگلیسی
+========================= */
+function convertToEnglishNumbers(value) {
+  if (!value) return "";
 
-const statusData = {
-  available: {
-    label: "آماده",
-    className: "driver-status-available",
-  },
-  busy: {
-    label: "مشغول",
-    className: "driver-status-busy",
-  },
-  inactive: {
-    label: "غیرفعال",
-    className: "driver-status-inactive",
-  },
-};
+  return String(value).replace(/[۰-۹]/g, (digit) => {
+    return String("۰۱۲۳۴۵۶۷۸۹".indexOf(digit));
+  });
+}
 
-export default function DriverTable() {
+/* =========================
+   تبدیل تاریخ شمسی به Julian Day
+========================= */
+function jalaliToJulianDay(year, month, day) {
+  const epBase = year - (year >= 0 ? 474 : 473);
+  const epYear = 474 + (epBase % 2820);
+
   return (
-    <section className="driver-table-panel">
+    day +
+    (month <= 7 ? (month - 1) * 31 : (month - 1) * 30 + 6) +
+    Math.floor((epYear * 682 - 110) / 2816) +
+    (epYear - 1) * 365 +
+    Math.floor(epBase / 2820) * 1029983 +
+    (1948320.5 - 1)
+  );
+}
 
+/* =========================
+   دریافت تاریخ امروز شمسی
+========================= */
+function getTodayJalali() {
+  const formatter = new Intl.DateTimeFormat("fa-IR-u-ca-persian", {
+    year: "numeric",
+    month: "numeric",
+    day: "numeric",
+  });
+
+  const parts = formatter.formatToParts(new Date());
+
+  const year = Number(
+    convertToEnglishNumbers(
+      parts.find((part) => part.type === "year")?.value
+    )
+  );
+
+  const month = Number(
+    convertToEnglishNumbers(
+      parts.find((part) => part.type === "month")?.value
+    )
+  );
+
+  const day = Number(
+    convertToEnglishNumbers(
+      parts.find((part) => part.type === "day")?.value
+    )
+  );
+
+  return {
+    year,
+    month,
+    day,
+  };
+}
+
+/* =========================
+   وضعیت اعتبار گواهینامه
+========================= */
+function getLicenseStatus(licenseExpiry) {
+  if (!licenseExpiry) {
+    return {
+      status: "warning",
+      label: "تاریخ ثبت نشده",
+    };
+  }
+
+  const normalizedDate = convertToEnglishNumbers(licenseExpiry)
+    .replace(/-/g, "/")
+    .trim();
+
+  const parts = normalizedDate.split("/");
+
+  if (parts.length !== 3) {
+    return {
+      status: "warning",
+      label: "تاریخ نامعتبر",
+    };
+  }
+
+  const year = Number(parts[0]);
+  const month = Number(parts[1]);
+  const day = Number(parts[2]);
+
+  if (
+    !Number.isInteger(year) ||
+    !Number.isInteger(month) ||
+    !Number.isInteger(day) ||
+    month < 1 ||
+    month > 12 ||
+    day < 1 ||
+    day > 31
+  ) {
+    return {
+      status: "warning",
+      label: "تاریخ نامعتبر",
+    };
+  }
+
+  const today = getTodayJalali();
+
+  const todayJulian = jalaliToJulianDay(
+    today.year,
+    today.month,
+    today.day
+  );
+
+  const expiryJulian = jalaliToJulianDay(
+    year,
+    month,
+    day
+  );
+
+  const daysRemaining = Math.round(expiryJulian - todayJulian);
+
+  /* =========================
+     تاریخ گذشته → نامعتبر
+  ========================= */
+  if (daysRemaining < 0) {
+    return {
+      status: "expired",
+      label: "نامعتبر",
+      daysRemaining,
+    };
+  }
+
+  /* =========================
+     ۱۴ روز یا کمتر مانده → نمایش تعداد روز باقی‌مانده
+  ========================= */
+  if (daysRemaining <= 14) {
+    return {
+      status: "warning",
+      label:
+        daysRemaining === 0
+          ? "امروز منقضی می‌شود"
+          : `${daysRemaining} روز مانده`,
+      daysRemaining,
+    };
+  }
+
+  /* =========================
+     بیشتر از ۱۴ روز مانده → معتبر
+  ========================= */
+  return {
+    status: "valid",
+    label: "معتبر",
+    daysRemaining,
+  };
+}
+
+/* =========================
+   نوع خودرو
+========================= */
+function getVehicleTypeLabel(type) {
+  const vehicleTypes = {
+    truck: "کامیون",
+    trailer: "تریلی",
+    pickup: "نیسان",
+    van: "وانت",
+  };
+
+  return vehicleTypes[type] || type || "-";
+}
+
+/* =========================
+   کامپوننت اصلی
+========================= */
+export default function DriverTable({ drivers, filters }) {
+  const filteredDrivers = drivers.filter((driver) => {
+    /* -------------------------
+       جستجو
+    ------------------------- */
+    const searchValue = filters.search
+      .trim()
+      .toLowerCase();
+
+    const matchesSearch =
+      !searchValue ||
+      driver.name?.toLowerCase().includes(searchValue) ||
+      driver.nationalId?.includes(searchValue) ||
+      driver.phone?.includes(searchValue);
+
+    /* -------------------------
+       نوع خودرو
+    ------------------------- */
+    const matchesVehicle =
+      !filters.vehicleType ||
+      driver.vehicleType === filters.vehicleType;
+
+    /* -------------------------
+       وضعیت گواهینامه
+    ------------------------- */
+    const licenseStatus = getLicenseStatus(
+      driver.licenseExpiry
+    );
+
+    const matchesLicenseStatus =
+      !filters.licenseStatus ||
+      licenseStatus.status === filters.licenseStatus;
+
+    return (
+      matchesSearch &&
+      matchesVehicle &&
+      matchesLicenseStatus
+    );
+  });
+
+  return (
+    <section className="driver-table-section">
       <div className="driver-table-header">
         <div>
           <h2>لیست رانندگان</h2>
-          <p>۱۲۸ راننده ثبت شده در سیستم</p>
-        </div>
-
-        <span className="driver-count-badge">
-          ۱۲۸ راننده
-        </span>
-      </div>
-
-      <div className="driver-table-wrapper">
-
-        <table className="driver-table">
-
-          <thead>
-            <tr>
-              <th>راننده</th>
-              <th>شماره موبایل</th>
-              <th>کد ملی</th>
-              <th>خودرو</th>
-              <th>پلاک</th>
-              <th>وضعیت</th>
-              <th>عملیات</th>
-            </tr>
-          </thead>
-
-          <tbody>
-
-            {drivers.map((driver) => {
-
-              const status = statusData[driver.status];
-
-              return (
-                <tr key={driver.id}>
-
-                  <td>
-                    <div className="driver-table-name">
-
-                      <div className="driver-table-avatar">
-                        <UserRound size={20} />
-                      </div>
-
-                      <div>
-                        <strong>{driver.name}</strong>
-                        <span>{driver.id}</span>
-                      </div>
-
-                    </div>
-                  </td>
-
-                  <td>
-                    <div className="driver-table-phone">
-                      <Phone size={16} />
-                      {driver.phone}
-                    </div>
-                  </td>
-
-                  <td>
-                    <span className="driver-national-id">
-                      {driver.nationalId}
-                    </span>
-                  </td>
-
-                  <td>
-                    <div className="driver-vehicle">
-                      <Truck size={17} />
-                      {driver.vehicle}
-                    </div>
-                  </td>
-
-                  <td>
-                    <strong className="driver-plate">
-                      {driver.plate}
-                    </strong>
-                  </td>
-
-                  <td>
-                    <span className={`driver-status ${status.className}`}>
-                      <span className="driver-status-dot" />
-                      {status.label}
-                    </span>
-                  </td>
-
-                  <td>
-                    <div className="driver-actions">
-
-                      <Link
-                        href={`/drivers/${driver.id}`}
-                        className="driver-action-button"
-                        title="مشاهده"
-                      >
-                        <Eye size={17} />
-                      </Link>
-
-                      <Link
-                        href={`/drivers/${driver.id}`}
-                        className="driver-action-button"
-                        title="ویرایش"
-                      >
-                        <Pencil size={17} />
-                      </Link>
-
-                    </div>
-                  </td>
-
-                </tr>
-              );
-            })}
-
-          </tbody>
-
-        </table>
-
-      </div>
-
-      <div className="driver-table-footer">
-        <span>نمایش ۱ تا ۶ از ۱۲۸ راننده</span>
-
-        <div className="pagination">
-          <button disabled>قبلی</button>
-          <button className="pagination-active">۱</button>
-          <button>۲</button>
-          <button>۳</button>
-          <span>...</span>
-          <button>۲۲</button>
-          <button>بعدی</button>
+          <p>
+            {filteredDrivers.length} راننده نمایش داده می‌شود
+          </p>
         </div>
       </div>
 
+      {filteredDrivers.length === 0 ? (
+        <div className="driver-empty-state">
+          <UserRound size={42} />
+          <h3>راننده‌ای پیدا نشد</h3>
+          <p>
+            با تغییر فیلترها یا عبارت جستجو دوباره تلاش کنید.
+          </p>
+        </div>
+      ) : (
+        <div className="driver-table-wrapper">
+          <table className="driver-table">
+            <thead>
+              <tr>
+                <th>راننده</th>
+                <th>کد ملی</th>
+                <th>شماره موبایل</th>
+                <th>نوع خودرو</th>
+                <th>شماره پلاک</th>
+                <th>تاریخ اعتبار گواهینامه</th>
+                <th>وضعیت اعتبار</th>
+                <th>عملیات</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {filteredDrivers.map((driver) => {
+                const licenseStatus = getLicenseStatus(
+                  driver.licenseExpiry
+                );
+
+                return (
+                  <tr key={driver._id}>
+                    {/* راننده */}
+                    <td>
+                      <div className="driver-name-cell">
+                        <div className="driver-avatar">
+                          <UserRound size={19} />
+                        </div>
+
+                        <div>
+                          <strong>{driver.name}</strong>
+                        </div>
+                      </div>
+                    </td>
+
+                    {/* کد ملی */}
+                    <td>
+                      {driver.nationalId || "-"}
+                    </td>
+
+                    {/* موبایل */}
+                    <td>
+                      {driver.phone || "-"}
+                    </td>
+
+                    {/* خودرو */}
+                    <td>
+                      {getVehicleTypeLabel(
+                        driver.vehicleType
+                      )}
+                    </td>
+
+                    {/* پلاک */}
+                    <td>
+                      {driver.vehiclePlate || "-"}
+                    </td>
+
+                    {/* تاریخ اعتبار */}
+                    <td>
+                      {driver.licenseExpiry || "-"}
+                    </td>
+
+                    {/* وضعیت اعتبار */}
+                    <td>
+                      <span
+                        className={`driver-license-status driver-license-${licenseStatus.status}`}
+                      >
+                        <span className="driver-license-status-dot" />
+
+                        {licenseStatus.label}
+                      </span>
+                    </td>
+
+                    {/* عملیات */}
+                    <td>
+                      <div className="driver-table-actions">
+                        <Link
+                          href={`/drivers/${driver._id}`}
+                          className="driver-table-action driver-view-action"
+                          title="مشاهده جزئیات"
+                        >
+                          <Eye size={18} />
+                        </Link>
+
+                        <Link
+                          href={`/drivers/${driver._id}/edit`}
+                          className="driver-table-action driver-edit-action"
+                          title="ویرایش راننده"
+                        >
+                          <Pencil size={18} />
+                        </Link>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
     </section>
   );
 }
