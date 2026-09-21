@@ -1,9 +1,9 @@
-
 "use client";
 
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 import {
     ArrowRight,
@@ -41,6 +41,9 @@ const MapPicker = dynamic(
 
 export default function AddLoadPage() {
 
+    const router = useRouter();
+
+
     // ===============================
     // Map States
     // ===============================
@@ -56,14 +59,173 @@ export default function AddLoadPage() {
     // Submit
     // ===============================
 
-    const handleSubmit = (event) => {
 
-        event.preventDefault();
 
-        console.log("Destination location:", destinationLocation);
+const handleSubmit = async (event) => {
 
-        // بعداً اطلاعات فرم را اینجا به API می‌فرستیم
+    event.preventDefault();
+
+    // قبل از await فرم را ذخیره می‌کنیم
+    const form = event.currentTarget;
+
+    const formData = new FormData(form);
+
+
+    // =================================
+    // نام شرکت انتخاب شده
+    // =================================
+
+    const companySelect =
+        form.elements.loadCompany;
+
+    const companyName =
+        companySelect.options[
+            companySelect.selectedIndex
+        ]?.text || "";
+
+
+    // =================================
+    // اطلاعات بار
+    // =================================
+
+    const loadData = {
+
+        title:
+            formData.get("loadTitle"),
+
+        companyName,
+
+        barType:
+            formData.get("loadType"),
+
+        origin:
+            formData.get("loadOrigin"),
+
+        destination:
+            formData.get("loadDestination"),
+
+        destinationLocation:
+            destinationLocation
+                ? {
+                    lat: destinationLocation.lat,
+                    lng: destinationLocation.lng,
+                }
+                : null,
+
+        address:
+            formData.get("loadAddress"),
+
+        distance:
+            Number(
+                formData.get("loadDistance")
+            ),
+
+        provinceStatus:
+            formData.get(
+                "loadProvinceStatus"
+            ),
+
+        vehicleType:
+            formData.get(
+                "loadVehicleType"
+            ),
+
+        description:
+            formData.get(
+                "loadDescription"
+            ),
     };
+
+
+    // =================================
+    // ارسال به API
+    // =================================
+
+    try {
+
+        const response = await fetch(
+            "/api/loads",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type":
+                        "application/json",
+                },
+
+                body:
+                    JSON.stringify(
+                        loadData
+                    ),
+            }
+        );
+
+
+        const result =
+            await response.json();
+
+
+        // =================================
+        // خطا
+        // =================================
+
+        if (!response.ok) {
+
+            console.error(
+                "API Error:",
+                result
+            );
+
+            alert(
+                result.message ||
+                result.error ||
+                "خطا در ثبت بار"
+            );
+
+            return;
+        }
+
+
+        // =================================
+        // موفقیت
+        // =================================
+
+        console.log(
+            "Load created:",
+            result
+        );
+
+
+        alert(
+            `بار با موفقیت ثبت شد.\nشناسه بار: ${result.loadId}`
+        );
+
+
+        // =================================
+        // بازگشت به صفحه اصلی بارها
+        // =================================
+
+        router.push("/loads");
+
+        router.refresh();
+
+
+    } catch (error) {
+
+        console.error(
+            "Submit error:",
+            error
+        );
+
+        alert(
+            "ثبت بار انجام نشد."
+        );
+    }
+};
+
+
+
+
 
 
     return (

@@ -186,7 +186,7 @@ export default function InvoicePreview({ invoice, onClose }) {
             <div className="invoice-info-grid">
 
               <div className="invoice-info-card">
-                <h3>اطلاعات شرکت</h3>
+                <h3>اطلاعات شرکت (فرستنده)</h3>
                 <p><strong>نام:</strong> {invoice.clientCompanyName || "—"}</p>
                 <p><strong>نوع بار:</strong> {invoice.cargoType || "—"}</p>
               </div>
@@ -294,7 +294,7 @@ export default function InvoicePreview({ invoice, onClose }) {
                 <h3>مسیر راننده</h3>
 
                 <p className="invoice-route-destination">
-                  <strong>مقصد:</strong> {invoice.destination}
+                  <strong>گیرنده:</strong> {invoice.receiverName || "—"}
                 </p>
 
                 <p className="invoice-route-address-line">
@@ -352,7 +352,10 @@ export default function InvoicePreview({ invoice, onClose }) {
             {/* ========================= */}
 
             <div className="invoice-legal-notice">
-              <strong>توجه:</strong> شکستگی، روندگی، ضربه‌دیدگی و بیمه کالا از مبدأ تا مقصد، و رعایت حریم حمل بار (طول بار، ارتفاع بار) بر عهده صاحب کالا می‌باشد.
+              <div className="invoice-legal-notice-title">ملاحظات مهم</div>
+              <p className="invoice-legal-notice-item"><strong>۱.</strong> شکستگی، روندگی، ضربه‌دیدگی و بیمه کالا از مبدأ تا مقصد، و رعایت حریم حمل بار (طول بار، ارتفاع بار) بر عهده صاحب کالا می‌باشد.</p>
+              <p className="invoice-legal-notice-item"><strong>۲.</strong> ارزش بار به اظهار فرستنده، ۴ میلیارد ریال است؛ چنانچه ارزش واقعی کالا بیشتر از این مبلغ باشد، این موسسه و راننده در قبال حادثه احتمالی و جبران خسارت بیمه بار مسئولیتی نخواهند داشت.</p>
+              <p className="invoice-legal-notice-item"><strong>۳.</strong> خسارت ناشی از شورش، جنگ و اعتصاب جزو تعهدات موسسه حمل و نقل کامران، بیمه بار و راننده نمی‌باشد و مسئولیت آن بر عهده فرستنده کالا است.</p>
             </div>
 
             {/* ========================= */}

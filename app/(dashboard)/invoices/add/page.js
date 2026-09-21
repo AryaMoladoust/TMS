@@ -450,6 +450,9 @@ export default function AddInvoicePage() {
                OTHER
             ----------------------------- */
 
+            receiverName:
+                invoiceData.receiverName || "—",
+
             description:
                 invoiceData.description || "",
         };
