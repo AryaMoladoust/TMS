@@ -22,12 +22,12 @@ export default function DriverSearchSelect({
     const inputRef = useRef(null);
 
     const selectedDriver = drivers.find(
-        (driver) => driver.id === value
+        (driver) => driver._id === value
     );
 
     const filteredDrivers = drivers.filter((driver) =>
         driver.name
-            .toLowerCase()
+            ?.toLowerCase()
             .includes(search.trim().toLowerCase())
     );
 
@@ -64,7 +64,7 @@ export default function DriverSearchSelect({
     }
 
     function handleSelect(driver) {
-        onChange(driver.id);
+        onChange(driver._id);
         setSearch("");
         setOpen(false);
     }
@@ -80,7 +80,6 @@ export default function DriverSearchSelect({
     function handleInputChange(event) {
         setSearch(event.target.value);
         setOpen(true);
-
         onChange("");
     }
 
@@ -90,7 +89,9 @@ export default function DriverSearchSelect({
             className="driver-picker"
         >
             <div
-                className={`driver-picker-box ${open ? "driver-picker-box-open" : ""
+                className={`driver-picker-box ${open
+                        ? "driver-picker-box-open"
+                        : ""
                     }`}
                 onClick={openSearch}
             >
@@ -101,7 +102,9 @@ export default function DriverSearchSelect({
 
                 {selectedDriver && !open ? (
                     <div className="driver-picker-selected">
-                        <span>{selectedDriver.name}</span>
+                        <span>
+                            {selectedDriver.name}
+                        </span>
                     </div>
                 ) : (
                     <input
@@ -133,7 +136,9 @@ export default function DriverSearchSelect({
                 ) : (
                     <ChevronDown
                         size={17}
-                        className={`driver-picker-arrow ${open ? "driver-picker-arrow-open" : ""
+                        className={`driver-picker-arrow ${open
+                                ? "driver-picker-arrow-open"
+                                : ""
                             }`}
                     />
                 )}
@@ -143,56 +148,71 @@ export default function DriverSearchSelect({
                 <div className="driver-picker-dropdown">
                     <div className="driver-picker-dropdown-header">
                         {search.trim()
-                            ? filteredDrivers.length > 0
+                            ? filteredDrivers.length >
+                                0
                                 ? `${filteredDrivers.length} راننده پیدا شد`
                                 : "راننده‌ای پیدا نشد"
                             : "لیست رانندگان"}
                     </div>
 
                     <div className="driver-picker-list">
-                        {filteredDrivers.length > 0 ? (
-                            filteredDrivers.map((driver) => {
-                                const selected =
-                                    driver.id === value;
+                        {filteredDrivers.length >
+                            0 ? (
+                            filteredDrivers.map(
+                                (driver) => {
+                                    const selected =
+                                        driver._id ===
+                                        value;
 
-                                return (
-                                    <button
-                                        type="button"
-                                        key={driver.id}
-                                        className={`driver-picker-option ${selected
-                                                ? "driver-picker-option-selected"
-                                                : ""
-                                            }`}
-                                        onClick={() =>
-                                            handleSelect(driver)
-                                        }
-                                    >
-                                        <div className="driver-picker-avatar">
-                                            <User size={16} />
-                                        </div>
+                                    return (
+                                        <button
+                                            type="button"
+                                            key={
+                                                driver._id
+                                            }
+                                            className={`driver-picker-option ${selected
+                                                    ? "driver-picker-option-selected"
+                                                    : ""
+                                                }`}
+                                            onClick={() =>
+                                                handleSelect(
+                                                    driver
+                                                )
+                                            }
+                                        >
+                                            <div className="driver-picker-avatar">
+                                                <User
+                                                    size={
+                                                        16
+                                                    }
+                                                />
+                                            </div>
 
-                                        <div className="driver-picker-info">
-                                            <strong>
-                                                {driver.name}
-                                            </strong>
+                                            <div className="driver-picker-info">
+                                                <strong>
+                                                    {
+                                                        driver.name
+                                                    }
+                                                </strong>
 
-                                            <span>
-                                                {driver.id}
-                                                {driver.phone
-                                                    ? ` • ${driver.phone}`
-                                                    : ""}
-                                            </span>
-                                        </div>
+                                                <span>
+                                                    {driver.phone ||
+                                                        "بدون شماره تماس"}
+                                                </span>
+                                            </div>
 
-                                        {selected && (
-                                            <Check
-                                                size={17}
-                                                className="driver-picker-check"
-                                            />
-                                        )}
-                                    </button>
-                                );
-                            })
+                                            {selected && (
+                                                <Check
+                                                    size={
+                                                        17
+                                                    }
+                                                    className="driver-picker-check"
+                                                />
+                                            )}
+                                        </button>
+                                    );
+                                }
+                            )
                         ) : (
                             <div className="driver-picker-empty">
                                 <Search size={25} />
@@ -202,7 +222,8 @@ export default function DriverSearchSelect({
                                 </strong>
 
                                 <span>
-                                    نام دیگری را جستجو کنید.
+                                    نام دیگری را
+                                    جستجو کنید.
                                 </span>
                             </div>
                         )}
@@ -210,5 +231,5 @@ export default function DriverSearchSelect({
                 </div>
             )}
         </div>
-    );
+    )
 }

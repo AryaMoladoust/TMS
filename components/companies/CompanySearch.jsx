@@ -1,14 +1,17 @@
 "use client";
 
-import { Search, SlidersHorizontal, RotateCcw } from "lucide-react";
+import {
+  Search,
+  SlidersHorizontal,
+  RotateCcw,
+} from "lucide-react";
 
-export default function CompanySearch() {
+export default function CompanySearch({
+  search,
+  setSearch,
+}) {
   function resetFilters() {
-    const search = document.querySelector(".company-search-input");
-
-    if (search) {
-      search.value = "";
-    }
+    setSearch("");
   }
 
   return (
@@ -30,7 +33,6 @@ export default function CompanySearch() {
 
       </div>
 
-
       <div className="company-search-form">
 
         <div className="company-search-box">
@@ -40,11 +42,14 @@ export default function CompanySearch() {
           <input
             className="company-search-input"
             type="text"
+            value={search}
+            onChange={(event) =>
+              setSearch(event.target.value)
+            }
             placeholder="جستجو بر اساس نام شرکت، شماره تماس یا نام مسئول..."
           />
 
         </div>
-
 
         <button
           type="button"

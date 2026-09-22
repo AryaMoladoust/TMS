@@ -1,22 +1,20 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
 
 import {
   Plus,
-  Building2,
-  Phone,
-  UserRound,
-  Eye,
-  Pencil,
 } from "lucide-react";
 
 import CompanySearch from "@/components/companies/CompanySearch";
 import CompanyTable from "@/components/companies/CompanyTable";
 
 export default function CompaniesPage() {
+  const [search, setSearch] = useState("");
+
   return (
     <main className="main-content">
-
-      {/* Page Header */}
 
       <div className="page-heading page-heading-with-action">
 
@@ -41,15 +39,14 @@ export default function CompaniesPage() {
 
       </div>
 
+      <CompanySearch
+        search={search}
+        setSearch={setSearch}
+      />
 
-      {/* Search */}
-
-      <CompanySearch />
-
-
-      {/* Companies List */}
-
-      <CompanyTable />
+      <CompanyTable
+        search={search}
+      />
 
     </main>
   );
