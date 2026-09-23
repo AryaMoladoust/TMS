@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PersianDatePicker from "@/components/drivers/PersianDatePicker";
 import InvoicePreview from "@/components/invoices/InvoicePreview";
 
@@ -29,81 +29,28 @@ import {
 } from "lucide-react";
 
 /* =========================================================
-   MOCK DRIVERS
-   ========================================================= */
+   HELPERS
+========================================================= */
 
-const mockDrivers = [
-    {
-        id: "DRV-1001",
-        name: "علی رضایی",
-        nationalId: "۰۰۱۲۳۴۵۶۷۸",
-        licenseNumber: "LIC-458721",
-        vehicleId: "VEH-1001",
-        vehicleType: "کامیون",
-        plate: "۱۲ ایران ۳۴۵ ب۶۷",
-    },
-    {
-        id: "DRV-1002",
-        name: "محمد کریمی",
-        nationalId: "۰۰۲۳۴۵۶۷۸۹",
-        licenseNumber: "LIC-784512",
-        vehicleId: "VEH-1002",
-        vehicleType: "تریلی",
-        plate: "۲۴ ایران ۱۱۲ ج۴۵",
-    },
-    {
-        id: "DRV-1003",
-        name: "رضا احمدی",
-        nationalId: "۰۰۳۴۵۶۷۸۹۰",
-        licenseNumber: "LIC-321654",
-        vehicleId: "VEH-1003",
-        vehicleType: "کامیون",
-        plate: "۳۳ ایران ۹۸۷ الف۲۲",
-    },
-];
+const vehicleTypeLabels = {
+    truck: "کامیون",
+    trailer: "تریلی",
+    pickup: "وانت",
+    van: "وانت",
+    کامیون: "کامیون",
+    تریلی: "تریلی",
+    نیسان: "نیسان",
+    وانت: "وانت",
+};
 
-/* =========================================================
-   MOCK LOADS
-   ========================================================= */
-
-const mockLoads = [
-    {
-        id: "LOAD-1001",
-        title: "بار مواد غذایی",
-        barType: "مواد غذایی",
-        companyName: "شرکت حمل‌ونقل شمال",
-        origin: "رشت",
-        destination: "تهران",
-        distance: "۳۲۵",
-        address: "رشت، شهر صنعتی، انبار شماره ۲",
-    },
-    {
-        id: "LOAD-1002",
-        title: "قطعات صنعتی",
-        barType: "قطعات صنعتی",
-        companyName: "صنایع شمال",
-        origin: "رشت",
-        destination: "قزوین",
-        distance: "۲۷۰",
-        address: "رشت، جاده تهران، کارخانه صنایع شمال",
-    },
-    {
-        id: "LOAD-1003",
-        title: "مصالح ساختمانی",
-        barType: "مصالح ساختمانی",
-        companyName: "شرکت ساختمانی شمال",
-        origin: "رشت",
-        destination: "کرج",
-        distance: "۳۷۵",
-        address: "رشت، جاده انزلی، انبار مصالح",
-    },
-];
+function getVehicleTypeLabel(value) {
+    return vehicleTypeLabels[value] || value || "";
+}
 
 /* =========================================================
    COMPANY INFORMATION
-   فعلاً Mock
-   بعداً از MongoDB دریافت می‌شود
-   ========================================================= */
+   فعلاً برای پیش‌نمایش
+========================================================= */
 
 const companyData = {
     name: "موسسه حمل و نقل کامران",
@@ -114,20 +61,152 @@ const companyData = {
 };
 
 /* =========================================================
+   NUMBER TO PERSIAN WORDS
+========================================================= */
+
+const persianOnes = [
+    "",
+    "یک",
+    "دو",
+    "سه",
+    "چهار",
+    "پنج",
+    "شش",
+    "هفت",
+    "هشت",
+    "نه",
+];
+
+const persianTeens = [
+    "ده",
+    "یازده",
+    "دوازده",
+    "سیزده",
+    "چهارده",
+    "پانزده",
+    "شانزده",
+    "هفده",
+    "هجده",
+    "نوزده",
+];
+
+const persianTens = [
+    "",
+    "ده",
+    "بیست",
+    "سی",
+    "چهل",
+    "پنجاه",
+    "شصت",
+    "هفتاد",
+    "هشتاد",
+    "نود",
+];
+
+const persianHundreds = [
+    "",
+    "صد",
+    "دویست",
+    "سیصد",
+    "چهارصد",
+    "پانصد",
+    "ششصد",
+    "هفتصد",
+    "هشتصد",
+    "نهصد",
+];
+
+const persianScales = [
+    "",
+    "هزار",
+    "میلیون",
+    "میلیارد",
+    "تریلیون",
+];
+
+function threeDigitGroupToWords(n) {
+    if (n === 0) return "";
+
+    const hundred = Math.floor(n / 100);
+    const rest = n % 100;
+
+    const parts = [];
+
+    if (hundred > 0) {
+        parts.push(persianHundreds[hundred]);
+    }
+
+    if (rest > 0) {
+        if (rest < 10) {
+            parts.push(persianOnes[rest]);
+        } else if (rest < 20) {
+            parts.push(persianTeens[rest - 10]);
+        } else {
+            const tensDigit = Math.floor(rest / 10);
+            const onesDigit = rest % 10;
+
+            if (onesDigit === 0) {
+                parts.push(persianTens[tensDigit]);
+            } else {
+                parts.push(
+                    `${persianTens[tensDigit]} و ${persianOnes[onesDigit]}`
+                );
+            }
+        }
+    }
+
+    return parts.join(" و ");
+}
+
+function numberToPersianWords(value) {
+    let n = Math.floor(Math.abs(Number(value) || 0));
+
+    if (n === 0) return "صفر";
+
+    const groups = [];
+
+    while (n > 0) {
+        groups.push(n % 1000);
+        n = Math.floor(n / 1000);
+    }
+
+    const parts = [];
+
+    for (let i = groups.length - 1; i >= 0; i--) {
+        if (groups[i] === 0) continue;
+
+        const words = threeDigitGroupToWords(groups[i]);
+
+        parts.push(
+            persianScales[i]
+                ? `${words} ${persianScales[i]}`
+                : words
+        );
+    }
+
+    return parts.join(" و ");
+}
+
+/* =========================================================
    PAGE
-   ========================================================= */
+========================================================= */
 
 export default function AddInvoicePage() {
-
     /* =======================================================
-       PREVIEW STATE
-       ======================================================= */
+       GENERAL STATE
+    ======================================================= */
 
     const [preview, setPreview] = useState(false);
 
+    const [dataLoading, setDataLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
+
+    const [drivers, setDrivers] = useState([]);
+    const [loads, setLoads] = useState([]);
+
     /* =======================================================
        DRIVER STATE
-       ======================================================= */
+    ======================================================= */
 
     const [selectedDriver, setSelectedDriver] = useState(null);
     const [manualDriver, setManualDriver] = useState(false);
@@ -147,7 +226,7 @@ export default function AddInvoicePage() {
 
     /* =======================================================
        LOAD STATE
-       ======================================================= */
+    ======================================================= */
 
     const [selectedLoad, setSelectedLoad] = useState(null);
     const [manualLoad, setManualLoad] = useState(false);
@@ -164,11 +243,12 @@ export default function AddInvoicePage() {
         destination: "",
         distance: "",
         address: "",
+        status: "",
     });
 
     /* =======================================================
        INVOICE STATE
-       ======================================================= */
+    ======================================================= */
 
     const [invoiceDate, setInvoiceDate] = useState(null);
 
@@ -187,28 +267,130 @@ export default function AddInvoicePage() {
     });
 
     /* =======================================================
-       DRIVER SEARCH
-       ======================================================= */
+       LOAD DATABASE DATA
+    ======================================================= */
 
-    const filteredDrivers = mockDrivers.filter((driver) =>
-        driver.name.includes(driverSearch.trim())
+    useEffect(() => {
+        async function loadDataFromDatabase() {
+            try {
+                setDataLoading(true);
+
+                const [driversResponse, loadsResponse] =
+                    await Promise.all([
+                        fetch("/api/daily-drivers"),
+                        fetch("/api/loads"),
+                    ]);
+
+                if (!driversResponse.ok) {
+                    throw new Error(
+                        "خطا در دریافت رانندگان روزانه"
+                    );
+                }
+
+                if (!loadsResponse.ok) {
+                    throw new Error(
+                        "خطا در دریافت بارها"
+                    );
+                }
+
+                const driversResult =
+                    await driversResponse.json();
+
+                const loadsResult =
+                    await loadsResponse.json();
+
+                const driversList = Array.isArray(
+                    driversResult
+                )
+                    ? driversResult
+                    : driversResult.dailyDrivers || [];
+
+                const loadsList = Array.isArray(
+                    loadsResult
+                )
+                    ? loadsResult
+                    : loadsResult.loads || [];
+
+                setDrivers(driversList);
+                setLoads(loadsList);
+            } catch (error) {
+                console.error(
+                    "Invoice form data error:",
+                    error
+                );
+
+                alert(
+                    "دریافت اطلاعات رانندگان یا بارها با خطا مواجه شد."
+                );
+            } finally {
+                setDataLoading(false);
+            }
+        }
+
+        loadDataFromDatabase();
+    }, []);
+
+    /* =======================================================
+       DRIVER SEARCH
+    ======================================================= */
+
+    const filteredDrivers = drivers.filter((driver) =>
+        (driver.name || "")
+            .toLowerCase()
+            .includes(
+                driverSearch.trim().toLowerCase()
+            )
     );
 
     function selectDriver(driver) {
         setSelectedDriver(driver);
         setManualDriver(false);
 
+        const isGuest = driver.type === "guest";
+
+        const realDriver =
+            driver.driverId &&
+            typeof driver.driverId === "object"
+                ? driver.driverId
+                : null;
+
         setDriverData({
-            id: driver.id,
-            name: driver.name,
-            nationalId: driver.nationalId,
-            licenseNumber: driver.licenseNumber,
-            vehicleId: driver.vehicleId,
-            vehicleType: driver.vehicleType,
-            plate: driver.plate,
+            id:
+                realDriver?._id ||
+                driver.driverId ||
+                driver._id ||
+                "",
+
+            name: driver.name || "",
+
+            nationalId: isGuest
+                ? ""
+                : realDriver?.nationalId || "",
+
+            licenseNumber: isGuest
+                ? ""
+                : realDriver?.licenseNumber || "",
+
+            vehicleId: isGuest
+                ? ""
+                : realDriver?._id || "",
+
+            vehicleType:
+                getVehicleTypeLabel(
+                    driver.vehicleType ||
+                        realDriver?.vehicleType ||
+                        ""
+                ),
+
+            plate: isGuest
+                ? ""
+                : realDriver?.vehiclePlate || "",
         });
 
-        setDriverSearch(driver.name);
+        setDriverSearch(
+            driver.name || ""
+        );
+
         setDriverSearchOpen(false);
     }
 
@@ -256,28 +438,49 @@ export default function AddInvoicePage() {
 
     /* =======================================================
        LOAD SEARCH
-       ======================================================= */
+    ======================================================= */
 
-    const filteredLoads = mockLoads.filter((load) =>
-        load.title.includes(loadSearch.trim())
+    const filteredLoads = loads.filter((load) =>
+        (load.title || "")
+            .toLowerCase()
+            .includes(
+                loadSearch.trim().toLowerCase()
+            )
     );
 
     function selectLoad(load) {
         setSelectedLoad(load);
         setManualLoad(false);
 
+        const companyName =
+            load.companyId?.name ||
+            load.company?.name ||
+            load.companyName ||
+            "";
+
+        const provinceStatus =
+            load.provinceStatus === "outside"
+                ? "خارج استان"
+                : load.provinceStatus === "inside"
+                    ? "داخل استان"
+                    : load.status || "";
+
         setLoadData({
-            id: load.id,
-            title: load.title,
-            barType: load.barType,
-            companyName: load.companyName,
-            origin: load.origin,
-            destination: load.destination,
-            distance: load.distance,
-            address: load.address,
+            id: load.loadId || load._id || "",
+            title: load.title || "",
+            barType: load.barType || "",
+            companyName,
+            origin: load.origin || "",
+            destination: load.destination || "",
+            distance: load.distance ?? "",
+            address: load.address || "",
+            status: provinceStatus,
         });
 
-        setLoadSearch(load.title);
+        setLoadSearch(
+            load.title || ""
+        );
+
         setLoadSearchOpen(false);
     }
 
@@ -294,6 +497,7 @@ export default function AddInvoicePage() {
             destination: "",
             distance: "",
             address: "",
+            status: "",
         });
 
         setLoadSearch("");
@@ -313,6 +517,7 @@ export default function AddInvoicePage() {
             destination: "",
             distance: "",
             address: "",
+            status: "",
         });
 
         setLoadSearch("");
@@ -327,7 +532,7 @@ export default function AddInvoicePage() {
 
     /* =======================================================
        INVOICE FIELDS
-       ======================================================= */
+    ======================================================= */
 
     function editInvoiceField(field, value) {
         setInvoiceData((previous) => ({
@@ -337,83 +542,85 @@ export default function AddInvoicePage() {
     }
 
     /* =======================================================
-       PREVIEW DATA
-       ======================================================= */
+       PREVIEW
+    ======================================================= */
 
     function getPreviewInvoice() {
+        const mainCost =
+            Number(invoiceData.cost || 0);
 
-        const mainCost = Number(invoiceData.cost || 0);
+        const insurance =
+            Number(invoiceData.insuranceCost || 0);
 
-        const insurance = Number(
-            invoiceData.insuranceCost || 0
-        );
+        const workerCost =
+            Number(invoiceData.workerCost || 0);
 
-        const total = mainCost + insurance;
+        const scaleCost =
+            Number(invoiceData.scaleCost || 0);
+
+        const stopCost =
+            Number(invoiceData.stopCost || 0);
+
+        const commissionCost =
+            Number(invoiceData.commissionCost || 0);
+
+        const totalAmount =
+            mainCost +
+            insurance +
+            workerCost +
+            scaleCost +
+            stopCost +
+            commissionCost;
 
         return {
-
-            /* -----------------------------
-               COMPANY
-            ----------------------------- */
-
             companyName: companyData.name,
-
             companyManager: companyData.manager,
-
             companyMobile: companyData.mobile,
-
             companyPhone: companyData.phone,
-
             companyAddress: companyData.address,
-
-            /* -----------------------------
-               INVOICE
-            ----------------------------- */
 
             number:
                 invoiceData.invoiceId ||
-                "1404-0032",
+                "—",
 
             date:
                 invoiceDate
-                    ? invoiceDate.format("YYYY/MM/DD")
+                    ? invoiceDate.format(
+                        "YYYY/MM/DD"
+                    )
                     : "—",
 
             startTime:
-                invoiceData.startTime || "—",
-
-            /* -----------------------------
-               DRIVER
-            ----------------------------- */
+                invoiceData.startTime ||
+                "—",
 
             driver:
-                driverData.name || "—",
+                driverData.name ||
+                "—",
 
             vehicle:
-                driverData.vehicleType || "—",
+                driverData.vehicleType ||
+                "—",
 
             plate:
-                driverData.plate || "—",
-
-            /* -----------------------------
-               CLIENT / LOAD COMPANY
-            ----------------------------- */
+                driverData.plate ||
+                "—",
 
             clientCompanyName:
-                loadData.companyName || "—",
+                loadData.companyName ||
+                "—",
 
             cargoType:
-                loadData.barType || "—",
-
-            /* -----------------------------
-               LOAD
-            ----------------------------- */
+                loadData.barType ||
+                "—",
 
             origin:
-                loadData.origin || "—",
+                loadData.origin ||
+                "—",
 
             destination:
-                loadData.destination || "—",
+                loadData.destination ||
+                "—",
 
             distance:
                 loadData.distance
@@ -421,83 +628,279 @@ export default function AddInvoicePage() {
                     : "—",
 
             loadAddress:
-                loadData.address || "—",
+                loadData.address ||
+                "—",
 
-            /* -----------------------------
-               COST
-            ----------------------------- */
+            loadStatus:
+                loadData.status ||
+                "—",
 
-            cost: mainCost.toLocaleString("fa-IR"),
+            cost:
+                mainCost.toLocaleString(
+                    "fa-IR"
+                ),
 
-            insurance: insurance.toLocaleString("fa-IR"),
+            insurance:
+                insurance.toLocaleString(
+                    "fa-IR"
+                ),
 
-            workerCost: Number(invoiceData.workerCost || 0).toLocaleString("fa-IR"),
+            workerCost:
+                workerCost.toLocaleString(
+                    "fa-IR"
+                ),
 
-            scaleCost: Number(invoiceData.scaleCost || 0).toLocaleString("fa-IR"),
+            scaleCost:
+                scaleCost.toLocaleString(
+                    "fa-IR"
+                ),
 
-            stopCost: Number(invoiceData.stopCost || 0).toLocaleString("fa-IR"),
+            stopCost:
+                stopCost.toLocaleString(
+                    "fa-IR"
+                ),
 
-            total: (
-                mainCost +
-                insurance +
-                Number(invoiceData.workerCost || 0) +
-                Number(invoiceData.scaleCost || 0) +
-                Number(invoiceData.stopCost || 0) +
-                Number(invoiceData.commissionCost || 0)
-            ).toLocaleString("fa-IR"),
+            commissionCost:
+                commissionCost.toLocaleString(
+                    "fa-IR"
+                ),
 
-            /* -----------------------------
-               OTHER
-            ----------------------------- */
+            total:
+                totalAmount.toLocaleString(
+                    "fa-IR"
+                ),
+
+            totalInWords:
+                `${numberToPersianWords(
+                    totalAmount
+                )} تومان`,
 
             receiverName:
-                invoiceData.receiverName || "—",
+                invoiceData.receiverName ||
+                "—",
 
             description:
-                invoiceData.description || "",
+                invoiceData.description ||
+                "",
         };
     }
 
     /* =======================================================
        SUBMIT
-       ======================================================= */
+    ======================================================= */
 
-    function handleSubmit(event) {
-
+    async function handleSubmit(event) {
         event.preventDefault();
 
-        const invoicePayload = {
+        if (!invoiceDate) {
+            alert("تاریخ فاکتور را انتخاب کنید.");
+            return;
+        }
 
-            company: companyData,
+        if (!invoiceData.invoiceId.trim()) {
+            alert("شماره فاکتور را وارد کنید.");
+            return;
+        }
 
-            driver: driverData,
+        if (!driverData.name.trim()) {
+            alert("نام راننده را وارد کنید.");
+            return;
+        }
 
-            load: loadData,
+        if (!driverData.vehicleType.trim()) {
+            alert("نوع خودرو را انتخاب کنید.");
+            return;
+        }
 
-            invoice: {
+        if (!invoiceData.cost) {
+            alert("هزینه اصلی را وارد کنید.");
+            return;
+        }
 
-                ...invoiceData,
+        try {
+            setSaving(true);
+
+            const realDriverId =
+                selectedDriver?.driverId &&
+                typeof selectedDriver.driverId === "object"
+                    ? selectedDriver.driverId._id
+                    : selectedDriver?.driverId || null;
+
+            const isGuest =
+                selectedDriver?.type === "guest";
+
+            const driverType =
+                manualDriver
+                    ? "manual"
+                    : isGuest
+                        ? "guest"
+                        : "main";
+
+            const invoicePayload = {
+                invoiceNumber:
+                    invoiceData.invoiceId.trim(),
 
                 date:
-                    invoiceDate
-                        ? invoiceDate.format("YYYY/MM/DD")
-                        : "",
-            },
-        };
+                    invoiceDate.format(
+                        "YYYY/MM/DD"
+                    ),
 
-        console.log(
-            "Invoice payload:",
-            invoicePayload
-        );
+                startTime:
+                    invoiceData.startTime,
 
-        alert(
-            "فاکتور آماده ارسال به دیتابیس است."
-        );
+                dailyDriverId:
+                    selectedDriver?._id ||
+                    null,
+
+                driverType,
+
+                driverId:
+                    driverType === "main"
+                        ? realDriverId
+                        : null,
+
+                driverName:
+                    driverData.name.trim(),
+
+                driverPhone:
+                    selectedDriver?.phone ||
+                    "",
+
+                driverNationalId:
+                    driverData.nationalId.trim(),
+
+                driverLicenseNumber:
+                    driverData.licenseNumber.trim(),
+
+                vehicleId:
+                    driverData.vehicleId.trim(),
+
+                vehicleType:
+                    driverData.vehicleType.trim(),
+
+                vehiclePlate:
+                    driverData.plate.trim(),
+
+                loadId:
+                    selectedLoad?._id ||
+                    null,
+
+                loadType:
+                    loadData.barType.trim(),
+
+                companyId:
+                    selectedLoad?.companyId?._id ||
+                    selectedLoad?.companyId ||
+                    selectedLoad?.company?._id ||
+                    null,
+
+                companyName:
+                    loadData.companyName.trim(),
+
+                origin:
+                    loadData.origin.trim(),
+
+                destination:
+                    loadData.destination.trim(),
+
+                distance:
+                    Number(
+                        loadData.distance
+                    ) || 0,
+
+                address:
+                    loadData.address.trim(),
+
+                cost:
+                    Number(
+                        invoiceData.cost
+                    ) || 0,
+
+                costType:
+                    invoiceData.costType === "credit"
+                        ? "اعتباری"
+                        : "نقد",
+
+                insuranceCost:
+                    Number(
+                        invoiceData.insuranceCost
+                    ) || 0,
+
+                workerCost:
+                    Number(
+                        invoiceData.workerCost
+                    ) || 0,
+
+                scaleCost:
+                    Number(
+                        invoiceData.scaleCost
+                    ) || 0,
+
+                stopCost:
+                    Number(
+                        invoiceData.stopCost
+                    ) || 0,
+
+                commissionCost:
+                    Number(
+                        invoiceData.commissionCost
+                    ) || 0,
+
+                description:
+                    invoiceData.description.trim(),
+
+                receiverName:
+                    invoiceData.receiverName.trim(),
+            };
+
+            const response = await fetch(
+                "/api/invoices",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type":
+                            "application/json",
+                    },
+                    body: JSON.stringify(
+                        invoicePayload
+                    ),
+                }
+            );
+
+            const result =
+                await response.json();
+
+            if (!response.ok) {
+                throw new Error(
+                    result.error ||
+                    "ثبت فاکتور ناموفق بود."
+                );
+            }
+
+            alert(
+                "فاکتور با موفقیت ثبت شد."
+            );
+
+            window.location.href =
+                "/invoices";
+        } catch (error) {
+            console.error(
+                "Create invoice error:",
+                error
+            );
+
+            alert(
+                error.message ||
+                "ثبت فاکتور با خطا مواجه شد."
+            );
+        } finally {
+            setSaving(false);
+        }
     }
 
     /* =======================================================
        RENDER
-       ======================================================= */
+    ======================================================= */
 
     return (
         <main className="main-content">
@@ -560,6 +963,24 @@ export default function AddInvoicePage() {
                     </div>
 
                 </div>
+
+
+                {dataLoading && (
+
+                    <div
+                        style={{
+                            padding: "14px 18px",
+                            margin: "0 0 10px",
+                            borderRadius: "12px",
+                            background: "var(--surface-soft)",
+                            color: "var(--text-secondary)",
+                            textAlign: "center",
+                        }}
+                    >
+                        در حال دریافت اطلاعات رانندگان و بارها...
+                    </div>
+
+                )}
 
 
                 <form
@@ -634,50 +1055,74 @@ export default function AddInvoicePage() {
                                         {filteredDrivers.length > 0 ? (
 
                                             filteredDrivers.map(
-                                                (driver) => (
+                                                (driver) => {
 
-                                                    <button
-                                                        type="button"
-                                                        key={driver.id}
-                                                        className="invoice-search-option"
-                                                        onClick={() =>
-                                                            selectDriver(
-                                                                driver
-                                                            )
-                                                        }
-                                                    >
+                                                    const isGuest =
+                                                        driver.type === "guest";
 
-                                                        <div className="invoice-option-icon">
+                                                    const realDriver =
+                                                        driver.driverId &&
+                                                        typeof driver.driverId === "object"
+                                                            ? driver.driverId
+                                                            : null;
 
-                                                            <UserRound
-                                                                size={18}
-                                                            />
+                                                    const driverIdText =
+                                                        realDriver?._id ||
+                                                        driver.driverId ||
+                                                        driver._id ||
+                                                        "";
 
-                                                        </div>
+                                                    return (
+                                                        <button
+                                                            type="button"
+                                                            key={driver._id}
+                                                            className="invoice-search-option"
+                                                            onClick={() =>
+                                                                selectDriver(
+                                                                    driver
+                                                                )
+                                                            }
+                                                        >
 
-                                                        <div>
+                                                            <div className="invoice-option-icon">
 
-                                                            <strong>
-                                                                {driver.name}
-                                                            </strong>
+                                                                <UserRound
+                                                                    size={18}
+                                                                />
 
-                                                            <span>
-                                                                {driver.id} -{" "}
-                                                                {driver.vehicleType}
-                                                            </span>
+                                                            </div>
 
-                                                        </div>
+                                                            <div>
 
-                                                    </button>
+                                                                <strong>
+                                                                    {driver.name}
+                                                                </strong>
 
-                                                )
+                                                                <span>
+                                                                    {isGuest
+                                                                        ? "راننده مهمان"
+                                                                        : "راننده اصلی"}
+                                                                    {" - "}
+                                                                    {getVehicleTypeLabel(
+                                                                        driver.vehicleType
+                                                                    )}
+                                                                    {driverIdText
+                                                                        ? ` - ${driverIdText}`
+                                                                        : ""}
+                                                                </span>
+
+                                                            </div>
+
+                                                        </button>
+                                                    );
+                                                }
                                             )
 
                                         ) : (
 
                                             <div className="invoice-search-empty">
 
-                                                راننده‌ای پیدا نشد
+                                                راننده‌ای برای امروز پیدا نشد
 
                                             </div>
 
@@ -808,7 +1253,10 @@ export default function AddInvoicePage() {
                                     )
                                 }
                                 placeholder="کد ملی"
-                                disabled={!!selectedDriver}
+                                disabled={
+                                    !!selectedDriver &&
+                                    selectedDriver.type !== "guest"
+                                }
                             />
 
                         </div>
@@ -837,7 +1285,10 @@ export default function AddInvoicePage() {
                                     )
                                 }
                                 placeholder="شماره گواهینامه"
-                                disabled={!!selectedDriver}
+                                disabled={
+                                    !!selectedDriver &&
+                                    selectedDriver.type !== "guest"
+                                }
                             />
 
                         </div>
@@ -866,7 +1317,10 @@ export default function AddInvoicePage() {
                                     )
                                 }
                                 placeholder="شناسه خودرو"
-                                disabled={!!selectedDriver}
+                                disabled={
+                                    !!selectedDriver &&
+                                    selectedDriver.type !== "guest"
+                                }
                             />
 
                         </div>
@@ -937,7 +1391,9 @@ export default function AddInvoicePage() {
                             <CreditCard size={18} />
 
                             <input
-                                value={driverData.plate ?? ""}
+                                value={
+                                    driverData.plate ?? ""
+                                }
                                 onChange={(event) =>
                                     editDriverField(
                                         "plate",
@@ -945,7 +1401,10 @@ export default function AddInvoicePage() {
                                     )
                                 }
                                 placeholder="مثلاً ۱۲ ایران ۳۴۵ ب۶۷"
-                                disabled={!!selectedDriver}
+                                disabled={
+                                    !!selectedDriver &&
+                                    selectedDriver.type !== "guest"
+                                }
                             />
 
                         </div>
@@ -968,6 +1427,37 @@ export default function AddInvoicePage() {
                     </div>
 
 
+                    {/* INVOICE NUMBER */}
+
+                    <div className="invoice-form-group">
+
+                        <label>
+                            شماره فاکتور <span>*</span>
+                        </label>
+
+                        <div className="invoice-input-wrapper">
+
+                            <FileText size={18} />
+
+                            <input
+                                value={
+                                    invoiceData.invoiceId
+                                }
+                                onChange={(event) =>
+                                    editInvoiceField(
+                                        "invoiceId",
+                                        event.target.value
+                                    )
+                                }
+                                placeholder="شماره فاکتور"
+                                required
+                            />
+
+                        </div>
+
+                    </div>
+
+
                     {/* DATE */}
 
                     <div className="invoice-form-group">
@@ -982,7 +1472,9 @@ export default function AddInvoicePage() {
 
                             <PersianDatePicker
                                 value={invoiceDate}
-                                onChange={setInvoiceDate}
+                                onChange={
+                                    setInvoiceDate
+                                }
                                 placeholder="تاریخ فاکتور را انتخاب کنید"
                             />
 
@@ -1088,44 +1580,53 @@ export default function AddInvoicePage() {
                                         {filteredLoads.length > 0 ? (
 
                                             filteredLoads.map(
-                                                (load) => (
+                                                (load) => {
 
-                                                    <button
-                                                        type="button"
-                                                        key={load.id}
-                                                        className="invoice-search-option"
-                                                        onClick={() =>
-                                                            selectLoad(
-                                                                load
-                                                            )
-                                                        }
-                                                    >
+                                                    const companyName =
+                                                        load.companyId?.name ||
+                                                        load.company?.name ||
+                                                        load.companyName ||
+                                                        "";
 
-                                                        <div className="invoice-option-icon">
+                                                    return (
+                                                        <button
+                                                            type="button"
+                                                            key={load._id}
+                                                            className="invoice-search-option"
+                                                            onClick={() =>
+                                                                selectLoad(
+                                                                    load
+                                                                )
+                                                            }
+                                                        >
 
-                                                            <Package
-                                                                size={18}
-                                                            />
+                                                            <div className="invoice-option-icon">
 
-                                                        </div>
+                                                                <Package
+                                                                    size={18}
+                                                                />
 
-                                                        <div>
+                                                            </div>
 
-                                                            <strong>
-                                                                {load.title}
-                                                            </strong>
+                                                            <div>
 
-                                                            <span>
-                                                                {load.companyName} -{" "}
-                                                                {load.origin} تا{" "}
-                                                                {load.destination}
-                                                            </span>
+                                                                <strong>
+                                                                    {load.title}
+                                                                </strong>
 
-                                                        </div>
+                                                                <span>
+                                                                    {companyName}
+                                                                    {" - "}
+                                                                    {load.origin}
+                                                                    {" تا "}
+                                                                    {load.destination}
+                                                                </span>
 
-                                                    </button>
+                                                            </div>
 
-                                                )
+                                                        </button>
+                                                    );
+                                                }
                                             )
 
                                         ) : (
@@ -1296,6 +1797,48 @@ export default function AddInvoicePage() {
                     </div>
 
 
+                    {/* LOAD STATUS */}
+
+                    <div className="invoice-form-group">
+
+                        <label>
+                            وضعیت بار
+                        </label>
+
+                        <div className="invoice-input-wrapper">
+
+                            <Route size={18} />
+
+                            <select
+                                value={loadData.status}
+                                onChange={(event) =>
+                                    editLoadField(
+                                        "status",
+                                        event.target.value
+                                    )
+                                }
+                                disabled={!!selectedLoad}
+                            >
+
+                                <option value="">
+                                    انتخاب وضعیت بار
+                                </option>
+
+                                <option value="داخل استان">
+                                    داخل استان
+                                </option>
+
+                                <option value="خارج استان">
+                                    خارج استان
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+
                     {/* COMPANY */}
 
                     <div className="invoice-form-group">
@@ -1309,7 +1852,9 @@ export default function AddInvoicePage() {
                             <Building2 size={18} />
 
                             <input
-                                value={loadData.companyName}
+                                value={
+                                    loadData.companyName
+                                }
                                 onChange={(event) =>
                                     editLoadField(
                                         "companyName",
@@ -1338,7 +1883,9 @@ export default function AddInvoicePage() {
                             <MapPin size={18} />
 
                             <input
-                                value={loadData.origin}
+                                value={
+                                    loadData.origin
+                                }
                                 onChange={(event) =>
                                     editLoadField(
                                         "origin",
@@ -1367,7 +1914,9 @@ export default function AddInvoicePage() {
                             <MapPin size={18} />
 
                             <input
-                                value={loadData.destination}
+                                value={
+                                    loadData.destination
+                                }
                                 onChange={(event) =>
                                     editLoadField(
                                         "destination",
@@ -1396,7 +1945,9 @@ export default function AddInvoicePage() {
                             <Route size={18} />
 
                             <input
-                                value={loadData.distance}
+                                value={
+                                    loadData.distance
+                                }
                                 onChange={(event) =>
                                     editLoadField(
                                         "distance",
@@ -1429,7 +1980,9 @@ export default function AddInvoicePage() {
                             <MapPin size={18} />
 
                             <textarea
-                                value={loadData.address}
+                                value={
+                                    loadData.address
+                                }
                                 onChange={(event) =>
                                     editLoadField(
                                         "address",
@@ -1474,7 +2027,10 @@ export default function AddInvoicePage() {
 
                             <input
                                 type="number"
-                                value={invoiceData.cost}
+                                min="0"
+                                value={
+                                    invoiceData.cost
+                                }
                                 onChange={(event) =>
                                     editInvoiceField(
                                         "cost",
@@ -1482,6 +2038,7 @@ export default function AddInvoicePage() {
                                     )
                                 }
                                 placeholder="مبلغ هزینه"
+                                required
                             />
 
                             <span className="invoice-input-unit">
@@ -1506,13 +2063,16 @@ export default function AddInvoicePage() {
                             <Banknote size={18} />
 
                             <select
-                                value={invoiceData.costType}
+                                value={
+                                    invoiceData.costType
+                                }
                                 onChange={(event) =>
                                     editInvoiceField(
                                         "costType",
                                         event.target.value
                                     )
                                 }
+                                required
                             >
 
                                 <option value="credit">
@@ -1544,7 +2104,10 @@ export default function AddInvoicePage() {
 
                             <input
                                 type="number"
-                                value={invoiceData.insuranceCost}
+                                min="0"
+                                value={
+                                    invoiceData.insuranceCost
+                                }
                                 onChange={(event) =>
                                     editInvoiceField(
                                         "insuranceCost",
@@ -1577,7 +2140,10 @@ export default function AddInvoicePage() {
 
                             <input
                                 type="number"
-                                value={invoiceData.workerCost}
+                                min="0"
+                                value={
+                                    invoiceData.workerCost
+                                }
                                 onChange={(event) =>
                                     editInvoiceField(
                                         "workerCost",
@@ -1610,7 +2176,10 @@ export default function AddInvoicePage() {
 
                             <input
                                 type="number"
-                                value={invoiceData.scaleCost}
+                                min="0"
+                                value={
+                                    invoiceData.scaleCost
+                                }
                                 onChange={(event) =>
                                     editInvoiceField(
                                         "scaleCost",
@@ -1643,7 +2212,10 @@ export default function AddInvoicePage() {
 
                             <input
                                 type="number"
-                                value={invoiceData.stopCost}
+                                min="0"
+                                value={
+                                    invoiceData.stopCost
+                                }
                                 onChange={(event) =>
                                     editInvoiceField(
                                         "stopCost",
@@ -1676,7 +2248,11 @@ export default function AddInvoicePage() {
 
                             <input
                                 type="number"
-                                value={invoiceData.commissionCost ?? ""}
+                                min="0"
+                                value={
+                                    invoiceData.commissionCost ??
+                                    ""
+                                }
                                 onChange={(event) =>
                                     editInvoiceField(
                                         "commissionCost",
@@ -1777,7 +2353,10 @@ export default function AddInvoicePage() {
                                 textAlign: "left",
                             }}
                         >
-                            {invoiceData.description.length}/120
+                            {
+                                invoiceData.description.length
+                            }
+                            /120
                         </div>
 
                     </div>
@@ -1800,12 +2379,18 @@ export default function AddInvoicePage() {
                         <button
                             type="submit"
                             className="primary-action-button"
+                            disabled={
+                                saving ||
+                                dataLoading
+                            }
                         >
 
                             <Save size={19} />
 
                             <span>
-                                ثبت فاکتور
+                                {saving
+                                    ? "در حال ثبت..."
+                                    : "ثبت فاکتور"}
                             </span>
 
                         </button>

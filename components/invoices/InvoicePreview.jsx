@@ -212,6 +212,7 @@ export default function InvoicePreview({ invoice, onClose }) {
                 <p><strong>مبدأ:</strong> {invoice.origin}</p>
                 <p><strong>مقصد:</strong> {invoice.destination}</p>
                 <p><strong>مسافت:</strong> {invoice.distance}</p>
+                <p><strong>وضعیت:</strong> {invoice.loadStatus || "—"}</p>
               </div>
 
             </div>
@@ -280,6 +281,10 @@ export default function InvoicePreview({ invoice, onClose }) {
                 </tfoot>
 
               </table>
+
+              <div className="invoice-amount-words">
+                <strong>مبلغ به حروف:</strong> {invoice.totalInWords}
+              </div>
 
             </div>
 
