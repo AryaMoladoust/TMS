@@ -1,14 +1,15 @@
 import { NextResponse } from "next/server";
 import connectDB from "@/lib/mongodb";
+
 import DailyDriver from "@/models/DailyDriver";
 import Driver from "@/models/Driver";
 
 function getTodayKey() {
-    const now = new Date();
+    const today = new Date();
 
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, "0");
-    const day = String(now.getDate()).padStart(2, "0");
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const day = String(today.getDate()).padStart(2, "0");
 
     return `${year}-${month}-${day}`;
 }
@@ -22,30 +23,48 @@ function getCurrentTime() {
     return `${hours}:${minutes}`;
 }
 
+/* =========================================================
+   GET
+   ترتیب صف:
+   قدیمی‌ترین ورود ← اول
+   جدیدترین ورود ← آخر
+========================================================= */
+
 export async function GET(request) {
     try {
         await connectDB();
 
-        const { searchParams } = new URL(request.url);
+        const { searchParams } =
+            new URL(request.url);
 
-        const date = searchParams.get("date") || getTodayKey();
+        const date =
+            searchParams.get("date") ||
+            getTodayKey();
 
-        const dailyDrivers = await DailyDriver.find({ date })
-            .sort({ createdAt: -1 })
-            .lean();
+        const dailyDrivers =
+            await DailyDriver.find({
+                date,
+            })
+                .populate("driverId")
+                .sort({
+                    createdAt: 1,
+                })
+                .lean();
 
-        return NextResponse.json({
-            success: true,
-            date,
-            dailyDrivers,
-        });
+        return NextResponse.json(
+            dailyDrivers
+        );
     } catch (error) {
-        console.error("GET /api/daily-drivers error:", error);
+        console.error(
+            "Get daily drivers error:",
+            error
+        );
 
         return NextResponse.json(
             {
-                success: false,
-                message: "خطا در دریافت ورود روزانه رانندگان",
+                message:
+                    "خطا در دریافت ورود روزانه رانندگان",
+                error: error.message,
             },
             {
                 status: 500,
@@ -54,26 +73,31 @@ export async function GET(request) {
     }
 }
 
+/* =========================================================
+   POST
+========================================================= */
+
 export async function POST(request) {
     try {
         await connectDB();
 
-        const body = await request.json();
+        const body =
+            await request.json();
 
         const {
-            driverId,
-            name,
-            phone,
-            vehicleType,
+            driverId = null,
+            name = "",
+            phone = "",
+            vehicleType = "",
             type,
-            date,
+            date = getTodayKey(),
         } = body;
 
-        if (!type || !["main", "guest"].includes(type)) {
+        if (!type) {
             return NextResponse.json(
                 {
-                    success: false,
-                    message: "نوع راننده نامعتبر است",
+                    message:
+                        "نوع راننده مشخص نشده است.",
                 },
                 {
                     status: 400,
@@ -81,18 +105,31 @@ export async function POST(request) {
             );
         }
 
-        const entryDate = date || getTodayKey();
+        if (
+            type !== "main" &&
+            type !== "guest"
+        ) {
+            return NextResponse.json(
+                {
+                    message:
+                        "نوع راننده نامعتبر است.",
+                },
+                {
+                    status: 400,
+                }
+            );
+        }
 
-        // =========================
-        // راننده اصلی
-        // =========================
+        /* =====================================================
+           راننده اصلی
+        ===================================================== */
 
         if (type === "main") {
             if (!driverId) {
                 return NextResponse.json(
                     {
-                        success: false,
-                        message: "راننده اصلی را انتخاب کنید",
+                        message:
+                            "راننده را انتخاب کنید.",
                     },
                     {
                         status: 400,
@@ -100,13 +137,16 @@ export async function POST(request) {
                 );
             }
 
-            const driver = await Driver.findById(driverId).lean();
+            const driver =
+                await Driver.findById(
+                    driverId
+                );
 
             if (!driver) {
                 return NextResponse.json(
                     {
-                        success: false,
-                        message: "راننده موردنظر پیدا نشد",
+                        message:
+                            "راننده پیدا نشد.",
                     },
                     {
                         status: 404,
@@ -114,17 +154,18 @@ export async function POST(request) {
                 );
             }
 
-            // جلوگیری از ثبت دوباره یک راننده در همان روز
-            const existingDailyDriver = await DailyDriver.findOne({
-                driverId,
-                date: entryDate,
-            });
+            const alreadyExists =
+                await DailyDriver.findOne({
+                    driverId:
+                        driver._id,
+                    date,
+                });
 
-            if (existingDailyDriver) {
+            if (alreadyExists) {
                 return NextResponse.json(
                     {
-                        success: false,
-                        message: "این راننده امروز قبلاً ثبت شده است",
+                        message:
+                            "این راننده قبلاً برای امروز ثبت شده است.",
                     },
                     {
                         status: 409,
@@ -132,34 +173,42 @@ export async function POST(request) {
                 );
             }
 
-            // بررسی اعتبار گواهینامه
-            if (!driver.licenseExpiry) {
-                return NextResponse.json(
-                    {
-                        success: false,
-                        message: "تاریخ انقضای گواهینامه راننده ثبت نشده است",
-                    },
-                    {
-                        status: 400,
-                    }
-                );
-            }
+            const dailyDriver =
+                await DailyDriver.create({
+                    driverId:
+                        driver._id,
 
-            const dailyDriver = await DailyDriver.create({
-                driverId: driver._id,
-                name: driver.name,
-                phone: driver.phone,
-                vehicleType: driver.vehicleType,
-                type: "main",
-                date: entryDate,
-                entryTime: getCurrentTime(),
-            });
+                    name:
+                        driver.name,
+
+                    phone:
+                        driver.phone || "",
+
+                    vehicleType:
+                        driver.vehicleType,
+
+                    type: "main",
+
+                    date,
+
+                    entryTime:
+                        getCurrentTime(),
+                });
+
+            const result =
+                await DailyDriver.findById(
+                    dailyDriver._id
+                )
+                    .populate("driverId")
+                    .lean();
 
             return NextResponse.json(
                 {
-                    success: true,
-                    message: "ورود راننده با موفقیت ثبت شد",
-                    dailyDriver,
+                    message:
+                        "ورود راننده با موفقیت ثبت شد.",
+
+                    dailyDriver:
+                        result,
                 },
                 {
                     status: 201,
@@ -167,15 +216,15 @@ export async function POST(request) {
             );
         }
 
-        // =========================
-        // راننده مهمان
-        // =========================
+        /* =====================================================
+           راننده مهمان
+        ===================================================== */
 
-        if (!name || !name.trim()) {
+        if (!name.trim()) {
             return NextResponse.json(
                 {
-                    success: false,
-                    message: "نام راننده مهمان را وارد کنید",
+                    message:
+                        "نام راننده مهمان الزامی است.",
                 },
                 {
                     status: 400,
@@ -183,11 +232,11 @@ export async function POST(request) {
             );
         }
 
-        if (!vehicleType || !vehicleType.trim()) {
+        if (!vehicleType.trim()) {
             return NextResponse.json(
                 {
-                    success: false,
-                    message: "نوع خودرو را انتخاب کنید",
+                    message:
+                        "نوع خودرو راننده مهمان الزامی است.",
                 },
                 {
                     status: 400,
@@ -195,33 +244,56 @@ export async function POST(request) {
             );
         }
 
-        const dailyDriver = await DailyDriver.create({
-            driverId: null,
-            name: name.trim(),
-            phone: phone?.trim() || "",
-            vehicleType: vehicleType.trim(),
-            type: "guest",
-            date: entryDate,
-            entryTime: getCurrentTime(),
-        });
+        const dailyDriver =
+            await DailyDriver.create({
+                driverId: null,
+
+                name:
+                    name.trim(),
+
+                phone:
+                    phone?.trim() || "",
+
+                vehicleType:
+                    vehicleType.trim(),
+
+                type: "guest",
+
+                date,
+
+                entryTime:
+                    getCurrentTime(),
+            });
+
+        const result =
+            await DailyDriver.findById(
+                dailyDriver._id
+            ).lean();
 
         return NextResponse.json(
             {
-                success: true,
-                message: "ورود راننده مهمان با موفقیت ثبت شد",
-                dailyDriver,
+                message:
+                    "راننده مهمان با موفقیت ثبت شد.",
+
+                dailyDriver:
+                    result,
             },
             {
                 status: 201,
             }
         );
     } catch (error) {
-        console.error("POST /api/daily-drivers error:", error);
+        console.error(
+            "Create daily driver error:",
+            error
+        );
 
         return NextResponse.json(
             {
-                success: false,
-                message: "خطا در ثبت ورود راننده",
+                message:
+                    "خطا در ثبت ورود راننده",
+                error:
+                    error.message,
             },
             {
                 status: 500,
@@ -230,19 +302,25 @@ export async function POST(request) {
     }
 }
 
+/* =========================================================
+   DELETE
+========================================================= */
+
 export async function DELETE(request) {
     try {
         await connectDB();
 
-        const { searchParams } = new URL(request.url);
+        const { searchParams } =
+            new URL(request.url);
 
-        const id = searchParams.get("id");
+        const id =
+            searchParams.get("id");
 
         if (!id) {
             return NextResponse.json(
                 {
-                    success: false,
-                    message: "شناسه ورود روزانه مشخص نشده است",
+                    message:
+                        "شناسه راننده مشخص نشده است.",
                 },
                 {
                     status: 400,
@@ -250,13 +328,16 @@ export async function DELETE(request) {
             );
         }
 
-        const deletedDriver = await DailyDriver.findByIdAndDelete(id);
+        const deleted =
+            await DailyDriver.findByIdAndDelete(
+                id
+            );
 
-        if (!deletedDriver) {
+        if (!deleted) {
             return NextResponse.json(
                 {
-                    success: false,
-                    message: "رکورد موردنظر پیدا نشد",
+                    message:
+                        "ورودی راننده پیدا نشد.",
                 },
                 {
                     status: 404,
@@ -265,16 +346,21 @@ export async function DELETE(request) {
         }
 
         return NextResponse.json({
-            success: true,
-            message: "ورود روزانه راننده حذف شد",
+            message:
+                "ورودی راننده با موفقیت حذف شد.",
         });
     } catch (error) {
-        console.error("DELETE /api/daily-drivers error:", error);
+        console.error(
+            "Delete daily driver error:",
+            error
+        );
 
         return NextResponse.json(
             {
-                success: false,
-                message: "خطا در حذف ورود روزانه راننده",
+                message:
+                    "خطا در حذف ورود راننده",
+                error:
+                    error.message,
             },
             {
                 status: 500,

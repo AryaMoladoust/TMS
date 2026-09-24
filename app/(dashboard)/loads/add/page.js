@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import {
@@ -56,180 +56,281 @@ export default function AddLoadPage() {
 
 
     // ===============================
+    // Companies
+    // ===============================
+
+    const [companies, setCompanies] = useState([]);
+
+    const [companiesLoading, setCompaniesLoading] =
+        useState(true);
+
+
+    useEffect(() => {
+
+        async function fetchCompanies() {
+
+            try {
+
+                setCompaniesLoading(true);
+
+                const response = await fetch(
+                    "/api/companies",
+                    {
+                        cache: "no-store",
+                    }
+                );
+
+                const result =
+                    await response.json();
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        result.message ||
+                        result.error ||
+                        "خطا در دریافت شرکت‌ها"
+                    );
+
+                }
+
+
+                const companyList =
+                    Array.isArray(result)
+                        ? result
+                        : Array.isArray(result.companies)
+                            ? result.companies
+                            : [];
+
+
+                setCompanies(companyList);
+
+            } catch (error) {
+
+                console.error(
+                    "Fetch companies error:",
+                    error
+                );
+
+                setCompanies([]);
+
+                alert(
+                    "خطا در دریافت لیست شرکت‌ها"
+                );
+
+            } finally {
+
+                setCompaniesLoading(false);
+
+            }
+
+        }
+
+
+        fetchCompanies();
+
+    }, []);
+
+
+    // ===============================
     // Submit
     // ===============================
 
 
+    const handleSubmit = async (event) => {
 
-const handleSubmit = async (event) => {
-
-    event.preventDefault();
-
-    // قبل از await فرم را ذخیره می‌کنیم
-    const form = event.currentTarget;
-
-    const formData = new FormData(form);
+        event.preventDefault();
 
 
-    // =================================
-    // نام شرکت انتخاب شده
-    // =================================
+        // قبل از await فرم را ذخیره می‌کنیم
 
-    const companySelect =
-        form.elements.loadCompany;
+        const form = event.currentTarget;
 
-    const companyName =
-        companySelect.options[
-            companySelect.selectedIndex
-        ]?.text || "";
-
-
-    // =================================
-    // اطلاعات بار
-    // =================================
-
-    const loadData = {
-
-        title:
-            formData.get("loadTitle"),
-
-        companyName,
-
-        barType:
-            formData.get("loadType"),
-
-        origin:
-            formData.get("loadOrigin"),
-
-        destination:
-            formData.get("loadDestination"),
-
-        destinationLocation:
-            destinationLocation
-                ? {
-                    lat: destinationLocation.lat,
-                    lng: destinationLocation.lng,
-                }
-                : null,
-
-        address:
-            formData.get("loadAddress"),
-
-        distance:
-            Number(
-                formData.get("loadDistance")
-            ),
-
-        provinceStatus:
-            formData.get(
-                "loadProvinceStatus"
-            ),
-
-        vehicleType:
-            formData.get(
-                "loadVehicleType"
-            ),
-
-        description:
-            formData.get(
-                "loadDescription"
-            ),
-    };
-
-
-    // =================================
-    // ارسال به API
-    // =================================
-
-    try {
-
-        const response = await fetch(
-            "/api/loads",
-            {
-                method: "POST",
-
-                headers: {
-                    "Content-Type":
-                        "application/json",
-                },
-
-                body:
-                    JSON.stringify(
-                        loadData
-                    ),
-            }
-        );
-
-
-        const result =
-            await response.json();
+        const formData = new FormData(form);
 
 
         // =================================
-        // خطا
+        // نام شرکت انتخاب شده
         // =================================
 
-        if (!response.ok) {
+        const companySelect =
+            form.elements.loadCompany;
 
-            console.error(
-                "API Error:",
-                result
-            );
+
+        const companyName =
+            companySelect.options[
+                companySelect.selectedIndex
+            ]?.text || "";
+
+
+        if (!companySelect.value) {
 
             alert(
-                result.message ||
-                result.error ||
-                "خطا در ثبت بار"
+                "لطفاً شرکت را انتخاب کنید."
             );
 
             return;
+
         }
 
 
         // =================================
-        // موفقیت
+        // اطلاعات بار
         // =================================
 
-        console.log(
-            "Load created:",
-            result
-        );
+        const loadData = {
 
+            title:
+                formData.get("loadTitle"),
 
-        alert(
-            `بار با موفقیت ثبت شد.\nشناسه بار: ${result.loadId}`
-        );
+            companyName,
+
+            barType:
+                formData.get("loadType"),
+
+            origin:
+                formData.get("loadOrigin"),
+
+            destination:
+                formData.get("loadDestination"),
+
+            destinationLocation:
+                destinationLocation
+                    ? {
+                        lat:
+                            destinationLocation.lat,
+
+                        lng:
+                            destinationLocation.lng,
+                    }
+                    : null,
+
+            address:
+                formData.get("loadAddress"),
+
+            distance:
+                Number(
+                    formData.get(
+                        "loadDistance"
+                    )
+                ),
+
+            provinceStatus:
+                formData.get(
+                    "loadProvinceStatus"
+                ),
+
+            vehicleType:
+                formData.get(
+                    "loadVehicleType"
+                ),
+
+            description:
+                formData.get(
+                    "loadDescription"
+                ),
+
+        };
 
 
         // =================================
-        // بازگشت به صفحه اصلی بارها
+        // ارسال به API
         // =================================
 
-        router.push("/loads");
+        try {
 
-        router.refresh();
+            const response =
+                await fetch(
+                    "/api/loads",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json",
+                        },
+
+                        body:
+                            JSON.stringify(
+                                loadData
+                            ),
+                    }
+                );
 
 
-    } catch (error) {
-
-        console.error(
-            "Submit error:",
-            error
-        );
-
-        alert(
-            "ثبت بار انجام نشد."
-        );
-    }
-};
+            const result =
+                await response.json();
 
 
+            // =================================
+            // خطا
+            // =================================
+
+            if (!response.ok) {
+
+                console.error(
+                    "API Error:",
+                    result
+                );
 
 
+                alert(
+                    result.message ||
+                    result.error ||
+                    "خطا در ثبت بار"
+                );
+
+
+                return;
+
+            }
+
+
+            // =================================
+            // موفقیت
+            // =================================
+
+            console.log(
+                "Load created:",
+                result
+            );
+
+
+            alert(
+                `بار با موفقیت ثبت شد.\nشناسه بار: ${result.loadId}`
+            );
+
+
+            // =================================
+            // بازگشت به صفحه اصلی بارها
+            // =================================
+
+            router.push("/loads");
+
+            router.refresh();
+
+
+        } catch (error) {
+
+            console.error(
+                "Submit error:",
+                error
+            );
+
+
+            alert(
+                "ثبت بار انجام نشد."
+            );
+
+        }
+
+    };
 
 
     return (
+
         <main className="main-content">
+
 
             {/* =====================================
                 Page Header
@@ -302,7 +403,6 @@ const handleSubmit = async (event) => {
                 </div>
 
 
-
                 {/* =================================
                     Form
                 ================================== */}
@@ -336,12 +436,12 @@ const handleSubmit = async (event) => {
                                 name="loadTitle"
                                 type="text"
                                 placeholder="مثلاً بار مواد غذایی رشت به تهران"
+                                required
                             />
 
                         </div>
 
                     </div>
-
 
 
                     {/* =================================
@@ -366,41 +466,43 @@ const handleSubmit = async (event) => {
                                 id="loadCompany"
                                 name="loadCompany"
                                 defaultValue=""
+                                disabled={companiesLoading}
+                                required
                             >
 
                                 <option
                                     value=""
                                     disabled
                                 >
-                                    شرکت را انتخاب کنید
+
+                                    {companiesLoading
+                                        ? "در حال دریافت شرکت‌ها..."
+                                        : "شرکت را انتخاب کنید"}
+
                                 </option>
 
 
-                                <option value="COM-1001">
-                                    شرکت حمل‌ونقل شمال
-                                </option>
+                                {!companiesLoading &&
+                                    companies.map(
+                                        (company) => (
 
+                                            <option
+                                                key={company._id}
+                                                value={company._id}
+                                            >
 
-                                <option value="COM-1002">
-                                    صنایع شمال
-                                </option>
+                                                {company.name}
 
+                                            </option>
 
-                                <option value="COM-1003">
-                                    بازرگانی گیلان
-                                </option>
-
-
-                                <option value="COM-1004">
-                                    شرکت ساختمانی شمال
-                                </option>
+                                        )
+                                    )}
 
                             </select>
 
                         </div>
 
                     </div>
-
 
 
                     {/* =================================
@@ -425,13 +527,16 @@ const handleSubmit = async (event) => {
                                 id="loadType"
                                 name="loadType"
                                 defaultValue=""
+                                required
                             >
 
                                 <option
                                     value=""
                                     disabled
                                 >
+
                                     نوع بار را انتخاب کنید
+
                                 </option>
 
 
@@ -466,7 +571,6 @@ const handleSubmit = async (event) => {
                     </div>
 
 
-
                     {/* =================================
                         مسیر بار
                     ================================== */}
@@ -480,7 +584,6 @@ const handleSubmit = async (event) => {
                         </span>
 
                     </div>
-
 
 
                     {/* =================================
@@ -506,12 +609,12 @@ const handleSubmit = async (event) => {
                                 name="loadOrigin"
                                 type="text"
                                 placeholder="رشت"
+                                required
                             />
 
                         </div>
 
                     </div>
-
 
 
                     {/* =================================
@@ -537,10 +640,10 @@ const handleSubmit = async (event) => {
                                 name="loadDestination"
                                 type="text"
                                 placeholder="تهران"
+                                required
                             />
 
                         </div>
-
 
 
                         {/* =================================
@@ -562,7 +665,6 @@ const handleSubmit = async (event) => {
                                 : "انتخاب مقصد روی نقشه"}
 
                         </button>
-
 
 
                         {/* =================================
@@ -602,7 +704,6 @@ const handleSubmit = async (event) => {
                     </div>
 
 
-
                     {/* =================================
                         نقشه مقصد
                     ================================== */}
@@ -632,7 +733,6 @@ const handleSubmit = async (event) => {
                                 </span>
 
                             </div>
-
 
 
                             {/* Map */}
@@ -665,7 +765,6 @@ const handleSubmit = async (event) => {
                     )}
 
 
-
                     {/* =================================
                         آدرس بار
                     ================================== */}
@@ -689,12 +788,12 @@ const handleSubmit = async (event) => {
                                 name="loadAddress"
                                 rows={3}
                                 placeholder="آدرس دقیق محل را وارد کنید..."
+                                required
                             />
 
                         </div>
 
                     </div>
-
 
 
                     {/* =================================
@@ -721,6 +820,7 @@ const handleSubmit = async (event) => {
                                 type="number"
                                 min="0"
                                 placeholder="۳۲۵"
+                                required
                             />
 
 
@@ -733,7 +833,6 @@ const handleSubmit = async (event) => {
                         </div>
 
                     </div>
-
 
 
                     {/* =================================
@@ -758,13 +857,16 @@ const handleSubmit = async (event) => {
                                 id="loadProvinceStatus"
                                 name="loadProvinceStatus"
                                 defaultValue=""
+                                required
                             >
 
                                 <option
                                     value=""
                                     disabled
                                 >
+
                                     وضعیت مسیر را انتخاب کنید
+
                                 </option>
 
 
@@ -784,7 +886,6 @@ const handleSubmit = async (event) => {
                     </div>
 
 
-
                     {/* =================================
                         نوع خودرو
                     ================================== */}
@@ -798,7 +899,6 @@ const handleSubmit = async (event) => {
                         </span>
 
                     </div>
-
 
 
                     <div className="load-form-group">
@@ -819,13 +919,16 @@ const handleSubmit = async (event) => {
                                 id="loadVehicleType"
                                 name="loadVehicleType"
                                 defaultValue=""
+                                required
                             >
 
                                 <option
                                     value=""
                                     disabled
                                 >
+
                                     نوع خودرو را انتخاب کنید
+
                                 </option>
 
 
@@ -855,7 +958,6 @@ const handleSubmit = async (event) => {
                     </div>
 
 
-
                     {/* =================================
                         توضیحات
                     ================================== */}
@@ -869,7 +971,6 @@ const handleSubmit = async (event) => {
                         </span>
 
                     </div>
-
 
 
                     <div className="load-form-group load-form-full">
@@ -898,7 +999,6 @@ const handleSubmit = async (event) => {
                     </div>
 
 
-
                     {/* =================================
                         Buttons
                     ================================== */}
@@ -914,7 +1014,6 @@ const handleSubmit = async (event) => {
                             انصراف
 
                         </Link>
-
 
 
                         <button
@@ -937,5 +1036,6 @@ const handleSubmit = async (event) => {
             </section>
 
         </main>
+
     );
 }

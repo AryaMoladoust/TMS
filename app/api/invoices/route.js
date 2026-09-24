@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import connectDB from "@/lib/mongodb";
+
 import Invoice from "@/models/Invoice";
-import Driver from "@/models/Driver";
 import DailyDriver from "@/models/DailyDriver";
 import Load from "@/models/Load";
 import Company from "@/models/Company";
@@ -14,6 +14,39 @@ function getTodayKey() {
     const day = String(today.getDate()).padStart(2, "0");
 
     return `${year}-${month}-${day}`;
+}
+
+async function generateInvoiceNumber() {
+    const today = new Date();
+
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const day = String(today.getDate()).padStart(2, "0");
+
+    const datePrefix = `${year}${month}${day}`;
+    const prefix = `INV-${datePrefix}-`;
+
+    const lastInvoice = await Invoice.findOne({
+        invoiceNumber: {
+            $regex: `^${prefix}`,
+        },
+    })
+        .sort({ invoiceNumber: -1 })
+        .select("invoiceNumber")
+        .lean();
+
+    let nextNumber = 1;
+
+    if (lastInvoice?.invoiceNumber) {
+        const lastPart = lastInvoice.invoiceNumber.split("-").pop();
+        const lastNumber = Number(lastPart);
+
+        if (!Number.isNaN(lastNumber)) {
+            nextNumber = lastNumber + 1;
+        }
+    }
+
+    return `${prefix}${String(nextNumber).padStart(4, "0")}`;
 }
 
 export async function GET() {
@@ -30,15 +63,14 @@ export async function GET() {
 
         return NextResponse.json(invoices);
     } catch (error) {
-        console.error("GET invoices error:", error);
+        console.error("Get invoices error:", error);
 
         return NextResponse.json(
             {
-                message: "دریافت فاکتورها با خطا مواجه شد.",
+                message: "خطا در دریافت فاکتورها",
+                error: error.message,
             },
-            {
-                status: 500,
-            }
+            { status: 500 }
         );
     }
 }
@@ -50,71 +82,54 @@ export async function POST(request) {
         const body = await request.json();
 
         const {
-            invoiceNumber,
+            invoiceNumber: requestedInvoiceNumber = "",
             date,
-            startTime,
+            startTime = "",
 
-            driverId,
-            dailyDriverId,
-            driverType,
+            dailyDriverId = null,
+            driverId = null,
+            driverType = "main",
 
-            driverName,
-            driverPhone,
-            driverNationalId,
-            driverLicenseNumber,
+            driverName = "",
+            driverPhone = "",
+            driverNationalId = "",
+            driverLicenseNumber = "",
 
-            vehicleId,
-            vehicleType,
-            vehiclePlate,
+            vehicleId = "",
+            vehicleType = "",
+            vehiclePlate = "",
 
-            loadId,
-            loadType,
+            loadId = null,
+            loadType = "",
 
-            companyId,
-            companyName,
+            companyId = null,
+            companyName = "",
 
-            origin,
-            destination,
-            distance,
-            address,
+            origin = "",
+            destination = "",
+            distance = 0,
+            address = "",
 
-            cost,
-            costType,
+            cost = 0,
+            costType = "نقد",
 
-            insuranceCost,
-            workerCost,
-            scaleCost,
-            stopCost,
-            commissionCost,
+            insuranceCost = 0,
+            workerCost = 0,
+            scaleCost = 0,
+            stopCost = 0,
+            commissionCost = 0,
 
-            description,
-            receiverName,
-            qrCode,
+            description = "",
+            receiverName = "",
+            qrCode = "",
         } = body;
 
-        /* =========================
-           BASIC VALIDATION
-        ========================= */
-
-        if (!invoiceNumber?.trim()) {
-            return NextResponse.json(
-                {
-                    message: "شماره فاکتور الزامی است.",
-                },
-                {
-                    status: 400,
-                }
-            );
-        }
-
-        if (!date?.trim()) {
+        if (!date) {
             return NextResponse.json(
                 {
                     message: "تاریخ فاکتور الزامی است.",
                 },
-                {
-                    status: 400,
-                }
+                { status: 400 }
             );
         }
 
@@ -123,9 +138,7 @@ export async function POST(request) {
                 {
                     message: "نام راننده الزامی است.",
                 },
-                {
-                    status: 400,
-                }
+                { status: 400 }
             );
         }
 
@@ -134,82 +147,50 @@ export async function POST(request) {
                 {
                     message: "نوع خودرو الزامی است.",
                 },
-                {
-                    status: 400,
-                }
+                { status: 400 }
             );
         }
 
-        /* =========================
-           DUPLICATE INVOICE
-        ========================= */
-
-        const existingInvoice = await Invoice.findOne({
-            invoiceNumber: invoiceNumber.trim(),
-        });
-
-        if (existingInvoice) {
+        if (!loadType?.trim()) {
             return NextResponse.json(
                 {
-                    message: "این شماره فاکتور قبلاً ثبت شده است.",
+                    message: "نوع بار الزامی است.",
                 },
-                {
-                    status: 409,
-                }
+                { status: 400 }
             );
         }
 
-        /* =========================
-           DRIVER / DAILY DRIVER
-        ========================= */
-
-        let finalDriverId = null;
         let finalDailyDriverId = dailyDriverId || null;
+        let finalDriverId = driverId || null;
+        let finalDriverType = driverType || "manual";
 
-        let finalDriverType =
-            driverType === "guest" ? "guest" : "main";
-
-        let finalDriverName =
-            driverName?.trim() || "";
-
-        let finalDriverPhone =
-            driverPhone?.trim() || "";
-
+        let finalDriverName = driverName.trim();
+        let finalDriverPhone = driverPhone?.trim() || "";
         let finalDriverNationalId =
             driverNationalId?.trim() || "";
-
         let finalDriverLicenseNumber =
             driverLicenseNumber?.trim() || "";
 
-        let finalVehicleId =
-            vehicleId?.trim() || "";
-
-        let finalVehicleType =
-            vehicleType?.trim() || "";
-
-        let finalVehiclePlate =
-            vehiclePlate?.trim() || "";
+        let finalVehicleId = vehicleId?.trim() || "";
+        let finalVehicleType = vehicleType.trim();
+        let finalVehiclePlate = vehiclePlate?.trim() || "";
 
         /*
-         * اگر DailyDriver انتخاب شده باشد،
-         * اطلاعات راننده از لیست ورود روزانه گرفته می‌شود.
+         * DAILY DRIVER
          */
 
         if (dailyDriverId) {
-            const dailyDriver =
-                await DailyDriver.findById(
-                    dailyDriverId
-                ).lean();
+            const dailyDriver = await DailyDriver.findById(
+                dailyDriverId
+            ).populate("driverId");
 
             if (!dailyDriver) {
                 return NextResponse.json(
                     {
                         message:
-                            "راننده روزانه انتخاب‌شده پیدا نشد.",
+                            "راننده ورود روزانه پیدا نشد.",
                     },
-                    {
-                        status: 404,
-                    }
+                    { status: 400 }
                 );
             }
 
@@ -219,170 +200,87 @@ export async function POST(request) {
                         message:
                             "فقط رانندگان ورود روزانه امروز قابل استفاده هستند.",
                     },
-                    {
-                        status: 400,
-                    }
+                    { status: 400 }
                 );
             }
 
-            finalDriverName =
-                dailyDriver.name || "";
+            finalDailyDriverId = dailyDriver._id;
+
+            finalDriverType = dailyDriver.type;
+
+            finalDriverName = dailyDriver.name;
 
             finalDriverPhone =
                 dailyDriver.phone || "";
 
             finalVehicleType =
-                dailyDriver.vehicleType || "";
-
-            finalDriverType =
-                dailyDriver.type === "guest"
-                    ? "guest"
-                    : "main";
+                dailyDriver.vehicleType;
 
             /*
              * راننده اصلی
-             * اطلاعات کامل از Driver گرفته می‌شود.
              */
 
             if (
                 dailyDriver.type === "main" &&
                 dailyDriver.driverId
             ) {
-                const driver =
-                    await Driver.findById(
-                        dailyDriver.driverId
-                    ).lean();
-
-                if (!driver) {
-                    return NextResponse.json(
-                        {
-                            message:
-                                "اطلاعات راننده اصلی پیدا نشد.",
-                        },
-                        {
-                            status: 404,
-                        }
-                    );
-                }
+                const realDriver =
+                    dailyDriver.driverId;
 
                 finalDriverId =
-                    driver._id;
-
-                finalDriverName =
-                    driver.name || finalDriverName;
-
-                finalDriverPhone =
-                    driver.phone || finalDriverPhone;
+                    realDriver._id;
 
                 finalDriverNationalId =
-                    driver.nationalId || "";
+                    realDriver.nationalId || "";
 
                 finalDriverLicenseNumber =
-                    driver.licenseNumber || "";
-
-                finalVehicleId =
-                    driver._id?.toString() || "";
-
-                finalVehicleType =
-                    driver.vehicleType ||
-                    finalVehicleType;
+                    realDriver.licenseNumber || "";
 
                 finalVehiclePlate =
-                    driver.vehiclePlate || "";
-            } else {
-                /*
-                 * مهمان:
-                 * driverId خالی می‌ماند.
-                 * اطلاعاتی مثل پلاک و گواهینامه
-                 * از مهمان دریافت نمی‌شود.
-                 */
+                    realDriver.vehiclePlate || "";
 
-                finalDriverId = null;
-                finalDriverNationalId = "";
-                finalDriverLicenseNumber = "";
-                finalVehicleId = "";
-                finalVehiclePlate = "";
+                finalVehicleId =
+                    String(realDriver._id);
             }
-        } else if (driverId) {
+
             /*
-             * حالت انتخاب مستقیم راننده اصلی
+             * راننده مهمان
              */
 
-            const driver =
-                await Driver.findById(
-                    driverId
-                ).lean();
+            if (
+                dailyDriver.type === "guest"
+            ) {
+                finalDriverId = null;
 
-            if (!driver) {
-                return NextResponse.json(
-                    {
-                        message:
-                            "راننده انتخاب‌شده پیدا نشد.",
-                    },
-                    {
-                        status: 404,
-                    }
-                );
+                finalDriverNationalId = "";
+
+                finalDriverLicenseNumber = "";
+
+                finalVehicleId = "";
+
+                finalVehiclePlate = "";
             }
-
-            finalDriverId =
-                driver._id;
-
-            finalDriverType = "main";
-
-            finalDriverName =
-                driver.name || "";
-
-            finalDriverPhone =
-                driver.phone || "";
-
-            finalDriverNationalId =
-                driver.nationalId || "";
-
-            finalDriverLicenseNumber =
-                driver.licenseNumber || "";
-
-            finalVehicleId =
-                driver._id?.toString() || "";
-
-            finalVehicleType =
-                driver.vehicleType ||
-                finalVehicleType;
-
-            finalVehiclePlate =
-                driver.vehiclePlate || "";
         }
 
-        /* =========================
-           LOAD
-        ========================= */
+        /*
+         * MANUAL DRIVER
+         */
 
-        let finalLoadId =
-            loadId || null;
+        if (!dailyDriverId) {
+            finalDriverType = "manual";
 
-        let finalLoadType =
-            loadType?.trim() || "";
+            finalDailyDriverId = null;
+        }
 
-        let finalCompanyName =
-            companyName?.trim() || "";
+        /*
+         * LOAD
+         */
 
-        let finalOrigin =
-            origin?.trim() || "";
-
-        let finalDestination =
-            destination?.trim() || "";
-
-        let finalDistance =
-            Number(distance) || 0;
-
-        let finalAddress =
-            address?.trim() || "";
+        let finalLoadId = loadId || null;
 
         if (loadId) {
             const load =
-                await Load.findById(
-                    loadId
-                ).lean();
+                await Load.findById(loadId);
 
             if (!load) {
                 return NextResponse.json(
@@ -390,34 +288,16 @@ export async function POST(request) {
                         message:
                             "بار انتخاب‌شده پیدا نشد.",
                     },
-                    {
-                        status: 404,
-                    }
+                    { status: 400 }
                 );
             }
 
-            finalLoadType =
-                load.barType || "";
-
-            finalCompanyName =
-                load.companyName || "";
-
-            finalOrigin =
-                load.origin || "";
-
-            finalDestination =
-                load.destination || "";
-
-            finalDistance =
-                Number(load.distance) || 0;
-
-            finalAddress =
-                load.address || "";
+            finalLoadId = load._id;
         }
 
-        /* =========================
-           COMPANY
-        ========================= */
+        /*
+         * COMPANY
+         */
 
         let finalCompanyId =
             companyId || null;
@@ -426,7 +306,7 @@ export async function POST(request) {
             const company =
                 await Company.findById(
                     companyId
-                ).lean();
+                );
 
             if (!company) {
                 return NextResponse.json(
@@ -434,31 +314,32 @@ export async function POST(request) {
                         message:
                             "شرکت انتخاب‌شده پیدا نشد.",
                     },
-                    {
-                        status: 404,
-                    }
+                    { status: 400 }
                 );
             }
 
-            finalCompanyName =
-                company.name ||
-                finalCompanyName;
+            finalCompanyId = company._id;
         }
 
-        /* =========================
-           CREATE
-        ========================= */
+        /*
+         * INVOICE NUMBER
+         */
+
+        const invoiceNumber =
+            requestedInvoiceNumber?.trim() ||
+            (await generateInvoiceNumber());
+
+        /*
+         * CREATE INVOICE
+         */
 
         const invoice =
             await Invoice.create({
-                invoiceNumber:
-                    invoiceNumber.trim(),
+                invoiceNumber,
 
-                date:
-                    date.trim(),
+                date,
 
-                startTime:
-                    startTime?.trim() || "",
+                startTime,
 
                 driverId:
                     finalDriverId,
@@ -494,33 +375,30 @@ export async function POST(request) {
                     finalLoadId,
 
                 loadType:
-                    finalLoadType,
+                    loadType?.trim() || "",
 
                 companyId:
                     finalCompanyId,
 
                 companyName:
-                    finalCompanyName,
+                    companyName?.trim() || "",
 
                 origin:
-                    finalOrigin,
+                    origin?.trim() || "",
 
                 destination:
-                    finalDestination,
+                    destination?.trim() || "",
 
                 distance:
-                    finalDistance,
+                    Number(distance) || 0,
 
                 address:
-                    finalAddress,
+                    address?.trim() || "",
 
                 cost:
                     Number(cost) || 0,
 
-                costType:
-                    costType === "اعتباری"
-                        ? "اعتباری"
-                        : "نقد",
+                costType,
 
                 insuranceCost:
                     Number(insuranceCost) || 0,
@@ -547,25 +425,21 @@ export async function POST(request) {
                     qrCode?.trim() || "",
             });
 
-        const result =
-            await Invoice.findById(
-                invoice._id
-            )
-                .populate("driverId")
-                .populate("dailyDriverId")
-                .populate("loadId")
-                .populate("companyId")
-                .lean();
-
         return NextResponse.json(
-            result,
             {
-                status: 201,
-            }
+                message:
+                    "فاکتور با موفقیت ثبت شد.",
+
+                invoiceNumber:
+                    invoice.invoiceNumber,
+
+                invoice,
+            },
+            { status: 201 }
         );
     } catch (error) {
         console.error(
-            "POST invoice error:",
+            "Create invoice error:",
             error
         );
 
@@ -573,11 +447,9 @@ export async function POST(request) {
             return NextResponse.json(
                 {
                     message:
-                        "این شماره فاکتور قبلاً ثبت شده است.",
+                        "شماره فاکتور تکراری شد. دوباره تلاش کنید.",
                 },
-                {
-                    status: 409,
-                }
+                { status: 409 }
             );
         }
 
@@ -585,12 +457,11 @@ export async function POST(request) {
             {
                 message:
                     "ثبت فاکتور با خطا مواجه شد.",
+
                 error:
                     error.message,
             },
-            {
-                status: 500,
-            }
+            { status: 500 }
         );
     }
 }

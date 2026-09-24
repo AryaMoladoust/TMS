@@ -187,6 +187,20 @@ function numberToPersianWords(value) {
     return parts.join(" و ");
 }
 
+function createPreviewInvoiceNumber() {
+    const now = new Date();
+
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
+    const hour = String(now.getHours()).padStart(2, "0");
+    const minute = String(now.getMinutes()).padStart(2, "0");
+    const second = String(now.getSeconds()).padStart(2, "0");
+    const millisecond = String(now.getMilliseconds()).padStart(3, "0");
+
+    return `INV-${year}${month}${day}-${hour}${minute}${second}${millisecond}`;
+}
+
 /* =========================================================
    PAGE
 ========================================================= */
@@ -215,7 +229,6 @@ export default function AddInvoicePage() {
     const [driverSearchOpen, setDriverSearchOpen] = useState(false);
 
     const [driverData, setDriverData] = useState({
-        id: "",
         name: "",
         nationalId: "",
         licenseNumber: "",
@@ -235,7 +248,6 @@ export default function AddInvoicePage() {
     const [loadSearchOpen, setLoadSearchOpen] = useState(false);
 
     const [loadData, setLoadData] = useState({
-        id: "",
         title: "",
         barType: "",
         companyName: "",
@@ -251,9 +263,9 @@ export default function AddInvoicePage() {
     ======================================================= */
 
     const [invoiceDate, setInvoiceDate] = useState(null);
+    const [previewInvoiceNumber, setPreviewInvoiceNumber] = useState("");
 
     const [invoiceData, setInvoiceData] = useState({
-        invoiceId: "",
         startTime: "",
         cost: "",
         costType: "credit",
@@ -355,12 +367,6 @@ export default function AddInvoicePage() {
                 : null;
 
         setDriverData({
-            id:
-                realDriver?._id ||
-                driver.driverId ||
-                driver._id ||
-                "",
-
             name: driver.name || "",
 
             nationalId: isGuest
@@ -399,7 +405,6 @@ export default function AddInvoicePage() {
         setManualDriver(true);
 
         setDriverData({
-            id: "",
             name: "",
             nationalId: "",
             licenseNumber: "",
@@ -417,7 +422,6 @@ export default function AddInvoicePage() {
         setManualDriver(false);
 
         setDriverData({
-            id: "",
             name: "",
             nationalId: "",
             licenseNumber: "",
@@ -466,7 +470,6 @@ export default function AddInvoicePage() {
                     : load.status || "";
 
         setLoadData({
-            id: load.loadId || load._id || "",
             title: load.title || "",
             barType: load.barType || "",
             companyName,
@@ -489,7 +492,6 @@ export default function AddInvoicePage() {
         setManualLoad(true);
 
         setLoadData({
-            id: "",
             title: "",
             barType: "",
             companyName: "",
@@ -509,7 +511,6 @@ export default function AddInvoicePage() {
         setManualLoad(false);
 
         setLoadData({
-            id: "",
             title: "",
             barType: "",
             companyName: "",
@@ -580,7 +581,7 @@ export default function AddInvoicePage() {
             companyAddress: companyData.address,
 
             number:
-                invoiceData.invoiceId ||
+                previewInvoiceNumber ||
                 "—",
 
             date:
@@ -692,13 +693,16 @@ export default function AddInvoicePage() {
     async function handleSubmit(event) {
         event.preventDefault();
 
-        if (!invoiceDate) {
-            alert("تاریخ فاکتور را انتخاب کنید.");
-            return;
+        const invoiceNumber =
+            previewInvoiceNumber ||
+            createPreviewInvoiceNumber();
+
+        if (!previewInvoiceNumber) {
+            setPreviewInvoiceNumber(invoiceNumber);
         }
 
-        if (!invoiceData.invoiceId.trim()) {
-            alert("شماره فاکتور را وارد کنید.");
+        if (!invoiceDate) {
+            alert("تاریخ فاکتور را انتخاب کنید.");
             return;
         }
 
@@ -737,8 +741,7 @@ export default function AddInvoicePage() {
                         : "main";
 
             const invoicePayload = {
-                invoiceNumber:
-                    invoiceData.invoiceId.trim(),
+                invoiceNumber,
 
                 date:
                     invoiceDate.format(
@@ -1174,35 +1177,6 @@ export default function AddInvoicePage() {
                     </div>
 
 
-                    {/* DRIVER ID */}
-
-                    <div className="invoice-form-group">
-
-                        <label>
-                            Driver ID
-                        </label>
-
-                        <div className="invoice-input-wrapper">
-
-                            <UserRound size={18} />
-
-                            <input
-                                value={driverData.id}
-                                onChange={(event) =>
-                                    editDriverField(
-                                        "id",
-                                        event.target.value
-                                    )
-                                }
-                                placeholder="شناسه راننده"
-                                disabled={!!selectedDriver}
-                            />
-
-                        </div>
-
-                    </div>
-
-
                     {/* DRIVER NAME */}
 
                     <div className="invoice-form-group">
@@ -1253,10 +1227,7 @@ export default function AddInvoicePage() {
                                     )
                                 }
                                 placeholder="کد ملی"
-                                disabled={
-                                    !!selectedDriver &&
-                                    selectedDriver.type !== "guest"
-                                }
+                                disabled={!!selectedDriver}
                             />
 
                         </div>
@@ -1285,10 +1256,7 @@ export default function AddInvoicePage() {
                                     )
                                 }
                                 placeholder="شماره گواهینامه"
-                                disabled={
-                                    !!selectedDriver &&
-                                    selectedDriver.type !== "guest"
-                                }
+                                disabled={!!selectedDriver}
                             />
 
                         </div>
@@ -1317,10 +1285,7 @@ export default function AddInvoicePage() {
                                     )
                                 }
                                 placeholder="شناسه خودرو"
-                                disabled={
-                                    !!selectedDriver &&
-                                    selectedDriver.type !== "guest"
-                                }
+                                disabled={!!selectedDriver}
                             />
 
                         </div>
@@ -1401,10 +1366,7 @@ export default function AddInvoicePage() {
                                     )
                                 }
                                 placeholder="مثلاً ۱۲ ایران ۳۴۵ ب۶۷"
-                                disabled={
-                                    !!selectedDriver &&
-                                    selectedDriver.type !== "guest"
-                                }
+                                disabled={!!selectedDriver}
                             />
 
                         </div>
@@ -1423,37 +1385,6 @@ export default function AddInvoicePage() {
                         <span>
                             اطلاعات فاکتور
                         </span>
-
-                    </div>
-
-
-                    {/* INVOICE NUMBER */}
-
-                    <div className="invoice-form-group">
-
-                        <label>
-                            شماره فاکتور <span>*</span>
-                        </label>
-
-                        <div className="invoice-input-wrapper">
-
-                            <FileText size={18} />
-
-                            <input
-                                value={
-                                    invoiceData.invoiceId
-                                }
-                                onChange={(event) =>
-                                    editInvoiceField(
-                                        "invoiceId",
-                                        event.target.value
-                                    )
-                                }
-                                placeholder="شماره فاکتور"
-                                required
-                            />
-
-                        </div>
 
                     </div>
 
@@ -1681,35 +1612,6 @@ export default function AddInvoicePage() {
                             </div>
 
                         )}
-
-                    </div>
-
-
-                    {/* LOAD ID */}
-
-                    <div className="invoice-form-group">
-
-                        <label>
-                            Load ID
-                        </label>
-
-                        <div className="invoice-input-wrapper">
-
-                            <Package size={18} />
-
-                            <input
-                                value={loadData.id}
-                                onChange={(event) =>
-                                    editLoadField(
-                                        "id",
-                                        event.target.value
-                                    )
-                                }
-                                placeholder="شناسه بار"
-                                disabled={!!selectedLoad}
-                            />
-
-                        </div>
 
                     </div>
 
@@ -2399,9 +2301,14 @@ export default function AddInvoicePage() {
                         <button
                             type="button"
                             className="primary-action-button"
-                            onClick={() =>
-                                setPreview(true)
-                            }
+                            onClick={() => {
+                                if (!previewInvoiceNumber) {
+                                    setPreviewInvoiceNumber(
+                                        createPreviewInvoiceNumber()
+                                    );
+                                }
+                                setPreview(true);
+                            }}
                         >
                             پیش‌نمایش فاکتور
                         </button>

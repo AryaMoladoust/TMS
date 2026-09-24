@@ -5,6 +5,23 @@ import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import QRCode from "react-qr-code";
 
+const cargoTypeLabels = {
+  food: "مواد غذایی",
+  industrial: "قطعات صنعتی",
+  construction: "مصالح ساختمانی",
+  agriculture: "محصولات کشاورزی",
+  other: "سایر",
+  "مواد غذایی": "مواد غذایی",
+  "قطعات صنعتی": "قطعات صنعتی",
+  "مصالح ساختمانی": "مصالح ساختمانی",
+  "محصولات کشاورزی": "محصولات کشاورزی",
+  "سایر": "سایر",
+};
+
+function getCargoTypeLabel(value) {
+  return cargoTypeLabels[value] || value || "—";
+}
+
 export default function InvoicePreview({ invoice, onClose }) {
   if (!invoice) return null;
   const mapLink =
@@ -174,7 +191,7 @@ export default function InvoicePreview({ invoice, onClose }) {
                 <h1>فاکتور و رسید کالا</h1>
 
                 <div className="invoice-meta-line">
-                  <span><strong>شماره:</strong> {invoice.number}</span>
+                  <span><strong>شماره:</strong> {invoice.number || "—"}</span>
                   <span><strong>تاریخ:</strong> {invoice.date}</span>
                   <span><strong>ساعت:</strong> {invoice.startTime}</span>
                 </div>
@@ -188,7 +205,7 @@ export default function InvoicePreview({ invoice, onClose }) {
               <div className="invoice-info-card">
                 <h3>اطلاعات شرکت (فرستنده)</h3>
                 <p><strong>نام:</strong> {invoice.clientCompanyName || "—"}</p>
-                <p><strong>نوع بار:</strong> {invoice.cargoType || "—"}</p>
+                <p><strong>نوع بار:</strong> {getCargoTypeLabel(invoice.cargoType)}</p>
               </div>
 
               <div className="invoice-info-card">
