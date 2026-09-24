@@ -232,7 +232,6 @@ export default function AddInvoicePage() {
         name: "",
         nationalId: "",
         licenseNumber: "",
-        vehicleId: "",
         vehicleType: "",
         plate: "",
     });
@@ -377,10 +376,6 @@ export default function AddInvoicePage() {
                 ? ""
                 : realDriver?.licenseNumber || "",
 
-            vehicleId: isGuest
-                ? ""
-                : realDriver?._id || "",
-
             vehicleType:
                 getVehicleTypeLabel(
                     driver.vehicleType ||
@@ -408,7 +403,6 @@ export default function AddInvoicePage() {
             name: "",
             nationalId: "",
             licenseNumber: "",
-            vehicleId: "",
             vehicleType: "",
             plate: "",
         });
@@ -425,7 +419,6 @@ export default function AddInvoicePage() {
             name: "",
             nationalId: "",
             licenseNumber: "",
-            vehicleId: "",
             vehicleType: "",
             plate: "",
         });
@@ -724,12 +717,6 @@ export default function AddInvoicePage() {
         try {
             setSaving(true);
 
-            const realDriverId =
-                selectedDriver?.driverId &&
-                typeof selectedDriver.driverId === "object"
-                    ? selectedDriver.driverId._id
-                    : selectedDriver?.driverId || null;
-
             const isGuest =
                 selectedDriver?.type === "guest";
 
@@ -757,11 +744,6 @@ export default function AddInvoicePage() {
 
                 driverType,
 
-                driverId:
-                    driverType === "main"
-                        ? realDriverId
-                        : null,
-
                 driverName:
                     driverData.name.trim(),
 
@@ -775,18 +757,11 @@ export default function AddInvoicePage() {
                 driverLicenseNumber:
                     driverData.licenseNumber.trim(),
 
-                vehicleId:
-                    driverData.vehicleId.trim(),
-
                 vehicleType:
                     driverData.vehicleType.trim(),
 
                 vehiclePlate:
                     driverData.plate.trim(),
-
-                loadId:
-                    selectedLoad?._id ||
-                    null,
 
                 loadType:
                     loadData.barType.trim(),
@@ -1063,18 +1038,6 @@ export default function AddInvoicePage() {
                                                     const isGuest =
                                                         driver.type === "guest";
 
-                                                    const realDriver =
-                                                        driver.driverId &&
-                                                        typeof driver.driverId === "object"
-                                                            ? driver.driverId
-                                                            : null;
-
-                                                    const driverIdText =
-                                                        realDriver?._id ||
-                                                        driver.driverId ||
-                                                        driver._id ||
-                                                        "";
-
                                                     return (
                                                         <button
                                                             type="button"
@@ -1109,9 +1072,6 @@ export default function AddInvoicePage() {
                                                                     {getVehicleTypeLabel(
                                                                         driver.vehicleType
                                                                     )}
-                                                                    {driverIdText
-                                                                        ? ` - ${driverIdText}`
-                                                                        : ""}
                                                                 </span>
 
                                                             </div>
@@ -1256,35 +1216,6 @@ export default function AddInvoicePage() {
                                     )
                                 }
                                 placeholder="شماره گواهینامه"
-                                disabled={!!selectedDriver}
-                            />
-
-                        </div>
-
-                    </div>
-
-
-                    {/* VEHICLE ID */}
-
-                    <div className="invoice-form-group">
-
-                        <label>
-                            Vehicle ID
-                        </label>
-
-                        <div className="invoice-input-wrapper">
-
-                            <Truck size={18} />
-
-                            <input
-                                value={driverData.vehicleId}
-                                onChange={(event) =>
-                                    editDriverField(
-                                        "vehicleId",
-                                        event.target.value
-                                    )
-                                }
-                                placeholder="شناسه خودرو"
                                 disabled={!!selectedDriver}
                             />
 

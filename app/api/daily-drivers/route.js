@@ -51,9 +51,10 @@ export async function GET(request) {
                 })
                 .lean();
 
-        return NextResponse.json(
-            dailyDrivers
-        );
+        return NextResponse.json({
+            success: true,
+            dailyDrivers,
+        });
     } catch (error) {
         console.error(
             "Get daily drivers error:",
@@ -62,6 +63,7 @@ export async function GET(request) {
 
         return NextResponse.json(
             {
+                success: false,
                 message:
                     "خطا در دریافت ورود روزانه رانندگان",
                 error: error.message,
@@ -96,6 +98,7 @@ export async function POST(request) {
         if (!type) {
             return NextResponse.json(
                 {
+                    success: false,
                     message:
                         "نوع راننده مشخص نشده است.",
                 },
@@ -111,6 +114,7 @@ export async function POST(request) {
         ) {
             return NextResponse.json(
                 {
+                    success: false,
                     message:
                         "نوع راننده نامعتبر است.",
                 },
@@ -128,6 +132,7 @@ export async function POST(request) {
             if (!driverId) {
                 return NextResponse.json(
                     {
+                        success: false,
                         message:
                             "راننده را انتخاب کنید.",
                     },
@@ -145,6 +150,7 @@ export async function POST(request) {
             if (!driver) {
                 return NextResponse.json(
                     {
+                        success: false,
                         message:
                             "راننده پیدا نشد.",
                     },
@@ -164,6 +170,7 @@ export async function POST(request) {
             if (alreadyExists) {
                 return NextResponse.json(
                     {
+                        success: false,
                         message:
                             "این راننده قبلاً برای امروز ثبت شده است.",
                     },
@@ -204,6 +211,8 @@ export async function POST(request) {
 
             return NextResponse.json(
                 {
+                    success: true,
+
                     message:
                         "ورود راننده با موفقیت ثبت شد.",
 
@@ -223,6 +232,7 @@ export async function POST(request) {
         if (!name.trim()) {
             return NextResponse.json(
                 {
+                    success: false,
                     message:
                         "نام راننده مهمان الزامی است.",
                 },
@@ -235,6 +245,7 @@ export async function POST(request) {
         if (!vehicleType.trim()) {
             return NextResponse.json(
                 {
+                    success: false,
                     message:
                         "نوع خودرو راننده مهمان الزامی است.",
                 },
@@ -272,6 +283,8 @@ export async function POST(request) {
 
         return NextResponse.json(
             {
+                success: true,
+
                 message:
                     "راننده مهمان با موفقیت ثبت شد.",
 
@@ -290,6 +303,7 @@ export async function POST(request) {
 
         return NextResponse.json(
             {
+                success: false,
                 message:
                     "خطا در ثبت ورود راننده",
                 error:
@@ -319,6 +333,7 @@ export async function DELETE(request) {
         if (!id) {
             return NextResponse.json(
                 {
+                    success: false,
                     message:
                         "شناسه راننده مشخص نشده است.",
                 },
@@ -336,6 +351,7 @@ export async function DELETE(request) {
         if (!deleted) {
             return NextResponse.json(
                 {
+                    success: false,
                     message:
                         "ورودی راننده پیدا نشد.",
                 },
@@ -346,6 +362,7 @@ export async function DELETE(request) {
         }
 
         return NextResponse.json({
+            success: true,
             message:
                 "ورودی راننده با موفقیت حذف شد.",
         });
@@ -357,6 +374,7 @@ export async function DELETE(request) {
 
         return NextResponse.json(
             {
+                success: false,
                 message:
                     "خطا در حذف ورود راننده",
                 error:

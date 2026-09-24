@@ -155,6 +155,8 @@ function formatDate(date) {
 
 export default function LoadTable({
   loads = [],
+  emptyTitle = "هنوز هیچ باری ثبت نشده است",
+  emptySubtitle = "برای شروع، یک بار جدید ثبت کنید.",
 }) {
 
 
@@ -306,11 +308,11 @@ export default function LoadTable({
                     />
 
                     <strong>
-                      هنوز هیچ باری ثبت نشده است
+                      {emptyTitle}
                     </strong>
 
                     <span>
-                      برای شروع، یک بار جدید ثبت کنید.
+                      {emptySubtitle}
                     </span>
 
                   </div>

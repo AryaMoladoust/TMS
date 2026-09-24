@@ -8,6 +8,21 @@ import {
     Truck,
 } from "lucide-react";
 
+const vehicleTypes = [
+    { value: "truck", label: "کامیون" },
+    { value: "trailer", label: "تریلی" },
+    { value: "pickup", label: "وانت" },
+    { value: "van", label: "ون" },
+];
+
+function getVehicleLabel(vehicleType) {
+    const vehicle = vehicleTypes.find(
+        (item) => item.value === vehicleType
+    );
+
+    return vehicle?.label || vehicleType || "-";
+}
+
 function getTodayKey() {
     const now = new Date();
 
@@ -211,7 +226,7 @@ export default function DailyDriversList() {
                                                 <Truck size={15} />
 
                                                 <span>
-                                                    {driver.vehicleType || "-"}
+                                                    {getVehicleLabel(driver.vehicleType)}
                                                 </span>
 
                                             </div>

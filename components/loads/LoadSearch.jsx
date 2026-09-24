@@ -6,47 +6,17 @@ import {
   RotateCcw,
 } from "lucide-react";
 
-export default function LoadSearch() {
-
-  function resetFilters() {
-
-    const search =
-      document.querySelector(
-        ".load-search-input"
-      );
-
-    const status =
-      document.querySelector(
-        ".load-status-select"
-      );
-
-    const type =
-      document.querySelector(
-        ".load-type-select"
-      );
-
-    const vehicle =
-      document.querySelector(
-        ".load-vehicle-select"
-      );
-
-    if (search) {
-      search.value = "";
-    }
-
-    if (status) {
-      status.value = "";
-    }
-
-    if (type) {
-      type.value = "";
-    }
-
-    if (vehicle) {
-      vehicle.value = "";
-    }
-  }
-
+export default function LoadSearch({
+  searchTerm = "",
+  onSearchChange = () => {},
+  statusFilter = "",
+  onStatusChange = () => {},
+  typeFilter = "",
+  onTypeChange = () => {},
+  vehicleFilter = "",
+  onVehicleChange = () => {},
+  onReset = () => {},
+}) {
   return (
     <section className="load-search-panel">
 
@@ -76,6 +46,10 @@ export default function LoadSearch() {
           <input
             className="load-search-input"
             type="text"
+            value={searchTerm}
+            onChange={(event) =>
+              onSearchChange(event.target.value)
+            }
             placeholder="جستجو بر اساس شماره بار، شرکت، مبدا یا مقصد..."
           />
 
@@ -84,7 +58,10 @@ export default function LoadSearch() {
 
         <select
           className="load-status-select"
-          defaultValue=""
+          value={statusFilter}
+          onChange={(event) =>
+            onStatusChange(event.target.value)
+          }
         >
           <option value="">
             همه وضعیت‌ها
@@ -102,7 +79,10 @@ export default function LoadSearch() {
 
         <select
           className="load-type-select"
-          defaultValue=""
+          value={typeFilter}
+          onChange={(event) =>
+            onTypeChange(event.target.value)
+          }
         >
           <option value="">
             همه انواع بار
@@ -128,7 +108,10 @@ export default function LoadSearch() {
 
         <select
           className="load-vehicle-select"
-          defaultValue=""
+          value={vehicleFilter}
+          onChange={(event) =>
+            onVehicleChange(event.target.value)
+          }
         >
           <option value="">
             همه خودروها
@@ -151,7 +134,7 @@ export default function LoadSearch() {
         <button
           type="button"
           className="reset-filter-button"
-          onClick={resetFilters}
+          onClick={onReset}
         >
           <RotateCcw size={18} />
 
