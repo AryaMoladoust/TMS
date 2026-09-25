@@ -17751,3 +17751,41 @@ html.dark .driver-license-expired {
         justify-content: space-between;
     }
 }
+
+
+/* =========================================================
+   کامیون متحرک کنار کارت‌های آمار
+   این بلوک را به انتهای app/globals.css اضافه کنید
+   ========================================================= */
+
+.stats-truck {
+  grid-column: span 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+}
+
+.stats-truck svg {
+  height: 165px;
+  width: auto;
+  max-width: 100%;
+}
+
+@keyframes stats-truck-road-move {
+  to { stroke-dashoffset: -52; }
+}
+
+.stats-truck-road {
+  animation: stats-truck-road-move 1.2s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stats-truck-road { animation: none; }
+}
+
+/* روی تبلت و موبایل مخفی می‌شود */
+@media (max-width: 1100px) {
+  .stats-truck { display: none; }
+}
+

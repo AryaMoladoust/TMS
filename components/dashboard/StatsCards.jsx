@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import AnimatedTruck from "./AnimatedTruck";
 import { useEffect, useState } from "react";
 import {
     Users,
@@ -128,6 +129,8 @@ export default function StatsCards() {
                     </Link>
                 );
             })}
+
+            <AnimatedTruck />
         </section>
     );
 }
