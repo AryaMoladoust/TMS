@@ -195,8 +195,8 @@ export default function DailyDriversPage() {
             }
 
             setDailyDrivers((prev) => [
-                data.dailyDriver,
                 ...prev,
+                data.dailyDriver,
             ]);
 
             setSelectedDriver("");
@@ -261,8 +261,8 @@ export default function DailyDriversPage() {
             }
 
             setDailyDrivers((prev) => [
-                data.dailyDriver,
                 ...prev,
+                data.dailyDriver,
             ]);
 
             setGuestDriver({
