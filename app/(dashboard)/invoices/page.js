@@ -4,32 +4,30 @@ import {
     FileText,
     Plus,
     Search,
-    Printer,
+    Eye,
     X,
     CalendarDays,
     ChevronDown,
 } from "lucide-react";
+
 import { useEffect, useMemo, useState } from "react";
 
+import InvoicePreview from "@/components/invoices/InvoicePreview";
+
+
+/* =========================================================
+   HELPERS
+========================================================= */
+
 function toPersianDigits(value) {
-    if (value === null || value === undefined) {
-        return "";
-    }
+    if (value === null || value === undefined) return "";
 
-    return String(value).replace(/\d/g, (digit) =>
-        "۰۱۲۳۴۵۶۷۸۹"[digit]
+    return String(value).replace(
+        /\d/g,
+        (digit) => "۰۱۲۳۴۵۶۷۸۹"[digit]
     );
 }
 
-function toEnglishDigits(value) {
-    if (value === null || value === undefined) {
-        return "";
-    }
-
-    return String(value).replace(/[۰-۹]/g, (digit) =>
-        "۰۱۲۳۴۵۶۷۸۹".indexOf(digit)
-    );
-}
 
 function formatAmount(value) {
     const number = Number(value) || 0;
@@ -39,7 +37,23 @@ function formatAmount(value) {
     );
 }
 
+
+/* =========================================================
+   NORMALIZE LIST INVOICE
+========================================================= */
+
 function normalizeInvoice(invoice) {
+    const driver =
+        invoice.driverName ||
+        invoice.dailyDriverId?.name ||
+        invoice.driverId?.name ||
+        "—";
+
+    const company =
+        invoice.companyName ||
+        invoice.companyId?.name ||
+        "—";
+
     return {
         id:
             invoice.invoiceNumber ||
@@ -47,44 +61,253 @@ function normalizeInvoice(invoice) {
             invoice._id ||
             "",
 
-        date: invoice.date || "",
+        mongoId:
+            invoice._id || "",
 
-        driver:
-            invoice.driverName ||
-            invoice.dailyDriverId?.name ||
-            invoice.driverId?.name ||
-            "",
+        date:
+            invoice.date || "—",
 
-        company:
-            invoice.companyName ||
-            invoice.companyId?.name ||
-            "",
+        driver,
 
-        origin: invoice.origin || "",
+        company,
 
-        destination: invoice.destination || "",
+        origin:
+            invoice.origin || "—",
 
-        amount: formatAmount(invoice.cost),
+        destination:
+            invoice.destination || "—",
+
+        amount:
+            formatAmount(invoice.cost),
 
         raw: invoice,
     };
 }
 
+
+/* =========================================================
+   PREVIEW ADAPTER
+========================================================= */
+
+function makePreviewInvoice(invoice) {
+    if (!invoice) return null;
+
+    const companyData =
+        invoice.companyId &&
+        typeof invoice.companyId === "object"
+            ? invoice.companyId
+            : {};
+
+    const driverData =
+        invoice.driverId &&
+        typeof invoice.driverId === "object"
+            ? invoice.driverId
+            : {};
+
+    const mainCost =
+        Number(invoice.cost) || 0;
+
+    const insurance =
+        Number(invoice.insuranceCost) || 0;
+
+    const workerCost =
+        Number(invoice.workerCost) || 0;
+
+    const scaleCost =
+        Number(invoice.scaleCost) || 0;
+
+    const stopCost =
+        Number(invoice.stopCost) || 0;
+
+    const commissionCost =
+        Number(invoice.commissionCost) || 0;
+
+    const total =
+        mainCost +
+        insurance +
+        workerCost +
+        scaleCost +
+        stopCost +
+        commissionCost;
+
+
+    return {
+        /* =========================
+           COMPANY
+        ========================= */
+
+        companyName:
+            companyData.name ||
+            invoice.companyName ||
+            "—",
+
+        companyManager:
+            companyData.manager ||
+            companyData.managerName ||
+            "",
+
+        companyMobile:
+            companyData.mobile ||
+            companyData.mobileNumber ||
+            "",
+
+        companyPhone:
+            companyData.phone ||
+            companyData.phoneNumber ||
+            "",
+
+
+        /* =========================
+           INVOICE
+        ========================= */
+
+        number:
+            invoice.invoiceNumber ||
+            invoice.invoiceId ||
+            "—",
+
+        date:
+            invoice.date || "—",
+
+        startTime:
+            invoice.startTime || "—",
+
+
+        /* =========================
+           DRIVER
+        ========================= */
+
+        driver:
+            invoice.driverName ||
+            driverData.name ||
+            invoice.dailyDriverId?.name ||
+            "—",
+
+        vehicle:
+            invoice.vehicleType ||
+            driverData.vehicleType ||
+            "—",
+
+        plate:
+            invoice.vehiclePlate ||
+            driverData.plate ||
+            "—",
+
+
+        /* =========================
+           LOAD SNAPSHOT
+        ========================= */
+
+        clientCompanyName:
+            invoice.companyName ||
+            companyData.name ||
+            "—",
+
+        cargoType:
+            invoice.loadType ||
+            "—",
+
+        origin:
+            invoice.origin ||
+            "—",
+
+        destination:
+            invoice.destination ||
+            "—",
+
+        distance:
+            invoice.distance
+                ? `${toPersianDigits(invoice.distance)} کیلومتر`
+                : "—",
+
+        loadAddress:
+            invoice.address ||
+            "—",
+
+
+        /* =========================
+           COST
+        ========================= */
+
+        cost:
+            formatAmount(mainCost),
+
+        insurance:
+            formatAmount(insurance),
+
+        workerCost:
+            formatAmount(workerCost),
+
+        scaleCost:
+            formatAmount(scaleCost),
+
+        stopCost:
+            formatAmount(stopCost),
+
+        total:
+            formatAmount(total),
+
+        totalInWords:
+            invoice.totalInWords ||
+            "—",
+
+
+        /* =========================
+           OTHER
+        ========================= */
+
+        receiverName:
+            invoice.receiverName ||
+            "—",
+
+        description:
+            invoice.description ||
+            "",
+    };
+}
+
+
+/* =========================================================
+   PAGE
+========================================================= */
+
 export default function InvoicesPage() {
+
     const [search, setSearch] = useState("");
+
     const [company, setCompany] = useState("");
+
     const [driver, setDriver] = useState("");
+
     const [date, setDate] = useState("");
 
     const [invoices, setInvoices] = useState([]);
+
     const [loading, setLoading] = useState(true);
+
     const [error, setError] = useState("");
 
+    const [selectedInvoice, setSelectedInvoice] =
+        useState(null);
+
+
+    /* =======================================================
+       FETCH INVOICES
+    ======================================================= */
+
     useEffect(() => {
+
+        let cancelled = false;
+
+
         async function fetchInvoices() {
+
             try {
+
                 setLoading(true);
+
                 setError("");
+
 
                 const response = await fetch(
                     "/api/invoices",
@@ -93,126 +316,186 @@ export default function InvoicesPage() {
                     }
                 );
 
-                const result = await response.json();
 
                 if (!response.ok) {
+
                     throw new Error(
-                        result.message ||
-                        "خطا در دریافت فاکتورها"
+                        "دریافت فاکتورها ناموفق بود."
                     );
                 }
 
-                const invoiceList = Array.isArray(result)
-                    ? result
-                    : Array.isArray(result.invoices)
-                        ? result.invoices
-                        : [];
 
-                setInvoices(
-                    invoiceList.map(normalizeInvoice)
-                );
+                const result =
+                    await response.json();
+
+
+                const invoiceList =
+                    Array.isArray(result)
+                        ? result
+                        : result.invoices || [];
+
+
+                if (!cancelled) {
+
+                    setInvoices(
+                        invoiceList.map(
+                            normalizeInvoice
+                        )
+                    );
+                }
+
             } catch (error) {
+
                 console.error(
                     "Fetch invoices error:",
                     error
                 );
 
-                setError(
-                    error.message ||
-                    "خطا در دریافت فاکتورها"
-                );
 
-                setInvoices([]);
+                if (!cancelled) {
+
+                    setError(
+                        error.message ||
+                        "خطا در دریافت فاکتورها."
+                    );
+
+                    setInvoices([]);
+                }
+
             } finally {
-                setLoading(false);
+
+                if (!cancelled) {
+
+                    setLoading(false);
+                }
             }
         }
 
+
         fetchInvoices();
+
+
+        return () => {
+
+            cancelled = true;
+        };
+
     }, []);
 
+
+    /* =======================================================
+       FILTER OPTIONS
+    ======================================================= */
+
     const companies = useMemo(() => {
+
         return [
             ...new Set(
                 invoices
-                    .map((invoice) => invoice.company)
+                    .map(
+                        (invoice) =>
+                            invoice.company
+                    )
                     .filter(Boolean)
             ),
         ];
+
     }, [invoices]);
+
 
     const drivers = useMemo(() => {
+
         return [
             ...new Set(
                 invoices
-                    .map((invoice) => invoice.driver)
+                    .map(
+                        (invoice) =>
+                            invoice.driver
+                    )
                     .filter(Boolean)
             ),
         ];
+
     }, [invoices]);
 
-    const filteredInvoices = useMemo(() => {
-        return invoices.filter((invoice) => {
-            const searchValue = toEnglishDigits(
-                search.trim().toLowerCase()
+
+    /* =======================================================
+       FILTER
+    ======================================================= */
+
+    const filteredInvoices =
+        useMemo(() => {
+
+            const searchValue =
+                search
+                    .trim()
+                    .toLowerCase();
+
+
+            return invoices.filter(
+                (invoice) => {
+
+                    const matchesSearch =
+                        !searchValue ||
+                        String(invoice.id)
+                            .toLowerCase()
+                            .includes(searchValue) ||
+                        String(invoice.driver)
+                            .toLowerCase()
+                            .includes(searchValue) ||
+                        String(invoice.company)
+                            .toLowerCase()
+                            .includes(searchValue);
+
+
+                    const matchesCompany =
+                        !company ||
+                        invoice.company === company;
+
+
+                    const matchesDriver =
+                        !driver ||
+                        invoice.driver === driver;
+
+
+                    const matchesDate =
+                        !date ||
+                        invoice.date === date;
+
+
+                    return (
+                        matchesSearch &&
+                        matchesCompany &&
+                        matchesDriver &&
+                        matchesDate
+                    );
+                }
             );
 
-            const invoiceId = toEnglishDigits(
-                invoice.id.toLowerCase()
-            );
+        }, [
+            invoices,
+            search,
+            company,
+            driver,
+            date,
+        ]);
 
-            const driverName =
-                invoice.driver.toLowerCase();
 
-            const companyName =
-                invoice.company.toLowerCase();
-
-            const matchesSearch =
-                !searchValue ||
-                invoiceId.includes(searchValue) ||
-                driverName.includes(searchValue) ||
-                companyName.includes(searchValue);
-
-            const matchesCompany =
-                !company ||
-                invoice.company === company;
-
-            const matchesDriver =
-                !driver ||
-                invoice.driver === driver;
-
-            const normalizedDate = toEnglishDigits(
-                invoice.date
-            );
-
-            const normalizedSearchDate =
-                toEnglishDigits(date.trim());
-
-            const matchesDate =
-                !normalizedSearchDate ||
-                normalizedDate === normalizedSearchDate;
-
-            return (
-                matchesSearch &&
-                matchesCompany &&
-                matchesDriver &&
-                matchesDate
-            );
-        });
-    }, [
-        invoices,
-        search,
-        company,
-        driver,
-        date,
-    ]);
+    /* =======================================================
+       CLEAR FILTERS
+    ======================================================= */
 
     function clearFilters() {
+
         setSearch("");
+
         setCompany("");
+
         setDriver("");
+
         setDate("");
     }
+
 
     const hasFilters =
         search ||
@@ -220,36 +503,81 @@ export default function InvoicesPage() {
         driver ||
         date;
 
+
+    /* =======================================================
+       OPEN PREVIEW
+    ======================================================= */
+
+    function openPreview(invoice) {
+
+        const previewInvoice =
+            makePreviewInvoice(
+                invoice.raw
+            );
+
+
+        setSelectedInvoice(
+            previewInvoice
+        );
+    }
+
+
+    /* =======================================================
+       CLOSE PREVIEW
+    ======================================================= */
+
+    function closePreview() {
+
+        setSelectedInvoice(null);
+    }
+
+
+    /* =======================================================
+       RENDER
+    ======================================================= */
+
     return (
+
         <main className="main-content">
 
-            {/* عنوان صفحه */}
+            {/* =================================================
+                PAGE HEADER
+            ================================================= */}
 
             <div className="page-heading invoice-page-heading">
 
                 <div>
-                    <h1>فاکتورها</h1>
+
+                    <h1>
+                        فاکتورها
+                    </h1>
 
                     <p>
                         مدیریت و مشاهده فاکتورهای ثبت‌شده
                     </p>
+
                 </div>
+
 
                 <a
                     href="/invoices/add"
                     className="invoice-add-button"
                 >
+
                     <Plus size={20} />
 
                     <span>
                         ثبت فاکتور جدید
                     </span>
+
                 </a>
 
             </div>
 
 
-            {/* فیلترها */}
+            {/* =================================================
+                FILTERS
+            ================================================= */}
 
             <section className="invoice-filter-card">
 
@@ -273,16 +601,21 @@ export default function InvoicesPage() {
 
                     </div>
 
+
                     {hasFilters && (
+
                         <button
                             type="button"
                             className="invoice-clear-filter"
                             onClick={clearFilters}
                         >
+
                             <X size={16} />
 
                             پاک کردن فیلترها
+
                         </button>
+
                     )}
 
                 </div>
@@ -290,7 +623,7 @@ export default function InvoicesPage() {
 
                 <div className="invoice-filter-grid">
 
-                    {/* جستجو */}
+                    {/* SEARCH */}
 
                     <div className="invoice-filter-field invoice-search-field">
 
@@ -318,7 +651,7 @@ export default function InvoicesPage() {
                     </div>
 
 
-                    {/* شرکت */}
+                    {/* COMPANY */}
 
                     <div className="invoice-filter-field">
 
@@ -341,14 +674,18 @@ export default function InvoicesPage() {
                                     همه شرکت‌ها
                                 </option>
 
-                                {companies.map((item) => (
-                                    <option
-                                        value={item}
-                                        key={item}
-                                    >
-                                        {item}
-                                    </option>
-                                ))}
+                                {companies.map(
+                                    (item) => (
+
+                                        <option
+                                            value={item}
+                                            key={item}
+                                        >
+                                            {item}
+                                        </option>
+
+                                    )
+                                )}
 
                             </select>
 
@@ -359,7 +696,7 @@ export default function InvoicesPage() {
                     </div>
 
 
-                    {/* راننده */}
+                    {/* DRIVER */}
 
                     <div className="invoice-filter-field">
 
@@ -382,14 +719,18 @@ export default function InvoicesPage() {
                                     همه رانندگان
                                 </option>
 
-                                {drivers.map((item) => (
-                                    <option
-                                        value={item}
-                                        key={item}
-                                    >
-                                        {item}
-                                    </option>
-                                ))}
+                                {drivers.map(
+                                    (item) => (
+
+                                        <option
+                                            value={item}
+                                            key={item}
+                                        >
+                                            {item}
+                                        </option>
+
+                                    )
+                                )}
 
                             </select>
 
@@ -400,7 +741,7 @@ export default function InvoicesPage() {
                     </div>
 
 
-                    {/* تاریخ */}
+                    {/* DATE */}
 
                     <div className="invoice-filter-field">
 
@@ -432,7 +773,9 @@ export default function InvoicesPage() {
             </section>
 
 
-            {/* لیست فاکتورها */}
+            {/* =================================================
+                INVOICE LIST
+            ================================================= */}
 
             <section className="invoice-list-card">
 
@@ -445,11 +788,7 @@ export default function InvoicesPage() {
                         </h2>
 
                         <span>
-                            {loading
-                                ? "در حال دریافت..."
-                                : `${toPersianDigits(
-                                    filteredInvoices.length
-                                )} فاکتور`}
+                            {filteredInvoices.length} فاکتور
                         </span>
 
                     </div>
@@ -464,12 +803,8 @@ export default function InvoicesPage() {
                         <FileText size={42} />
 
                         <h3>
-                            در حال دریافت فاکتورها
+                            در حال دریافت فاکتورها...
                         </h3>
-
-                        <p>
-                            اطلاعات فاکتورها از دیتابیس دریافت می‌شود.
-                        </p>
 
                     </div>
 
@@ -480,7 +815,7 @@ export default function InvoicesPage() {
                         <FileText size={42} />
 
                         <h3>
-                            خطا در دریافت فاکتورها
+                            خطا در دریافت اطلاعات
                         </h3>
 
                         <p>
@@ -498,108 +833,148 @@ export default function InvoicesPage() {
                             <thead>
 
                                 <tr>
-                                    <th>شماره فاکتور</th>
-                                    <th>تاریخ</th>
-                                    <th>راننده</th>
-                                    <th>شرکت</th>
-                                    <th>مسیر</th>
-                                    <th>مبلغ</th>
-                                    <th>عملیات</th>
+
+                                    <th>
+                                        شماره فاکتور
+                                    </th>
+
+                                    <th>
+                                        تاریخ
+                                    </th>
+
+                                    <th>
+                                        راننده
+                                    </th>
+
+                                    <th>
+                                        شرکت
+                                    </th>
+
+                                    <th>
+                                        مسیر
+                                    </th>
+
+                                    <th>
+                                        مبلغ
+                                    </th>
+
+                                    <th>
+                                        عملیات
+                                    </th>
+
                                 </tr>
 
                             </thead>
 
+
                             <tbody>
 
-                                {filteredInvoices.map((invoice) => (
+                                {filteredInvoices.map(
+                                    (invoice) => (
 
-                                    <tr key={invoice.raw?._id || invoice.id}>
+                                        <tr
+                                            key={
+                                                invoice.mongoId ||
+                                                invoice.id
+                                            }
+                                        >
 
-                                        <td>
+                                            <td>
 
-                                            <strong className="invoice-number">
-                                                {toPersianDigits(
-                                                    invoice.id
-                                                )}
-                                            </strong>
+                                                <strong className="invoice-number">
 
-                                        </td>
+                                                    {invoice.id}
 
-                                        <td>
-                                            {toPersianDigits(
-                                                invoice.date
-                                            )}
-                                        </td>
+                                                </strong>
 
-                                        <td>
+                                            </td>
 
-                                            <span className="invoice-driver">
-                                                {invoice.driver || "-"}
-                                            </span>
 
-                                        </td>
+                                            <td>
+                                                {invoice.date}
+                                            </td>
 
-                                        <td>
-                                            {invoice.company || "-"}
-                                        </td>
 
-                                        <td>
+                                            <td>
 
-                                            <div className="invoice-route">
+                                                <span className="invoice-driver">
 
-                                                <span>
-                                                    {invoice.origin || "-"}
+                                                    {invoice.driver}
+
                                                 </span>
 
-                                                <span className="invoice-route-arrow">
-                                                    ←
-                                                </span>
+                                            </td>
 
-                                                <span>
-                                                    {invoice.destination || "-"}
-                                                </span>
 
-                                            </div>
+                                            <td>
+                                                {invoice.company}
+                                            </td>
 
-                                        </td>
 
-                                        <td>
+                                            <td>
 
-                                            <strong className="invoice-amount">
+                                                <div className="invoice-route">
 
-                                                {invoice.amount}
+                                                    <span>
+                                                        {invoice.origin}
+                                                    </span>
 
-                                                <small>
-                                                    {" "}تومان
-                                                </small>
+                                                    <span className="invoice-route-arrow">
+                                                        ←
+                                                    </span>
 
-                                            </strong>
+                                                    <span>
+                                                        {invoice.destination}
+                                                    </span>
 
-                                        </td>
+                                                </div>
 
-                                        <td>
+                                            </td>
 
-                                            <div className="invoice-actions">
 
-                                                <button
-                                                    type="button"
-                                                    className="invoice-print-button"
-                                                    title="چاپ فاکتور"
-                                                    aria-label="چاپ فاکتور"
-                                                    onClick={() => {
-                                                        window.print();
-                                                    }}
-                                                >
-                                                    <Printer size={18} />
-                                                </button>
+                                            <td>
 
-                                            </div>
+                                                <strong className="invoice-amount">
 
-                                        </td>
+                                                    {invoice.amount}
 
-                                    </tr>
+                                                    <small>
+                                                        {" "}تومان
+                                                    </small>
 
-                                ))}
+                                                </strong>
+
+                                            </td>
+
+
+                                            <td>
+
+                                                <div className="invoice-actions">
+
+                                                    <button
+                                                        type="button"
+                                                        className="invoice-print-button"
+                                                        title="مشاهده فاکتور"
+                                                        aria-label="مشاهده فاکتور"
+                                                        onClick={() =>
+                                                            openPreview(
+                                                                invoice
+                                                            )
+                                                        }
+                                                    >
+
+                                                        <Eye size={18} />
+
+                                                    </button>
+
+                                                </div>
+
+                                            </td>
+
+                                        </tr>
+
+                                    )
+                                )}
 
                             </tbody>
 
@@ -626,6 +1001,20 @@ export default function InvoicesPage() {
                 )}
 
             </section>
+
+
+            {/* =================================================
+                PREVIEW OVERLAY
+            ================================================= */}
+
+            {selectedInvoice && (
+
+                <InvoicePreview
+                    invoice={selectedInvoice}
+                    onClose={closePreview}
+                />
+
+            )}
 
         </main>
     );

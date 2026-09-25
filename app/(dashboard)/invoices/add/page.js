@@ -49,7 +49,6 @@ function getVehicleTypeLabel(value) {
 
 /* =========================================================
    COMPANY INFORMATION
-   فعلاً برای پیش‌نمایش
 ========================================================= */
 
 const companyData = {
@@ -247,6 +246,7 @@ export default function AddInvoicePage() {
     const [loadSearchOpen, setLoadSearchOpen] = useState(false);
 
     const [loadData, setLoadData] = useState({
+        loadId: "",
         title: "",
         barType: "",
         companyName: "",
@@ -463,6 +463,7 @@ export default function AddInvoicePage() {
                     : load.status || "";
 
         setLoadData({
+            loadId: load._id || "",
             title: load.title || "",
             barType: load.barType || "",
             companyName,
@@ -485,6 +486,7 @@ export default function AddInvoicePage() {
         setManualLoad(true);
 
         setLoadData({
+            loadId: "",
             title: "",
             barType: "",
             companyName: "",
@@ -504,6 +506,7 @@ export default function AddInvoicePage() {
         setManualLoad(false);
 
         setLoadData({
+            loadId: "",
             title: "",
             barType: "",
             companyName: "",
@@ -727,6 +730,16 @@ export default function AddInvoicePage() {
                         ? "guest"
                         : "main";
 
+            /*
+             * مهم:
+             * اگر بار از دیتابیس انتخاب شده باشد،
+             * loadData.loadId همان MongoDB _id واقعی بار است.
+             */
+            const selectedLoadId =
+                selectedLoad?._id ||
+                loadData.loadId ||
+                null;
+
             const invoicePayload = {
                 invoiceNumber,
 
@@ -762,6 +775,13 @@ export default function AddInvoicePage() {
 
                 vehiclePlate:
                     driverData.plate.trim(),
+
+                /*
+                 * مهم‌ترین بخش:
+                 * شناسه واقعی MongoDB بار ارسال می‌شود.
+                 */
+                loadId:
+                    selectedLoadId,
 
                 loadType:
                     loadData.barType.trim(),
@@ -831,6 +851,11 @@ export default function AddInvoicePage() {
                     invoiceData.receiverName.trim(),
             };
 
+            console.log(
+                "Invoice payload:",
+                invoicePayload
+            );
+
             const response = await fetch(
                 "/api/invoices",
                 {
@@ -850,13 +875,14 @@ export default function AddInvoicePage() {
 
             if (!response.ok) {
                 throw new Error(
+                    result.message ||
                     result.error ||
                     "ثبت فاکتور ناموفق بود."
                 );
             }
 
             alert(
-                "فاکتور با موفقیت ثبت شد."
+                "فاکتور با موفقیت ثبت شد و بار از لیست بارها حذف شد."
             );
 
             window.location.href =
@@ -2083,8 +2109,7 @@ export default function AddInvoicePage() {
                                 type="number"
                                 min="0"
                                 value={
-                                    invoiceData.commissionCost ??
-                                    ""
+                                    invoiceData.commissionCost ?? ""
                                 }
                                 onChange={(event) =>
                                     editInvoiceField(
@@ -2163,7 +2188,7 @@ export default function AddInvoicePage() {
 
                             <textarea
                                 rows={4}
-                                maxLength={120}
+                                maxLength={70}
                                 value={
                                     invoiceData.description
                                 }
@@ -2189,7 +2214,7 @@ export default function AddInvoicePage() {
                             {
                                 invoiceData.description.length
                             }
-                            /120
+                            /70
                         </div>
 
                     </div>
@@ -2233,12 +2258,15 @@ export default function AddInvoicePage() {
                             type="button"
                             className="primary-action-button"
                             onClick={() => {
+
                                 if (!previewInvoiceNumber) {
                                     setPreviewInvoiceNumber(
                                         createPreviewInvoiceNumber()
                                     );
                                 }
+
                                 setPreview(true);
+
                             }}
                         >
                             پیش‌نمایش فاکتور

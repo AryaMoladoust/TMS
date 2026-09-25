@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
 import {
     Package,
     UserCheck,
@@ -8,147 +10,266 @@ import {
     Truck,
     CalendarDays,
     RefreshCw,
+    MapPin,
 } from "lucide-react";
 
-import { useEffect, useState } from "react";
+/* =========================================================
+   HELPERS
+========================================================= */
 
 function getTodayKey() {
-    const now = new Date();
+    const today = new Date();
 
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, "0");
-    const day = String(now.getDate()).padStart(2, "0");
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const day = String(today.getDate()).padStart(2, "0");
 
     return `${year}-${month}-${day}`;
 }
 
-function formatPersianDate() {
-    const now = new Date();
-
-    return new Intl.DateTimeFormat("fa-IR", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-    }).format(now);
+function toPersianNumber(value) {
+    return String(value ?? "")
+        .replace(/\d/g, (digit) => "۰۱۲۳۴۵۶۷۸۹"[digit]);
 }
 
+function getVehicleTypeLabel(type) {
+    const vehicleTypes = {
+        truck: "کامیون",
+        trailer: "تریلی",
+        pickup: "وانت",
+        van: "ون",
+    };
+
+    return vehicleTypes[type] || type || "—";
+}
+
+function getLoadStatus(status) {
+    if (status === "delivered") {
+        return {
+            label: "تحویل شده",
+            className: "delivered",
+        };
+    }
+
+    return {
+        label: "تحویل نشده",
+        className: "undelivered",
+    };
+}
+
+/* =========================================================
+   PAGE
+========================================================= */
+
 export default function DisplayPage() {
+    const [dailyDrivers, setDailyDrivers] =
+        useState([]);
 
-    /*
-    |--------------------------------------------------------------------------
-    | Daily Drivers
-    |--------------------------------------------------------------------------
-    */
+    const [loads, setLoads] =
+        useState([]);
 
-    const [dailyDrivers, setDailyDrivers] = useState([]);
+    const [loading, setLoading] =
+        useState(true);
 
-    const [driversLoading, setDriversLoading] = useState(true);
+    const [lastUpdate, setLastUpdate] =
+        useState(new Date());
 
-    const [lastUpdate, setLastUpdate] = useState(null);
+    /* =====================================================
+       LOAD DATABASE DATA
+    ===================================================== */
 
-    async function loadDailyDrivers() {
+    async function fetchDisplayData() {
         try {
-            const response = await fetch(
-                `/api/daily-drivers?date=${getTodayKey()}`,
-                {
-                    cache: "no-store",
-                }
-            );
+            const [
+                driversResponse,
+                loadsResponse,
+            ] = await Promise.all([
+                fetch(
+                    `/api/daily-drivers?date=${getTodayKey()}`,
+                    {
+                        cache: "no-store",
+                    }
+                ),
 
-            if (!response.ok) {
-                throw new Error("خطا در دریافت رانندگان");
+                fetch(
+                    "/api/loads",
+                    {
+                        cache: "no-store",
+                    }
+                ),
+            ]);
+
+            /* ---------------------------------------------
+               DAILY DRIVERS
+            --------------------------------------------- */
+
+            if (driversResponse.ok) {
+                const driversResult =
+                    await driversResponse.json();
+
+                const driversList =
+                    Array.isArray(driversResult)
+                        ? driversResult
+                        : Array.isArray(
+                            driversResult.dailyDrivers
+                        )
+                            ? driversResult.dailyDrivers
+                            : [];
+
+                /*
+                 * ترتیب صف:
+                 * اولین راننده بالا
+                 * آخرین راننده پایین
+                 */
+
+                const sortedDrivers =
+                    [...driversList].sort(
+                        (a, b) => {
+                            const aTime =
+                                new Date(
+                                    a.createdAt || 0
+                                ).getTime();
+
+                            const bTime =
+                                new Date(
+                                    b.createdAt || 0
+                                ).getTime();
+
+                            return aTime - bTime;
+                        }
+                    );
+
+                setDailyDrivers(
+                    sortedDrivers
+                );
             }
 
-            const data = await response.json();
+            /* ---------------------------------------------
+               LOADS
+            --------------------------------------------- */
 
-            const drivers =
-                Array.isArray(data)
-                    ? data
-                    : data.dailyDrivers || [];
+            if (loadsResponse.ok) {
+                const loadsResult =
+                    await loadsResponse.json();
 
-            setDailyDrivers(drivers);
+                const loadsList =
+                    Array.isArray(loadsResult)
+                        ? loadsResult
+                        : Array.isArray(
+                            loadsResult.loads
+                        )
+                            ? loadsResult.loads
+                            : [];
+
+                /*
+                 * ترتیب بارها:
+                 *
+                 * 1. تحویل نشده
+                 * 2. تحویل شده
+                 *
+                 * داخل هر بخش:
+                 * جدیدترین بار اول
+                 */
+
+                const sortedLoads =
+                    [...loadsList].sort(
+                        (a, b) => {
+                            const aDelivered =
+                                a.status ===
+                                "delivered";
+
+                            const bDelivered =
+                                b.status ===
+                                "delivered";
+
+                            if (
+                                aDelivered !==
+                                bDelivered
+                            ) {
+                                return aDelivered
+                                    ? 1
+                                    : -1;
+                            }
+
+                            const aTime =
+                                new Date(
+                                    a.createdAt || 0
+                                ).getTime();
+
+                            const bTime =
+                                new Date(
+                                    b.createdAt || 0
+                                ).getTime();
+
+                            return bTime - aTime;
+                        }
+                    );
+
+                setLoads(
+                    sortedLoads
+                );
+            }
 
             setLastUpdate(
-                new Date().toLocaleTimeString("fa-IR", {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    second: "2-digit",
-                })
+                new Date()
             );
-
         } catch (error) {
-
             console.error(
-                "Display daily drivers error:",
+                "Display data error:",
                 error
             );
-
-            setDailyDrivers([]);
-
         } finally {
-
-            setDriversLoading(false);
-
+            setLoading(false);
         }
     }
 
+    /* =====================================================
+       INITIAL LOAD + AUTO REFRESH
+    ===================================================== */
+
     useEffect(() => {
+        fetchDisplayData();
 
-        loadDailyDrivers();
-
-        /*
-        |----------------------------------------------------------------------
-        | Auto Refresh
-        |----------------------------------------------------------------------
-        */
-
-        const interval = setInterval(() => {
-            loadDailyDrivers();
-        }, 5000);
-
-        /*
-        |----------------------------------------------------------------------
-        | Instant update when Daily Drivers changes
-        |----------------------------------------------------------------------
-        */
-
-        function handleDailyDriversUpdated() {
-            loadDailyDrivers();
-        }
-
-        window.addEventListener(
-            "daily-drivers-updated",
-            handleDailyDriversUpdated
-        );
-
-        return () => {
-
-            clearInterval(interval);
-
-            window.removeEventListener(
-                "daily-drivers-updated",
-                handleDailyDriversUpdated
+        const interval =
+            setInterval(
+                fetchDisplayData,
+                5000
             );
 
-        };
-
+        return () =>
+            clearInterval(
+                interval
+            );
     }, []);
 
-    /*
-    |--------------------------------------------------------------------------
-    | فعلاً آمار بارها را دست نمی‌زنیم
-    |--------------------------------------------------------------------------
-    */
+    /* =====================================================
+       LOAD COUNTS
+    ===================================================== */
 
-    const pendingLoads = [];
+    const undeliveredLoads =
+        loads.filter(
+            (load) =>
+                load.status !==
+                "delivered"
+        );
+
+    const deliveredLoads =
+        loads.filter(
+            (load) =>
+                load.status ===
+                "delivered"
+        );
+
+    /* =====================================================
+       RENDER
+    ===================================================== */
 
     return (
-
         <main className="main-content display-page">
 
-            {/* =====================================================
+            {/* =================================================
                 HEADER
-            ====================================================== */}
+            ================================================= */}
 
             <div className="display-page-header">
 
@@ -165,14 +286,16 @@ export default function DisplayPage() {
                     </div>
 
                     <p>
-                        وضعیت بارهای بدون فاکتور و رانندگان ثبت‌شده امروز
+                        وضعیت بارها و رانندگان ثبت‌شده امروز
                     </p>
 
                 </div>
 
                 <div className="display-date">
 
-                    <CalendarDays size={18} />
+                    <CalendarDays
+                        size={18}
+                    />
 
                     <div>
 
@@ -181,7 +304,11 @@ export default function DisplayPage() {
                         </span>
 
                         <strong>
-                            {formatPersianDate()}
+                            {toPersianNumber(
+                                new Date().toLocaleDateString(
+                                    "fa-IR"
+                                )
+                            )}
                         </strong>
 
                     </div>
@@ -190,42 +317,42 @@ export default function DisplayPage() {
 
             </div>
 
-
-            {/* =====================================================
+            {/* =================================================
                 STATS
-            ====================================================== */}
+            ================================================= */}
 
             <div className="display-stats">
 
                 <div className="display-stat">
 
                     <div className="display-stat-icon display-stat-orange">
-
-                        <FileWarning size={21} />
-
+                        <FileWarning
+                            size={21}
+                        />
                     </div>
 
                     <div>
 
                         <span>
-                            بارهای بدون فاکتور
+                            بارهای تحویل نشده
                         </span>
 
                         <strong>
-                            {pendingLoads.length}
+                            {toPersianNumber(
+                                undeliveredLoads.length
+                            )}
                         </strong>
 
                     </div>
 
                 </div>
 
-
                 <div className="display-stat">
 
                     <div className="display-stat-icon display-stat-blue">
-
-                        <UserCheck size={21} />
-
+                        <UserCheck
+                            size={21}
+                        />
                     </div>
 
                     <div>
@@ -235,20 +362,21 @@ export default function DisplayPage() {
                         </span>
 
                         <strong>
-                            {dailyDrivers.length}
+                            {toPersianNumber(
+                                dailyDrivers.length
+                            )}
                         </strong>
 
                     </div>
 
                 </div>
 
-
                 <div className="display-stat">
 
                     <div className="display-stat-icon display-stat-green">
-
-                        <Clock3 size={21} />
-
+                        <Clock3
+                            size={21}
+                        />
                     </div>
 
                     <div>
@@ -258,7 +386,9 @@ export default function DisplayPage() {
                         </span>
 
                         <strong>
-                            فعال
+                            {loading
+                                ? "در حال دریافت"
+                                : "فعال"}
                         </strong>
 
                     </div>
@@ -267,17 +397,15 @@ export default function DisplayPage() {
 
             </div>
 
-
-            {/* =====================================================
+            {/* =================================================
                 GRID
-            ====================================================== */}
+            ================================================= */}
 
             <div className="display-grid">
 
-
                 {/* =================================================
                     LOADS
-                ================================================== */}
+                ================================================= */}
 
                 <section className="display-panel">
 
@@ -286,19 +414,19 @@ export default function DisplayPage() {
                         <div className="display-panel-title">
 
                             <div className="display-panel-icon display-panel-orange">
-
-                                <Package size={21} />
-
+                                <Package
+                                    size={21}
+                                />
                             </div>
 
                             <div>
 
                                 <h2>
-                                    بارهای بدون فاکتور
+                                    بارها
                                 </h2>
 
                                 <p>
-                                    بارهایی که هنوز برای آن‌ها فاکتور ثبت نشده است
+                                    لیست بارهای ثبت‌شده در سیستم
                                 </p>
 
                             </div>
@@ -306,109 +434,144 @@ export default function DisplayPage() {
                         </div>
 
                         <span className="display-count orange">
-                            {pendingLoads.length} بار
+                            {toPersianNumber(
+                                loads.length
+                            )} بار
                         </span>
 
                     </div>
 
-
                     <div className="display-list">
 
-                        {pendingLoads.map((load) => (
+                        {loads.map(
+                            (load) => {
 
-                            <div
-                                className="display-load-item"
-                                key={load.id}
-                            >
+                                const status =
+                                    getLoadStatus(
+                                        load.status
+                                    );
 
-                                <div className="display-item-main">
+                                return (
+                                    <div
+                                        className="display-load-item"
+                                        key={
+                                            load._id ||
+                                            load.loadId
+                                        }
+                                    >
 
-                                    <div className="display-item-icon load">
-                                        <Package size={19} />
-                                    </div>
+                                        <div className="display-item-main">
 
-                                    <div className="display-item-info">
+                                            <div className="display-item-icon load">
+                                                <Package
+                                                    size={19}
+                                                />
+                                            </div>
 
-                                        <div className="display-item-title">
+                                            <div className="display-item-info">
 
-                                            <strong>
-                                                {load.title}
-                                            </strong>
+                                                <div className="display-item-title">
 
-                                            <span>
-                                                {load.id}
-                                            </span>
+                                                    <strong>
+                                                        {load.title ||
+                                                            "بدون عنوان"}
+                                                    </strong>
+
+                                                    <span>
+                                                        {load.loadId ||
+                                                            "—"}
+                                                    </span>
+
+                                                </div>
+
+                                                <span className="display-company">
+
+                                                    {load.companyName ||
+                                                        load.company?.name ||
+                                                        "—"}
+
+                                                </span>
+
+                                                <div className="display-route">
+
+                                                    <span>
+                                                        {load.origin ||
+                                                            "—"}
+                                                    </span>
+
+                                                    <span className="route-arrow">
+                                                        ←
+                                                    </span>
+
+                                                    <span>
+                                                        {load.destination ||
+                                                            "—"}
+                                                    </span>
+
+                                                </div>
+
+                                            </div>
 
                                         </div>
 
-                                        <span className="display-company">
-                                            {load.company}
-                                        </span>
+                                        <div className="display-load-meta">
 
-                                        <div className="display-route">
+                                            <div>
 
-                                            <span>
-                                                {load.origin}
-                                            </span>
+                                                <Truck
+                                                    size={15}
+                                                />
 
-                                            <span className="route-arrow">
-                                                ←
-                                            </span>
+                                                <span>
+                                                    {getVehicleTypeLabel(
+                                                        load.vehicleType
+                                                    )}
+                                                </span>
 
-                                            <span>
-                                                {load.destination}
-                                            </span>
+                                            </div>
+
+                                            <div>
+
+                                                <MapPin
+                                                    size={15}
+                                                />
+
+                                                <span
+                                                    className={
+                                                        status.className ===
+                                                        "delivered"
+                                                            ? "display-load-status delivered"
+                                                            : "display-load-status"
+                                                    }
+                                                >
+                                                    {status.label}
+                                                </span>
+
+                                            </div>
 
                                         </div>
 
                                     </div>
-
-                                </div>
-
-
-                                <div className="display-load-meta">
-
-                                    <div>
-
-                                        <Truck size={15} />
-
-                                        <span>
-                                            {load.vehicleType}
-                                        </span>
-
-                                    </div>
-
-                                    <div>
-
-                                        <CalendarDays size={15} />
-
-                                        <span>
-                                            {load.date}
-                                        </span>
-
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-                        ))}
+                                );
+                            }
+                        )}
 
                     </div>
 
-
-                    {pendingLoads.length === 0 && (
+                    {loads.length === 0 && (
 
                         <div className="display-empty">
 
-                            <Package size={30} />
+                            <Package
+                                size={30}
+                            />
 
                             <strong>
-                                فعلاً باری برای نمایش وجود ندارد
+                                باری ثبت نشده است
                             </strong>
 
                             <span>
-                                بخش بارها بعداً به این قسمت متصل می‌شود.
+                                هنوز هیچ باری در سیستم ثبت نشده است.
                             </span>
 
                         </div>
@@ -417,10 +580,9 @@ export default function DisplayPage() {
 
                 </section>
 
-
                 {/* =================================================
                     DAILY DRIVERS
-                ================================================== */}
+                ================================================= */}
 
                 <section className="display-panel">
 
@@ -430,7 +592,9 @@ export default function DisplayPage() {
 
                             <div className="display-panel-icon display-panel-blue">
 
-                                <UserCheck size={21} />
+                                <UserCheck
+                                    size={21}
+                                />
 
                             </div>
 
@@ -450,122 +614,132 @@ export default function DisplayPage() {
 
                         <span className="display-count blue">
 
-                            {dailyDrivers.length} راننده
+                            {toPersianNumber(
+                                dailyDrivers.length
+                            )} راننده
 
                         </span>
 
                     </div>
 
-
                     <div className="display-list">
 
-                        {driversLoading ? (
+                        {dailyDrivers.map(
+                            (driver) => {
 
-                            <div className="display-empty">
+                                const isGuest =
+                                    driver.type ===
+                                    "guest";
 
-                                <RefreshCw
-                                    size={30}
-                                    className="display-loading-icon"
-                                />
+                                const realDriver =
+                                    driver.driverId &&
+                                    typeof driver.driverId ===
+                                        "object"
+                                        ? driver.driverId
+                                        : null;
 
-                                <strong>
-                                    در حال دریافت رانندگان...
-                                </strong>
+                                return (
+                                    <div
+                                        className="display-driver-item"
+                                        key={
+                                            driver._id
+                                        }
+                                    >
 
-                            </div>
+                                        <div className="display-driver-main">
 
-                        ) : dailyDrivers.map((driver) => (
+                                            <div className="display-driver-avatar">
 
-                            <div
-                                className="display-driver-item"
-                                key={driver._id}
-                            >
+                                                <UserCheck
+                                                    size={18}
+                                                />
 
-                                <div className="display-driver-main">
+                                            </div>
 
-                                    <div className="display-driver-avatar">
+                                            <div className="display-driver-info">
 
-                                        <UserCheck size={18} />
+                                                <div className="display-driver-name">
 
-                                    </div>
+                                                    <strong>
+                                                        {driver.name}
+                                                    </strong>
 
-                                    <div className="display-driver-info">
+                                                    <span
+                                                        className={
+                                                            isGuest
+                                                                ? "display-driver-badge guest"
+                                                                : "display-driver-badge"
+                                                        }
+                                                    >
+                                                        {isGuest
+                                                            ? "مهمان"
+                                                            : "اصلی"}
+                                                    </span>
 
-                                        <div className="display-driver-name">
+                                                </div>
 
-                                            <strong>
-                                                {driver.name}
-                                            </strong>
+                                                <span className="display-driver-phone">
 
-                                            <span
-                                                className={
-                                                    driver.type === "guest"
-                                                        ? "display-driver-badge guest"
-                                                        : "display-driver-badge"
-                                                }
-                                            >
-                                                {driver.type === "guest"
-                                                    ? "مهمان"
-                                                    : "اصلی"}
+                                                    {driver.phone ||
+                                                        "—"}
+
+                                                </span>
+
+                                            </div>
+
+                                        </div>
+
+                                        <div className="display-driver-vehicle">
+
+                                            <Truck
+                                                size={16}
+                                            />
+
+                                            <span>
+
+                                                {getVehicleTypeLabel(
+                                                    driver.vehicleType ||
+                                                    realDriver?.vehicleType
+                                                )}
+
                                             </span>
 
                                         </div>
 
-                                        <span className="display-driver-phone">
-
-                                            {driver.phone || "-"}
-
-                                        </span>
-
                                     </div>
-
-                                </div>
-
-
-                                <div className="display-driver-vehicle">
-
-                                    <Truck size={16} />
-
-                                    <span>
-                                        {driver.vehicleType || "-"}
-                                    </span>
-
-                                </div>
-
-                            </div>
-
-                        ))}
+                                );
+                            }
+                        )}
 
                     </div>
 
+                    {dailyDrivers.length === 0 && (
 
-                    {!driversLoading &&
-                        dailyDrivers.length === 0 && (
+                        <div className="display-empty">
 
-                            <div className="display-empty">
+                            <UserCheck
+                                size={30}
+                            />
 
-                                <UserCheck size={30} />
+                            <strong>
+                                امروز راننده‌ای ثبت نشده
+                            </strong>
 
-                                <strong>
-                                    امروز راننده‌ای ثبت نشده
-                                </strong>
+                            <span>
+                                از بخش ورود روزانه رانندگان، راننده ثبت کنید.
+                            </span>
 
-                                <span>
-                                    از بخش ورود روزانه رانندگان، راننده ثبت کنید.
-                                </span>
+                        </div>
 
-                            </div>
-
-                        )}
+                    )}
 
                 </section>
 
             </div>
 
-
-            {/* =====================================================
+            {/* =================================================
                 FOOTER
-            ====================================================== */}
+            ================================================= */}
 
             <div className="display-footer">
 
@@ -580,16 +754,23 @@ export default function DisplayPage() {
                 </div>
 
                 <span>
-                    آخرین بروزرسانی:
-                    {" "}
-                    {lastUpdate || "در حال دریافت"}
+                    آخرین بروزرسانی:{" "}
+                    {lastUpdate.toLocaleTimeString(
+                        "fa-IR",
+                        {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            second: "2-digit",
+                        }
+                    )}
                 </span>
 
-                <RefreshCw size={16} />
+                <RefreshCw
+                    size={16}
+                />
 
             </div>
 
         </main>
-
     );
 }

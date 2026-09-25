@@ -124,12 +124,18 @@ export async function POST(request) {
             qrCode = "",
         } = body;
 
+        // ==========================================
+        // بررسی اطلاعات ضروری
+        // ==========================================
+
         if (!date) {
             return NextResponse.json(
                 {
                     message: "تاریخ فاکتور الزامی است.",
                 },
-                { status: 400 }
+                {
+                    status: 400,
+                }
             );
         }
 
@@ -138,7 +144,9 @@ export async function POST(request) {
                 {
                     message: "نام راننده الزامی است.",
                 },
-                { status: 400 }
+                {
+                    status: 400,
+                }
             );
         }
 
@@ -147,7 +155,9 @@ export async function POST(request) {
                 {
                     message: "نوع خودرو الزامی است.",
                 },
-                { status: 400 }
+                {
+                    status: 400,
+                }
             );
         }
 
@@ -156,33 +166,51 @@ export async function POST(request) {
                 {
                     message: "نوع بار الزامی است.",
                 },
-                { status: 400 }
+                {
+                    status: 400,
+                }
             );
         }
 
-        let finalDailyDriverId = dailyDriverId || null;
-        let finalDriverId = driverId || null;
-        let finalDriverType = driverType || "manual";
+        // ==========================================
+        // اطلاعات راننده
+        // ==========================================
 
-        let finalDriverName = driverName.trim();
-        let finalDriverPhone = driverPhone?.trim() || "";
+        let finalDailyDriverId =
+            dailyDriverId || null;
+
+        let finalDriverId =
+            driverId || null;
+
+        let finalDriverType =
+            driverType || "manual";
+
+        let finalDriverName =
+            driverName.trim();
+
+        let finalDriverPhone =
+            driverPhone?.trim() || "";
+
         let finalDriverNationalId =
             driverNationalId?.trim() || "";
+
         let finalDriverLicenseNumber =
             driverLicenseNumber?.trim() || "";
 
-        let finalVehicleId = vehicleId?.trim() || "";
-        let finalVehicleType = vehicleType.trim();
-        let finalVehiclePlate = vehiclePlate?.trim() || "";
+        let finalVehicleId =
+            vehicleId?.trim() || "";
 
-        /*
-         * DAILY DRIVER
-         */
+        let finalVehicleType =
+            vehicleType.trim();
+
+        let finalVehiclePlate =
+            vehiclePlate?.trim() || "";
 
         if (dailyDriverId) {
-            const dailyDriver = await DailyDriver.findById(
-                dailyDriverId
-            ).populate("driverId");
+            const dailyDriver =
+                await DailyDriver.findById(
+                    dailyDriverId
+                ).populate("driverId");
 
             if (!dailyDriver) {
                 return NextResponse.json(
@@ -190,25 +218,35 @@ export async function POST(request) {
                         message:
                             "راننده ورود روزانه پیدا نشد.",
                     },
-                    { status: 400 }
+                    {
+                        status: 400,
+                    }
                 );
             }
 
-            if (dailyDriver.date !== getTodayKey()) {
+            if (
+                dailyDriver.date !==
+                getTodayKey()
+            ) {
                 return NextResponse.json(
                     {
                         message:
                             "فقط رانندگان ورود روزانه امروز قابل استفاده هستند.",
                     },
-                    { status: 400 }
+                    {
+                        status: 400,
+                    }
                 );
             }
 
-            finalDailyDriverId = dailyDriver._id;
+            finalDailyDriverId =
+                dailyDriver._id;
 
-            finalDriverType = dailyDriver.type;
+            finalDriverType =
+                dailyDriver.type;
 
-            finalDriverName = dailyDriver.name;
+            finalDriverName =
+                dailyDriver.name;
 
             finalDriverPhone =
                 dailyDriver.phone || "";
@@ -216,9 +254,9 @@ export async function POST(request) {
             finalVehicleType =
                 dailyDriver.vehicleType;
 
-            /*
-             * راننده اصلی
-             */
+            // ======================================
+            // راننده اصلی
+            // ======================================
 
             if (
                 dailyDriver.type === "main" &&
@@ -243,61 +281,80 @@ export async function POST(request) {
                     String(realDriver._id);
             }
 
-            /*
-             * راننده مهمان
-             */
+            // ======================================
+            // راننده مهمان
+            // ======================================
 
             if (
                 dailyDriver.type === "guest"
             ) {
                 finalDriverId = null;
 
-                finalDriverNationalId = "";
+                finalDriverNationalId =
+                    "";
 
-                finalDriverLicenseNumber = "";
+                finalDriverLicenseNumber =
+                    "";
 
-                finalVehicleId = "";
+                finalVehicleId =
+                    "";
 
-                finalVehiclePlate = "";
+                finalVehiclePlate =
+                    "";
             }
         }
-
-        /*
-         * MANUAL DRIVER
-         */
 
         if (!dailyDriverId) {
             finalDriverType = "manual";
-
             finalDailyDriverId = null;
         }
 
-        /*
-         * LOAD
-         */
+        // ==========================================
+        // بررسی بار
+        // ==========================================
 
-        let finalLoadId = loadId || null;
+        // ==========================================
+// پیدا کردن بار
+// ==========================================
 
-        if (loadId) {
-            const load =
-                await Load.findById(loadId);
+let finalLoadId = null;
 
-            if (!load) {
-                return NextResponse.json(
-                    {
-                        message:
-                            "بار انتخاب‌شده پیدا نشد.",
-                    },
-                    { status: 400 }
-                );
+if (loadId) {
+    let load = null;
+
+    // اگر MongoDB ObjectId باشد
+    if (
+        typeof loadId === "string" &&
+        /^[0-9a-fA-F]{24}$/.test(loadId)
+    ) {
+        load = await Load.findById(loadId);
+    }
+
+    // اگر شناسه داخلی بار باشد
+    if (!load) {
+        load = await Load.findOne({
+            loadId: String(loadId),
+        });
+    }
+
+    if (!load) {
+        return NextResponse.json(
+            {
+                message:
+                    "بار انتخاب‌شده پیدا نشد.",
+            },
+            {
+                status: 400,
             }
+        );
+    }
 
-            finalLoadId = load._id;
-        }
+    finalLoadId = load._id;
+}
 
-        /*
-         * COMPANY
-         */
+        // ==========================================
+        // بررسی شرکت
+        // ==========================================
 
         let finalCompanyId =
             companyId || null;
@@ -314,24 +371,27 @@ export async function POST(request) {
                         message:
                             "شرکت انتخاب‌شده پیدا نشد.",
                     },
-                    { status: 400 }
+                    {
+                        status: 400,
+                    }
                 );
             }
 
-            finalCompanyId = company._id;
+            finalCompanyId =
+                company._id;
         }
 
-        /*
-         * INVOICE NUMBER
-         */
+        // ==========================================
+        // شماره فاکتور
+        // ==========================================
 
         const invoiceNumber =
             requestedInvoiceNumber?.trim() ||
             (await generateInvoiceNumber());
 
-        /*
-         * CREATE INVOICE
-         */
+        // ==========================================
+        // ساخت فاکتور
+        // ==========================================
 
         const invoice =
             await Invoice.create({
@@ -371,6 +431,10 @@ export async function POST(request) {
                 vehiclePlate:
                     finalVehiclePlate,
 
+                // ==================================
+                // اطلاعات بار
+                // ==================================
+
                 loadId:
                     finalLoadId,
 
@@ -395,6 +459,10 @@ export async function POST(request) {
                 address:
                     address?.trim() || "",
 
+                // ==================================
+                // هزینه‌ها
+                // ==================================
+
                 cost:
                     Number(cost) || 0,
 
@@ -415,6 +483,10 @@ export async function POST(request) {
                 commissionCost:
                     Number(commissionCost) || 0,
 
+                // ==================================
+                // اطلاعات تکمیلی
+                // ==================================
+
                 description:
                     description?.trim() || "",
 
@@ -425,17 +497,84 @@ export async function POST(request) {
                     qrCode?.trim() || "",
             });
 
+        // ==========================================
+        // حذف کامل بار بعد از ثبت موفق فاکتور
+        // ==========================================
+
+        if (finalLoadId) {
+            try {
+                const deletedLoad =
+                    await Load.findByIdAndDelete(
+                        finalLoadId
+                    );
+
+                if (!deletedLoad) {
+                    // اگر بار پیدا نشد، فاکتور
+                    // تازه ساخته‌شده را حذف می‌کنیم
+                    await Invoice.findByIdAndDelete(
+                        invoice._id
+                    );
+
+                    return NextResponse.json(
+                        {
+                            message:
+                                "فاکتور ثبت شد اما بار حذف نشد؛ عملیات برگشت داده شد.",
+                        },
+                        {
+                            status: 409,
+                        }
+                    );
+                }
+
+                console.log(
+                    "Load deleted after invoice:",
+                    finalLoadId.toString()
+                );
+            } catch (deleteError) {
+                console.error(
+                    "Delete load after invoice error:",
+                    deleteError
+                );
+
+                // ==================================
+                // Rollback فاکتور
+                // ==================================
+
+                await Invoice.findByIdAndDelete(
+                    invoice._id
+                );
+
+                return NextResponse.json(
+                    {
+                        message:
+                            "حذف بار انجام نشد و ثبت فاکتور نیز برگشت داده شد.",
+                        error:
+                            deleteError.message,
+                    },
+                    {
+                        status: 500,
+                    }
+                );
+            }
+        }
+
+        // ==========================================
+        // پاسخ موفق
+        // ==========================================
+
         return NextResponse.json(
             {
                 message:
-                    "فاکتور با موفقیت ثبت شد.",
+                    "فاکتور با موفقیت ثبت شد و بار از لیست بارها حذف شد.",
 
                 invoiceNumber:
                     invoice.invoiceNumber,
 
                 invoice,
             },
-            { status: 201 }
+            {
+                status: 201,
+            }
         );
     } catch (error) {
         console.error(
@@ -443,13 +582,19 @@ export async function POST(request) {
             error
         );
 
+        // ==========================================
+        // شماره فاکتور تکراری
+        // ==========================================
+
         if (error.code === 11000) {
             return NextResponse.json(
                 {
                     message:
                         "شماره فاکتور تکراری شد. دوباره تلاش کنید.",
                 },
-                { status: 409 }
+                {
+                    status: 409,
+                }
             );
         }
 
@@ -461,7 +606,9 @@ export async function POST(request) {
                 error:
                     error.message,
             },
-            { status: 500 }
+            {
+                status: 500,
+            }
         );
     }
 }

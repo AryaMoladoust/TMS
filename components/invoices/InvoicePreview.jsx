@@ -191,7 +191,6 @@ export default function InvoicePreview({ invoice, onClose }) {
                 <h1>فاکتور و رسید کالا</h1>
 
                 <div className="invoice-meta-line">
-                  <span><strong>شماره:</strong> {invoice.number || "—"}</span>
                   <span><strong>تاریخ:</strong> {invoice.date}</span>
                   <span><strong>ساعت:</strong> {invoice.startTime}</span>
                 </div>
@@ -229,7 +228,6 @@ export default function InvoicePreview({ invoice, onClose }) {
                 <p><strong>مبدأ:</strong> {invoice.origin}</p>
                 <p><strong>مقصد:</strong> {invoice.destination}</p>
                 <p><strong>مسافت:</strong> {invoice.distance}</p>
-                <p><strong>وضعیت:</strong> {invoice.loadStatus || "—"}</p>
               </div>
 
             </div>
