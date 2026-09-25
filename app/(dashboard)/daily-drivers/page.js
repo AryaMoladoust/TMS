@@ -11,6 +11,7 @@ import {
     UserCheck,
     UserPlus,
     Users,
+    RotateCcw,
 } from "lucide-react";
 
 import DriverSearchSelect from "@/components/daily-drivers/DriverSearchSelect";
@@ -115,7 +116,7 @@ export default function DailyDriversPage() {
             if (!response.ok || !data.success) {
                 throw new Error(
                     data.message ||
-                        "خطا در دریافت ورود روزانه رانندگان"
+                    "خطا در دریافت ورود روزانه رانندگان"
                 );
             }
 
@@ -124,7 +125,7 @@ export default function DailyDriversPage() {
             console.error(err);
             setError(
                 err.message ||
-                    "خطا در دریافت ورود روزانه رانندگان"
+                "خطا در دریافت ورود روزانه رانندگان"
             );
         } finally {
             setLoadingDailyDrivers(false);
@@ -281,16 +282,13 @@ export default function DailyDriversPage() {
             console.error(err);
             showError(
                 err.message ||
-                    "خطا در ثبت راننده مهمان"
+                "خطا در ثبت راننده مهمان"
             );
         } finally {
             setSaving(false);
         }
     }
 
-    // =========================
-    // حذف ورود روزانه
-    // =========================
 
     async function removeDriver(id) {
         try {
@@ -309,18 +307,20 @@ export default function DailyDriversPage() {
 
             if (!response.ok || !data.success) {
                 throw new Error(
-                    data.message || "خطا در حذف راننده"
+                    data.message ||
+                    "خطا در حذف ورود راننده"
                 );
             }
 
-            setDailyDrivers((prev) =>
-                prev.filter(
-                    (driver) => driver._id !== id
+            setDailyDrivers((previous) =>
+                previous.filter(
+                    (driver) =>
+                        driver._id !== id
                 )
             );
 
             showSuccess(
-                "ورود راننده حذف شد"
+                "ورود راننده از لیست امروز حذف شد."
             );
 
             window.dispatchEvent(
@@ -328,8 +328,66 @@ export default function DailyDriversPage() {
             );
         } catch (err) {
             console.error(err);
+
             showError(
-                err.message || "خطا در حذف راننده"
+                err.message ||
+                "خطا در حذف ورود راننده"
+            );
+        } finally {
+            setDeletingId(null);
+        }
+    }
+
+
+    // =========================
+    // ریست ورودهای امروز
+    // =========================
+
+    async function resetTodayDrivers() {
+        const confirmed = window.confirm(
+            "آیا مطمئن هستید که تمام ورودهای ثبت‌شده امروز حذف شوند؟"
+        );
+
+        if (!confirmed) {
+            return;
+        }
+
+        try {
+            setDeletingId("reset");
+            setError("");
+            setSuccess("");
+
+            const response = await fetch(
+                `/api/daily-drivers?date=${today}&reset=true`,
+                {
+                    method: "DELETE",
+                }
+            );
+
+            const data = await response.json();
+
+            if (!response.ok || !data.success) {
+                throw new Error(
+                    data.message ||
+                    "خطا در ریست لیست"
+                );
+            }
+
+            setDailyDrivers([]);
+
+            showSuccess(
+                "لیست ورود رانندگان امروز با موفقیت ریست شد."
+            );
+
+            window.dispatchEvent(
+                new Event("daily-drivers-updated")
+            );
+        } catch (err) {
+            console.error(err);
+
+            showError(
+                err.message ||
+                "خطا در ریست لیست"
             );
         } finally {
             setDeletingId(null);
@@ -578,17 +636,43 @@ export default function DailyDriversPage() {
                 <div className="daily-driver-list-header">
                     <div>
                         <h2>رانندگان حاضر امروز</h2>
+
                         <p>
                             لیست رانندگانی که برای امروز ثبت
                             شده‌اند.
                         </p>
                     </div>
 
-                    <div className="daily-driver-count">
-                        <Users size={17} />
-                        <span>
-                            {dailyDrivers.length} راننده
-                        </span>
+                    <div className="daily-driver-list-actions">
+                        <button
+                            type="button"
+                            className="daily-driver-reset-button"
+                            onClick={resetTodayDrivers}
+                            disabled={deletingId === "reset"}
+                        >
+                            <RotateCcw
+                                size={16}
+                                className={
+                                    deletingId === "reset"
+                                        ? "daily-driver-reset-spinning"
+                                        : ""
+                                }
+                            />
+
+                            <span>
+                                {deletingId === "reset"
+                                    ? "در حال ریست..."
+                                    : "ریست لیست"}
+                            </span>
+                        </button>
+
+                        <div className="daily-driver-count">
+                            <Users size={17} />
+
+                            <span>
+                                {dailyDrivers.length} راننده
+                            </span>
+                        </div>
                     </div>
                 </div>
 
@@ -652,17 +736,17 @@ export default function DailyDriversPage() {
 
                                                         {driver.type ===
                                                             "main" && (
-                                                            <span>
-                                                                راننده ثبت‌شده
-                                                            </span>
-                                                        )}
+                                                                <span>
+                                                                    راننده ثبت‌شده
+                                                                </span>
+                                                            )}
 
                                                         {driver.type ===
                                                             "guest" && (
-                                                            <span>
-                                                                مهمان
-                                                            </span>
-                                                        )}
+                                                                <span>
+                                                                    مهمان
+                                                                </span>
+                                                            )}
                                                     </div>
                                                 </div>
                                             </td>
@@ -680,15 +764,14 @@ export default function DailyDriversPage() {
 
                                             <td>
                                                 <span
-                                                    className={`daily-driver-type-badge ${
-                                                        driver.type ===
+                                                    className={`daily-driver-type-badge ${driver.type ===
                                                         "main"
-                                                            ? "daily-driver-type-main"
-                                                            : "daily-driver-type-guest"
-                                                    }`}
+                                                        ? "daily-driver-type-main"
+                                                        : "daily-driver-type-guest"
+                                                        }`}
                                                 >
                                                     {driver.type ===
-                                                    "main"
+                                                        "main"
                                                         ? "اصلی"
                                                         : "مهمان"}
                                                 </span>

@@ -12,6 +12,7 @@ import {
 
 import { useEffect, useMemo, useState } from "react";
 
+import PersianDatePicker from "@/components/drivers/PersianDatePicker";
 import InvoicePreview from "@/components/invoices/InvoicePreview";
 
 
@@ -94,13 +95,13 @@ function makePreviewInvoice(invoice) {
 
     const companyData =
         invoice.companyId &&
-        typeof invoice.companyId === "object"
+            typeof invoice.companyId === "object"
             ? invoice.companyId
             : {};
 
     const driverData =
         invoice.driverId &&
-        typeof invoice.driverId === "object"
+            typeof invoice.driverId === "object"
             ? invoice.driverId
             : {};
 
@@ -458,9 +459,14 @@ export default function InvoicesPage() {
                         invoice.driver === driver;
 
 
+                    const selectedDate =
+                        date && typeof date.format === "function"
+                            ? date.format("YYYY/MM/DD")
+                            : date;
+
                     const matchesDate =
-                        !date ||
-                        invoice.date === date;
+                        !selectedDate ||
+                        invoice.date === selectedDate;
 
 
                     return (
@@ -740,7 +746,6 @@ export default function InvoicesPage() {
 
                     </div>
 
-
                     {/* DATE */}
 
                     <div className="invoice-filter-field">
@@ -749,19 +754,16 @@ export default function InvoicesPage() {
                             تاریخ
                         </label>
 
-                        <div className="invoice-input-with-icon">
+                        <div className="invoice-input-with-icon invoice-date-filter-wrapper">
 
                             <CalendarDays size={17} />
 
-                            <input
-                                type="text"
+                            <PersianDatePicker
                                 value={date}
-                                onChange={(event) =>
-                                    setDate(
-                                        event.target.value
-                                    )
+                                onChange={(value) =>
+                                    setDate(value || "")
                                 }
-                                placeholder="مثلاً ۱۴۰۵/۰۶/۲۱"
+                                placeholder="تاریخ فاکتور را انتخاب کنید"
                             />
 
                         </div>

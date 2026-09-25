@@ -29,7 +29,10 @@ function getTodayKey() {
 
 function toPersianNumber(value) {
     return String(value ?? "")
-        .replace(/\d/g, (digit) => "۰۱۲۳۴۵۶۷۸۹"[digit]);
+        .replace(
+            /\d/g,
+            (digit) => "۰۱۲۳۴۵۶۷۸۹"[digit]
+        );
 }
 
 function getVehicleTypeLabel(type) {
@@ -40,7 +43,11 @@ function getVehicleTypeLabel(type) {
         van: "ون",
     };
 
-    return vehicleTypes[type] || type || "—";
+    return (
+        vehicleTypes[type] ||
+        type ||
+        "—"
+    );
 }
 
 function getLoadStatus(status) {
@@ -71,8 +78,16 @@ export default function DisplayPage() {
     const [loading, setLoading] =
         useState(true);
 
+    /*
+     * مهم:
+     * مقدار اولیه نباید new Date() باشد.
+     * چون باعث اختلاف SSR و Client می‌شود.
+     */
+    const [currentDate, setCurrentDate] =
+        useState("");
+
     const [lastUpdate, setLastUpdate] =
-        useState(new Date());
+        useState("");
 
     /* =====================================================
        LOAD DATABASE DATA
@@ -135,7 +150,9 @@ export default function DisplayPage() {
                                     b.createdAt || 0
                                 ).getTime();
 
-                            return aTime - bTime;
+                            return (
+                                aTime - bTime
+                            );
                         }
                     );
 
@@ -201,7 +218,9 @@ export default function DisplayPage() {
                                     b.createdAt || 0
                                 ).getTime();
 
-                            return bTime - aTime;
+                            return (
+                                bTime - aTime
+                            );
                         }
                     );
 
@@ -210,8 +229,19 @@ export default function DisplayPage() {
                 );
             }
 
+            /*
+             * زمان آخرین بروزرسانی فقط بعد از
+             * دریافت اطلاعات روی Client تنظیم می‌شود.
+             */
             setLastUpdate(
-                new Date()
+                new Date().toLocaleTimeString(
+                    "fa-IR",
+                    {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        second: "2-digit",
+                    }
+                )
             );
         } catch (error) {
             console.error(
@@ -224,22 +254,61 @@ export default function DisplayPage() {
     }
 
     /* =====================================================
-       INITIAL LOAD + AUTO REFRESH
+       INITIAL LOAD + AUTO REFRESH + CLOCK
     ===================================================== */
 
     useEffect(() => {
+        /*
+         * تاریخ و ساعت فقط بعد از Mount شدن Client
+         * ساخته می‌شوند تا Hydration Error نداشته باشیم.
+         */
+
+        const updateClock = () => {
+            const now = new Date();
+
+            setCurrentDate(
+                now.toLocaleDateString(
+                    "fa-IR"
+                )
+            );
+
+            setLastUpdate(
+                now.toLocaleTimeString(
+                    "fa-IR",
+                    {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        second: "2-digit",
+                    }
+                )
+            );
+        };
+
+        updateClock();
+
         fetchDisplayData();
 
-        const interval =
+        const clockInterval =
+            setInterval(
+                updateClock,
+                1000
+            );
+
+        const dataInterval =
             setInterval(
                 fetchDisplayData,
                 5000
             );
 
-        return () =>
+        return () => {
             clearInterval(
-                interval
+                clockInterval
             );
+
+            clearInterval(
+                dataInterval
+            );
+        };
     }, []);
 
     /* =====================================================
@@ -304,11 +373,11 @@ export default function DisplayPage() {
                         </span>
 
                         <strong>
-                            {toPersianNumber(
-                                new Date().toLocaleDateString(
-                                    "fa-IR"
+                            {currentDate
+                                ? toPersianNumber(
+                                    currentDate
                                 )
-                            )}
+                                : "—"}
                         </strong>
 
                     </div>
@@ -755,14 +824,7 @@ export default function DisplayPage() {
 
                 <span>
                     آخرین بروزرسانی:{" "}
-                    {lastUpdate.toLocaleTimeString(
-                        "fa-IR",
-                        {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                            second: "2-digit",
-                        }
-                    )}
+                    {lastUpdate || "—"}
                 </span>
 
                 <RefreshCw
