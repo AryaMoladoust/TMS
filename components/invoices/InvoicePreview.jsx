@@ -24,12 +24,35 @@ function getCargoTypeLabel(value) {
 
 export default function InvoicePreview({ invoice, onClose }) {
   if (!invoice) return null;
-  const mapLink =
-    invoice.destination && invoice.destination !== "—"
-      ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-        invoice.destination
-      )}`
+
+  // =========================================================
+  // لینک مسیریابی
+  // اگر طول و عرض جغرافیایی مقصد در دیتابیس بار ثبت شده باشد
+  // (invoice.destinationLat / invoice.destinationLng) از همان
+  // استفاده می‌کنیم؛ در غیر این صورت از متن آدرس مقصد به‌عنوان
+  // پشتیبان (fallback) استفاده می‌شود.
+  //
+  // عمداً پارامتر origin ارسال نمی‌شود تا اپ گوگل‌مپ هنگام باز
+  // شدن لینک، موقعیت لحظه‌ای همان کاربری که QR را اسکن کرده
+  // است را به‌عنوان مبدأ حرکت در نظر بگیرد.
+  // =========================================================
+
+  const hasDestinationCoords =
+    invoice.destinationLat !== undefined &&
+    invoice.destinationLat !== null &&
+    invoice.destinationLat !== "" &&
+    invoice.destinationLng !== undefined &&
+    invoice.destinationLng !== null &&
+    invoice.destinationLng !== "";
+
+  const mapLink = hasDestinationCoords
+    ? `https://www.google.com/maps/dir/?api=1&destination=${invoice.destinationLat},${invoice.destinationLng}&travelmode=driving`
+    : invoice.destination && invoice.destination !== "—"
+      ? `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
+          invoice.destination
+        )}&travelmode=driving`
       : "";
+
   const printInvoice = () => {
     window.print();
   };

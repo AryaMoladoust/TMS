@@ -39,6 +39,29 @@ const MapPicker = dynamic(
 );
 
 
+// ===============================
+// مختصات ثابت مبدأ
+// (آدرس شرکت باربری در رشت)
+//
+// !! این دو عدد را با مختصات واقعی محل باربری جایگزین کنید.
+// ساده‌ترین راه: یک‌بار MapPicker را باز کنید، دقیقاً روی
+// محل باربری کلیک کنید و دو عدد «عرض جغرافیایی» و
+// «طول جغرافیایی» که پایین نقشه نشان داده می‌شود را همین‌جا قرار دهید.
+// ===============================
+
+const ORIGIN_LOCATION = {
+    lat: null, // TODO: عرض جغرافیایی واقعی باربری رشت
+    lng: null, // TODO: طول جغرافیایی واقعی باربری رشت
+};
+
+function hasValidOrigin() {
+    return (
+        typeof ORIGIN_LOCATION.lat === "number" &&
+        typeof ORIGIN_LOCATION.lng === "number"
+    );
+}
+
+
 export default function AddLoadPage() {
 
     const router = useRouter();
@@ -53,6 +76,94 @@ export default function AddLoadPage() {
 
     const [destinationLocation, setDestinationLocation] =
         useState(null);
+
+
+    // ===============================
+    // Distance (real-time road distance)
+    // ===============================
+
+    const [distance, setDistance] = useState("");
+    const [distanceLoading, setDistanceLoading] = useState(false);
+    const [distanceError, setDistanceError] = useState("");
+
+
+    useEffect(() => {
+
+        if (!destinationLocation) {
+            return;
+        }
+
+        if (!hasValidOrigin()) {
+            setDistanceError(
+                "مختصات مبدأ هنوز در کد تنظیم نشده است."
+            );
+            return;
+        }
+
+        let cancelled = false;
+
+        async function calculateRoadDistance() {
+
+            try {
+
+                setDistanceLoading(true);
+                setDistanceError("");
+
+                const url =
+                    `https://router.project-osrm.org/route/v1/driving/` +
+                    `${ORIGIN_LOCATION.lng},${ORIGIN_LOCATION.lat};` +
+                    `${destinationLocation.lng},${destinationLocation.lat}` +
+                    `?overview=false`;
+
+                const response = await fetch(url);
+
+                const data = await response.json();
+
+                if (
+                    !response.ok ||
+                    data.code !== "Ok" ||
+                    !data.routes?.[0]
+                ) {
+                    throw new Error("مسیر پیدا نشد");
+                }
+
+                const meters = data.routes[0].distance;
+                const kilometers = Math.round(meters / 1000);
+
+                if (!cancelled) {
+                    setDistance(String(kilometers));
+                }
+
+            } catch (error) {
+
+                console.error(
+                    "Distance calculation error:",
+                    error
+                );
+
+                if (!cancelled) {
+                    setDistanceError(
+                        "محاسبه خودکار مسافت ممکن نشد؛ می‌توانید مسافت را دستی وارد کنید."
+                    );
+                }
+
+            } finally {
+
+                if (!cancelled) {
+                    setDistanceLoading(false);
+                }
+
+            }
+
+        }
+
+        calculateRoadDistance();
+
+        return () => {
+            cancelled = true;
+        };
+
+    }, [destinationLocation]);
 
 
     // ===============================
@@ -609,6 +720,7 @@ export default function AddLoadPage() {
                                 name="loadOrigin"
                                 type="text"
                                 placeholder="رشت"
+                                defaultValue="رشت"
                                 required
                             />
 
@@ -819,6 +931,10 @@ export default function AddLoadPage() {
                                 name="loadDistance"
                                 type="number"
                                 min="0"
+                                value={distance}
+                                onChange={(event) =>
+                                    setDistance(event.target.value)
+                                }
                                 placeholder="۳۲۵"
                                 required
                             />
@@ -831,6 +947,58 @@ export default function AddLoadPage() {
                             </span>
 
                         </div>
+
+
+                        {/*
+                            وضعیت محاسبه‌ی خودکار مسافت
+                            (فقط پس از انتخاب مقصد روی نقشه فعال می‌شود)
+                        */}
+
+                        {distanceLoading && (
+
+                            <div
+                                style={{
+                                    fontSize: "12px",
+                                    color: "#64748b",
+                                    marginTop: "6px",
+                                }}
+                            >
+                                در حال محاسبه مسافت جاده‌ای...
+                            </div>
+
+                        )}
+
+                        {!distanceLoading &&
+                            distanceError && (
+
+                                <div
+                                    style={{
+                                        fontSize: "12px",
+                                        color: "#b91c1c",
+                                        marginTop: "6px",
+                                    }}
+                                >
+                                    {distanceError}
+                                </div>
+
+                            )}
+
+                        {!distanceLoading &&
+                            !distanceError &&
+                            distance &&
+                            destinationLocation && (
+
+                                <div
+                                    style={{
+                                        fontSize: "12px",
+                                        color: "#15803d",
+                                        marginTop: "6px",
+                                    }}
+                                >
+                                    مسافت جاده‌ای به‌صورت خودکار محاسبه شد: {distance} کیلومتر
+                                </div>
+
+                            )}
 
                     </div>
 

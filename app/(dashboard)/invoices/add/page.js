@@ -252,6 +252,8 @@ export default function AddInvoicePage() {
         companyName: "",
         origin: "",
         destination: "",
+        destinationLat: null,
+        destinationLng: null,
         distance: "",
         address: "",
         status: "",
@@ -469,6 +471,19 @@ export default function AddInvoicePage() {
             companyName,
             origin: load.origin || "",
             destination: load.destination || "",
+
+            /*
+             * مختصات مقصد (طول/عرض جغرافیایی) که هنگام
+             * ثبت بار در دیتابیس ذخیره شده، اینجا هم
+             * کپی می‌شود تا در QR کد فاکتور برای
+             * مسیریابی واقعی استفاده شود.
+             */
+            destinationLat:
+                load.destinationLat ?? null,
+
+            destinationLng:
+                load.destinationLng ?? null,
+
             distance: load.distance ?? "",
             address: load.address || "",
             status: provinceStatus,
@@ -492,6 +507,8 @@ export default function AddInvoicePage() {
             companyName: "",
             origin: "",
             destination: "",
+            destinationLat: null,
+            destinationLng: null,
             distance: "",
             address: "",
             status: "",
@@ -512,6 +529,8 @@ export default function AddInvoicePage() {
             companyName: "",
             origin: "",
             destination: "",
+            destinationLat: null,
+            destinationLng: null,
             distance: "",
             address: "",
             status: "",
@@ -618,6 +637,15 @@ export default function AddInvoicePage() {
             destination:
                 loadData.destination ||
                 "—",
+
+            /*
+             * برای ساخت لینک مسیریابی واقعی در QR کد.
+             */
+            destinationLat:
+                loadData.destinationLat,
+
+            destinationLng:
+                loadData.destinationLng,
 
             distance:
                 loadData.distance
