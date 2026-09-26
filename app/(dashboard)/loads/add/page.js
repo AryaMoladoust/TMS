@@ -50,8 +50,8 @@ const MapPicker = dynamic(
 // ===============================
 
 const ORIGIN_LOCATION = {
-    lat: null, // TODO: عرض جغرافیایی واقعی باربری رشت
-    lng: null, // TODO: طول جغرافیایی واقعی باربری رشت
+    lat: 37.2309875,
+    lng: 49.5533906,
 };
 
 function hasValidOrigin() {
