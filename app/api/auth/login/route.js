@@ -41,7 +41,7 @@ export async function POST(request) {
         |--------------------------------------------------------------------------
         |
         | اگر هیچ کاربری در MongoDB وجود نداشته باشد،
-        | فقط admin / 1234 اجازه ایجاد مالک اولیه را دارد.
+        | فقط کامران صمدیان / 1234 اجازه ایجاد مالک اولیه را دارد.
         |
         */
 
@@ -51,7 +51,7 @@ export async function POST(request) {
 
             if (usersCount === 0) {
                 if (
-                    username !== "admin" ||
+                    username !== "کامران صمدیان" ||
                     password !== "1234"
                 ) {
                     return NextResponse.json(
@@ -68,7 +68,7 @@ export async function POST(request) {
                     await hashPassword("1234");
 
                 user = await User.create({
-                    username: "admin",
+                    username: "کامران صمدیان",
                     password: hashedPassword,
                     role: "owner",
                 });

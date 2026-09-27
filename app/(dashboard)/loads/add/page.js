@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import {
@@ -17,8 +17,12 @@ import {
     Navigation,
     Tag,
     Map,
-    MapPinned,
 } from "lucide-react";
+
+import {
+    getProvincesList,
+    getCities,
+} from "@code-plate/iran-cities";
 
 
 // ===============================
@@ -40,13 +44,15 @@ const MapPicker = dynamic(
 
 
 // ===============================
-// مختصات ثابت مبدأ
-// (آدرس شرکت باربری در رشت)
-//
-// !! این دو عدد را با مختصات واقعی محل باربری جایگزین کنید.
-// ساده‌ترین راه: یک‌بار MapPicker را باز کنید، دقیقاً روی
-// محل باربری کلیک کنید و دو عدد «عرض جغرافیایی» و
-// «طول جغرافیایی» که پایین نقشه نشان داده می‌شود را همین‌جا قرار دهید.
+// مبدأ ثابت
+// ===============================
+
+const ORIGIN_PROVINCE = "گیلان";
+const ORIGIN_CITY = "رشت";
+
+
+// ===============================
+// مختصات مبدأ رشت
 // ===============================
 
 const ORIGIN_LOCATION = {
@@ -54,17 +60,42 @@ const ORIGIN_LOCATION = {
     lng: 49.5533906,
 };
 
-function hasValidOrigin() {
-    return (
-        typeof ORIGIN_LOCATION.lat === "number" &&
-        typeof ORIGIN_LOCATION.lng === "number"
-    );
-}
-
 
 export default function AddLoadPage() {
 
     const router = useRouter();
+
+
+    // ===============================
+    // استان‌ها
+    // ===============================
+
+    const provinces = useMemo(
+        () => getProvincesList(),
+        []
+    );
+
+
+    // ===============================
+    // مقصد
+    // ===============================
+
+    const [destinationProvince, setDestinationProvince] =
+        useState("");
+
+    const [destinationCity, setDestinationCity] =
+        useState("");
+
+
+    const destinationCities = useMemo(() => {
+
+        if (!destinationProvince) {
+            return [];
+        }
+
+        return getCities(destinationProvince);
+
+    }, [destinationProvince]);
 
 
     // ===============================
@@ -79,91 +110,15 @@ export default function AddLoadPage() {
 
 
     // ===============================
-    // Distance (real-time road distance)
+    // Distance
     // ===============================
 
-    const [distance, setDistance] = useState("");
-    const [distanceLoading, setDistanceLoading] = useState(false);
-    const [distanceError, setDistanceError] = useState("");
+    const [calculatedDistance, setCalculatedDistance] =
+        useState("");
 
 
-    useEffect(() => {
-
-        if (!destinationLocation) {
-            return;
-        }
-
-        if (!hasValidOrigin()) {
-            setDistanceError(
-                "مختصات مبدأ هنوز در کد تنظیم نشده است."
-            );
-            return;
-        }
-
-        let cancelled = false;
-
-        async function calculateRoadDistance() {
-
-            try {
-
-                setDistanceLoading(true);
-                setDistanceError("");
-
-                const url =
-                    `https://router.project-osrm.org/route/v1/driving/` +
-                    `${ORIGIN_LOCATION.lng},${ORIGIN_LOCATION.lat};` +
-                    `${destinationLocation.lng},${destinationLocation.lat}` +
-                    `?overview=false`;
-
-                const response = await fetch(url);
-
-                const data = await response.json();
-
-                if (
-                    !response.ok ||
-                    data.code !== "Ok" ||
-                    !data.routes?.[0]
-                ) {
-                    throw new Error("مسیر پیدا نشد");
-                }
-
-                const meters = data.routes[0].distance;
-                const kilometers = Math.round(meters / 1000);
-
-                if (!cancelled) {
-                    setDistance(String(kilometers));
-                }
-
-            } catch (error) {
-
-                console.error(
-                    "Distance calculation error:",
-                    error
-                );
-
-                if (!cancelled) {
-                    setDistanceError(
-                        "محاسبه خودکار مسافت ممکن نشد؛ می‌توانید مسافت را دستی وارد کنید."
-                    );
-                }
-
-            } finally {
-
-                if (!cancelled) {
-                    setDistanceLoading(false);
-                }
-
-            }
-
-        }
-
-        calculateRoadDistance();
-
-        return () => {
-            cancelled = true;
-        };
-
-    }, [destinationLocation]);
+    const [distanceLoading, setDistanceLoading] =
+        useState(false);
 
 
     // ===============================
@@ -175,6 +130,10 @@ export default function AddLoadPage() {
     const [companiesLoading, setCompaniesLoading] =
         useState(true);
 
+
+    // ===============================
+    // دریافت شرکت‌ها
+    // ===============================
 
     useEffect(() => {
 
@@ -194,7 +153,6 @@ export default function AddLoadPage() {
                 const result =
                     await response.json();
 
-
                 if (!response.ok) {
 
                     throw new Error(
@@ -202,9 +160,7 @@ export default function AddLoadPage() {
                         result.error ||
                         "خطا در دریافت شرکت‌ها"
                     );
-
                 }
-
 
                 const companyList =
                     Array.isArray(result)
@@ -212,7 +168,6 @@ export default function AddLoadPage() {
                         : Array.isArray(result.companies)
                             ? result.companies
                             : [];
-
 
                 setCompanies(companyList);
 
@@ -234,9 +189,7 @@ export default function AddLoadPage() {
                 setCompaniesLoading(false);
 
             }
-
         }
-
 
         fetchCompanies();
 
@@ -244,24 +197,173 @@ export default function AddLoadPage() {
 
 
     // ===============================
-    // Submit
+    // تغییر استان مقصد
     // ===============================
 
+    function handleDestinationProvinceChange(
+        event
+    ) {
+
+        const province =
+            event.target.value;
+
+        setDestinationProvince(
+            province
+        );
+
+        // با تغییر استان،
+        // شهر قبلی باید پاک شود
+        setDestinationCity("");
+
+        // مختصات مقصد قبلی هم دیگر معتبر نیست
+        setDestinationLocation(null);
+
+        setCalculatedDistance("");
+
+    }
+
+
+    // ===============================
+    // تغییر شهر مقصد
+    // ===============================
+
+    function handleDestinationCityChange(
+        event
+    ) {
+
+        const city =
+            event.target.value;
+
+        setDestinationCity(city);
+
+    }
+
+
+    // ===============================
+    // محاسبه مسافت از رشت
+    // ===============================
+
+    useEffect(() => {
+
+        if (!destinationLocation) {
+
+            setCalculatedDistance("");
+
+            return;
+        }
+
+        let cancelled = false;
+
+        async function calculateDistance() {
+
+            try {
+
+                setDistanceLoading(true);
+
+                const {
+                    lat,
+                    lng,
+                } = destinationLocation;
+
+
+                const url =
+                    `https://router.project-osrm.org/route/v1/driving/` +
+                    `${ORIGIN_LOCATION.lng},${ORIGIN_LOCATION.lat};` +
+                    `${lng},${lat}` +
+                    `?overview=false`;
+
+
+                const response =
+                    await fetch(url);
+
+
+                const data =
+                    await response.json();
+
+
+                if (
+                    !response.ok ||
+                    !data.routes ||
+                    !data.routes.length
+                ) {
+
+                    throw new Error(
+                        "مسافت پیدا نشد."
+                    );
+                }
+
+
+                const distanceKm =
+                    Math.round(
+                        data.routes[0].distance /
+                        1000
+                    );
+
+
+                if (!cancelled) {
+
+                    setCalculatedDistance(
+                        String(distanceKm)
+                    );
+
+                }
+
+            } catch (error) {
+
+                console.error(
+                    "Distance calculation error:",
+                    error
+                );
+
+                if (!cancelled) {
+
+                    setCalculatedDistance("");
+
+                }
+
+            } finally {
+
+                if (!cancelled) {
+
+                    setDistanceLoading(false);
+
+                }
+
+            }
+        }
+
+
+        calculateDistance();
+
+
+        return () => {
+
+            cancelled = true;
+
+        };
+
+    }, [destinationLocation]);
+
+
+    // ===============================
+    // Submit
+    // ===============================
 
     const handleSubmit = async (event) => {
 
         event.preventDefault();
 
 
-        // قبل از await فرم را ذخیره می‌کنیم
+        const form =
+            event.currentTarget;
 
-        const form = event.currentTarget;
 
-        const formData = new FormData(form);
+        const formData =
+            new FormData(form);
 
 
         // =================================
-        // نام شرکت انتخاب شده
+        // شرکت
         // =================================
 
         const companySelect =
@@ -281,8 +383,42 @@ export default function AddLoadPage() {
             );
 
             return;
-
         }
+
+
+        // =================================
+        // بررسی مقصد
+        // =================================
+
+        if (!destinationProvince) {
+
+            alert(
+                "لطفاً استان مقصد را انتخاب کنید."
+            );
+
+            return;
+        }
+
+
+        if (!destinationCity) {
+
+            alert(
+                "لطفاً شهر مقصد را انتخاب کنید."
+            );
+
+            return;
+        }
+
+
+        // =================================
+        // فاصله
+        // =================================
+
+        const distanceValue =
+            calculatedDistance ||
+            formData.get(
+                "loadDistance"
+            );
 
 
         // =================================
@@ -292,18 +428,49 @@ export default function AddLoadPage() {
         const loadData = {
 
             title:
-                formData.get("loadTitle"),
+                formData.get(
+                    "loadTitle"
+                ),
 
             companyName,
 
             barType:
-                formData.get("loadType"),
+                formData.get(
+                    "loadType"
+                ),
+
+
+            // =============================
+            // مبدأ ثابت
+            // =============================
+
+            originProvince:
+                ORIGIN_PROVINCE,
+
+            originCity:
+                ORIGIN_CITY,
 
             origin:
-                formData.get("loadOrigin"),
+                ORIGIN_CITY,
+
+
+            // =============================
+            // مقصد استاندارد
+            // =============================
+
+            destinationProvince:
+                destinationProvince,
+
+            destinationCity:
+                destinationCity,
 
             destination:
-                formData.get("loadDestination"),
+                destinationCity,
+
+
+            // =============================
+            // مختصات
+            // =============================
 
             destinationLocation:
                 destinationLocation
@@ -316,15 +483,18 @@ export default function AddLoadPage() {
                     }
                     : null,
 
+
+            // =============================
+            // اطلاعات دیگر
+            // =============================
+
             address:
-                formData.get("loadAddress"),
+                formData.get(
+                    "loadAddress"
+                ),
 
             distance:
-                Number(
-                    formData.get(
-                        "loadDistance"
-                    )
-                ),
+                Number(distanceValue || 0),
 
             provinceStatus:
                 formData.get(
@@ -340,12 +510,11 @@ export default function AddLoadPage() {
                 formData.get(
                     "loadDescription"
                 ),
-
         };
 
 
         // =================================
-        // ارسال به API
+        // ارسال API
         // =================================
 
         try {
@@ -384,16 +553,13 @@ export default function AddLoadPage() {
                     result
                 );
 
-
                 alert(
                     result.message ||
                     result.error ||
                     "خطا در ثبت بار"
                 );
 
-
                 return;
-
             }
 
 
@@ -412,11 +578,9 @@ export default function AddLoadPage() {
             );
 
 
-            // =================================
-            // بازگشت به صفحه اصلی بارها
-            // =================================
-
-            router.push("/loads");
+            router.push(
+                "/loads"
+            );
 
             router.refresh();
 
@@ -428,20 +592,15 @@ export default function AddLoadPage() {
                 error
             );
 
-
             alert(
                 "ثبت بار انجام نشد."
             );
-
         }
-
     };
 
 
     return (
-
         <main className="main-content">
-
 
             {/* =====================================
                 Page Header
@@ -577,7 +736,9 @@ export default function AddLoadPage() {
                                 id="loadCompany"
                                 name="loadCompany"
                                 defaultValue=""
-                                disabled={companiesLoading}
+                                disabled={
+                                    companiesLoading
+                                }
                                 required
                             >
 
@@ -585,11 +746,9 @@ export default function AddLoadPage() {
                                     value=""
                                     disabled
                                 >
-
                                     {companiesLoading
                                         ? "در حال دریافت شرکت‌ها..."
                                         : "شرکت را انتخاب کنید"}
-
                                 </option>
 
 
@@ -598,12 +757,16 @@ export default function AddLoadPage() {
                                         (company) => (
 
                                             <option
-                                                key={company._id}
-                                                value={company._id}
+                                                key={
+                                                    company._id
+                                                }
+                                                value={
+                                                    company._id
+                                                }
                                             >
-
-                                                {company.name}
-
+                                                {
+                                                    company.name
+                                                }
                                             </option>
 
                                         )
@@ -645,9 +808,7 @@ export default function AddLoadPage() {
                                     value=""
                                     disabled
                                 >
-
                                     نوع بار را انتخاب کنید
-
                                 </option>
 
 
@@ -703,10 +864,8 @@ export default function AddLoadPage() {
 
                     <div className="load-form-group">
 
-                        <label htmlFor="loadOrigin">
-
-                            مبدأ <span>*</span>
-
+                        <label>
+                            مبدأ
                         </label>
 
 
@@ -716,12 +875,10 @@ export default function AddLoadPage() {
 
 
                             <input
-                                id="loadOrigin"
-                                name="loadOrigin"
                                 type="text"
-                                placeholder="رشت"
-                                defaultValue="رشت"
-                                required
+                                value="رشت، گیلان"
+                                disabled
+                                readOnly
                             />
 
                         </div>
@@ -730,14 +887,74 @@ export default function AddLoadPage() {
 
 
                     {/* =================================
-                        مقصد
+                        استان مقصد
                     ================================== */}
 
                     <div className="load-form-group">
 
-                        <label htmlFor="loadDestination">
+                        <label htmlFor="destinationProvince">
 
-                            مقصد <span>*</span>
+                            استان مقصد <span>*</span>
+
+                        </label>
+
+
+                        <div className="load-input-wrapper">
+
+                            <MapPin size={18} />
+
+
+                            <select
+                                id="destinationProvince"
+                                value={
+                                    destinationProvince
+                                }
+                                onChange={
+                                    handleDestinationProvinceChange
+                                }
+                                required
+                            >
+
+                                <option value="">
+                                    استان مقصد را انتخاب کنید
+                                </option>
+
+
+                                {provinces.map(
+                                    (province) => (
+
+                                        <option
+                                            key={
+                                                province.en
+                                            }
+                                            value={
+                                                province.en
+                                            }
+                                        >
+                                            {
+                                                province.fa
+                                            }
+                                        </option>
+
+                                    )
+                                )}
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+
+                    {/* =================================
+                        شهر مقصد
+                    ================================== */}
+
+                    <div className="load-form-group">
+
+                        <label htmlFor="destinationCity">
+
+                            شهر مقصد <span>*</span>
 
                         </label>
 
@@ -747,41 +964,77 @@ export default function AddLoadPage() {
                             <Navigation size={18} />
 
 
-                            <input
-                                id="loadDestination"
-                                name="loadDestination"
-                                type="text"
-                                placeholder="تهران"
+                            <select
+                                id="destinationCity"
+                                value={
+                                    destinationCity
+                                }
+                                onChange={
+                                    handleDestinationCityChange
+                                }
+                                disabled={
+                                    !destinationProvince
+                                }
                                 required
-                            />
+                            >
+
+                                <option value="">
+                                    {!destinationProvince
+                                        ? "ابتدا استان را انتخاب کنید"
+                                        : "شهر مقصد را انتخاب کنید"}
+                                </option>
+
+
+                                {destinationCities.map(
+                                    (city) => (
+
+                                        <option
+                                            key={
+                                                city.en
+                                            }
+                                            value={
+                                                city.fa
+                                            }
+                                        >
+                                            {
+                                                city.fa
+                                            }
+                                        </option>
+
+                                    )
+                                )}
+
+                            </select>
 
                         </div>
 
+                    </div>
 
-                        {/* =================================
-                            انتخاب مقصد روی نقشه
-                        ================================== */}
+
+                    {/* =================================
+                        نقشه مقصد
+                    ================================== */}
+
+                    <div className="load-form-group load-form-full">
 
                         <button
                             type="button"
                             className="map-select-button"
                             onClick={() =>
-                                setShowDestinationMap(true)
+                                setShowDestinationMap(
+                                    true
+                                )
                             }
                         >
 
                             <Map size={17} />
 
                             {destinationLocation
-                                ? "تغییر محل مقصد روی نقشه"
-                                : "انتخاب مقصد روی نقشه"}
+                                ? "تغییر محل دقیق مقصد روی نقشه"
+                                : "انتخاب محل دقیق مقصد روی نقشه"}
 
                         </button>
 
-
-                        {/* =================================
-                            نمایش مقصد انتخاب شده
-                        ================================== */}
 
                         {destinationLocation && (
 
@@ -799,11 +1052,19 @@ export default function AddLoadPage() {
 
                                     <span>
 
-                                        {destinationLocation.lat.toFixed(6)}
+                                        {
+                                            destinationLocation.lat.toFixed(
+                                                6
+                                            )
+                                        }
 
                                         {" , "}
 
-                                        {destinationLocation.lng.toFixed(6)}
+                                        {
+                                            destinationLocation.lng.toFixed(
+                                                6
+                                            )
+                                        }
 
                                     </span>
 
@@ -817,15 +1078,12 @@ export default function AddLoadPage() {
 
 
                     {/* =================================
-                        نقشه مقصد
+                        نقشه
                     ================================== */}
 
                     {showDestinationMap && (
 
                         <div className="load-map-section load-form-full">
-
-
-                            {/* Header نقشه */}
 
                             <div className="map-section-header">
 
@@ -847,8 +1105,6 @@ export default function AddLoadPage() {
                             </div>
 
 
-                            {/* Map */}
-
                             <MapPicker
 
                                 initialPosition={{
@@ -857,12 +1113,13 @@ export default function AddLoadPage() {
                                 }}
 
 
-                                onConfirm={(location) => {
+                                onConfirm={(
+                                    location
+                                ) => {
 
                                     setDestinationLocation(
                                         location
                                     );
-
 
                                     setShowDestinationMap(
                                         false
@@ -899,7 +1156,7 @@ export default function AddLoadPage() {
                                 id="loadAddress"
                                 name="loadAddress"
                                 rows={3}
-                                placeholder="آدرس دقیق محل را وارد کنید..."
+                                placeholder="آدرس دقیق محل بار را وارد کنید..."
                                 required
                             />
 
@@ -931,74 +1188,25 @@ export default function AddLoadPage() {
                                 name="loadDistance"
                                 type="number"
                                 min="0"
-                                value={distance}
-                                onChange={(event) =>
-                                    setDistance(event.target.value)
+                                value={
+                                    calculatedDistance
                                 }
-                                placeholder="۳۲۵"
+                                onChange={() => {}}
+                                placeholder={
+                                    distanceLoading
+                                        ? "در حال محاسبه..."
+                                        : "بعد از انتخاب مقصد روی نقشه محاسبه می‌شود"
+                                }
+                                readOnly
                                 required
                             />
 
 
                             <span className="load-input-unit">
-
                                 کیلومتر
-
                             </span>
 
                         </div>
-
-
-                        {/*
-                            وضعیت محاسبه‌ی خودکار مسافت
-                            (فقط پس از انتخاب مقصد روی نقشه فعال می‌شود)
-                        */}
-
-                        {distanceLoading && (
-
-                            <div
-                                style={{
-                                    fontSize: "12px",
-                                    color: "#64748b",
-                                    marginTop: "6px",
-                                }}
-                            >
-                                در حال محاسبه مسافت جاده‌ای...
-                            </div>
-
-                        )}
-
-                        {!distanceLoading &&
-                            distanceError && (
-
-                                <div
-                                    style={{
-                                        fontSize: "12px",
-                                        color: "#b91c1c",
-                                        marginTop: "6px",
-                                    }}
-                                >
-                                    {distanceError}
-                                </div>
-
-                            )}
-
-                        {!distanceLoading &&
-                            !distanceError &&
-                            distance &&
-                            destinationLocation && (
-
-                                <div
-                                    style={{
-                                        fontSize: "12px",
-                                        color: "#15803d",
-                                        marginTop: "6px",
-                                    }}
-                                >
-                                    مسافت جاده‌ای به‌صورت خودکار محاسبه شد: {distance} کیلومتر
-                                </div>
-
-                            )}
 
                     </div>
 
@@ -1032,9 +1240,7 @@ export default function AddLoadPage() {
                                     value=""
                                     disabled
                                 >
-
                                     وضعیت مسیر را انتخاب کنید
-
                                 </option>
 
 
@@ -1094,9 +1300,7 @@ export default function AddLoadPage() {
                                     value=""
                                     disabled
                                 >
-
                                     نوع خودرو را انتخاب کنید
-
                                 </option>
 
 
@@ -1187,6 +1391,9 @@ export default function AddLoadPage() {
                         <button
                             type="submit"
                             className="primary-action-button"
+                            disabled={
+                                distanceLoading
+                            }
                         >
 
                             <Save size={19} />
@@ -1204,6 +1411,5 @@ export default function AddLoadPage() {
             </section>
 
         </main>
-
     );
 }

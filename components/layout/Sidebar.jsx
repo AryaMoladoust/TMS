@@ -20,7 +20,7 @@ import { usePathname } from "next/navigation";
 const menuItems = [
   {
     title: "صفحه اصلی",
-    href: "/",
+    href: "/dashboard",
     icon: LayoutDashboard,
   },
   {
@@ -69,11 +69,7 @@ export default function Sidebar({
   const pathname = usePathname();
 
   function isActive(href) {
-    if (href === "/") {
-      return pathname === "/";
-    }
-
-    return pathname.startsWith(href);
+    return pathname === href || pathname.startsWith(`${href}/`);
   }
 
   return (
@@ -86,15 +82,13 @@ export default function Sidebar({
       )}
 
       <aside
-        className={`sidebar ${
-          sidebarOpen
+        className={`sidebar ${sidebarOpen
             ? "sidebar-open"
             : "sidebar-closed"
-        } ${
-          mobileOpen
+          } ${mobileOpen
             ? "sidebar-mobile-open"
             : ""
-        }`}
+          }`}
       >
         {/* Header */}
 
@@ -158,11 +152,10 @@ export default function Sidebar({
               <a
                 href={item.href}
                 key={item.title}
-                className={`nav-item ${
-                  active
+                className={`nav-item ${active
                     ? "nav-item-active"
                     : ""
-                }`}
+                  }`}
                 title={item.title}
               >
                 <Icon
@@ -185,11 +178,10 @@ export default function Sidebar({
 
           <a
             href="/users"
-            className={`nav-item ${
-              isActive("/users")
+            className={`nav-item ${isActive("/users")
                 ? "nav-item-active"
                 : ""
-            }`}
+              }`}
             title="مدیریت کاربران"
           >
             <UserPlus
@@ -206,11 +198,10 @@ export default function Sidebar({
 
           <a
             href="/change-password"
-            className={`nav-item ${
-              isActive("/change-password")
+            className={`nav-item ${isActive("/change-password")
                 ? "nav-item-active"
                 : ""
-            }`}
+              }`}
             title="تغییر رمز عبور"
           >
             <KeyRound
@@ -227,11 +218,10 @@ export default function Sidebar({
 
           <a
             href="/settings"
-            className={`nav-item ${
-              isActive("/settings")
+            className={`nav-item ${isActive("/settings")
                 ? "nav-item-active"
                 : ""
-            }`}
+              }`}
             title="تنظیمات"
           >
             <Settings

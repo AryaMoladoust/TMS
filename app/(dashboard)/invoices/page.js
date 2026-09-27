@@ -173,6 +173,10 @@ function makePreviewInvoice(invoice) {
         startTime:
             invoice.startTime || "—",
 
+        paymentType:
+            invoice.costType ||
+            invoice.paymentType ||
+            "—",
 
         /* =========================
            DRIVER

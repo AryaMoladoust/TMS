@@ -17,7 +17,6 @@ export async function GET() {
         return NextResponse.json(loads);
 
     } catch (error) {
-
         console.error("GET /api/loads error:", error);
 
         return NextResponse.json(
@@ -37,7 +36,6 @@ export async function GET() {
 // =====================================
 
 async function generateLoadId() {
-
     const date = new Date();
 
     const year = date.getFullYear();
@@ -50,11 +48,7 @@ async function generateLoadId() {
         date.getDate()
     ).padStart(2, "0");
 
-
     const prefix = `LD-${year}${month}${day}`;
-
-
-    // پیدا کردن آخرین بار همان روز
 
     const lastLoad = await Load.findOne({
         loadId: {
@@ -64,23 +58,18 @@ async function generateLoadId() {
         loadId: -1,
     });
 
-
     let number = 1;
 
-
     if (lastLoad) {
-
-        const lastNumber =
-            parseInt(
-                lastLoad.loadId.split("-")[2],
-                10
-            );
+        const lastNumber = parseInt(
+            lastLoad.loadId.split("-")[2],
+            10
+        );
 
         if (!isNaN(lastNumber)) {
             number = lastNumber + 1;
         }
     }
-
 
     return `${prefix}-${String(number).padStart(4, "0")}`;
 }
@@ -91,21 +80,16 @@ async function generateLoadId() {
 // =====================================
 
 export async function POST(request) {
-
     try {
-
         await connectToDatabase();
-
 
         const body = await request.json();
 
-
         // =================================
-        // بررسی اطلاعات ضروری
+        // اطلاعات ضروری
         // =================================
 
         if (!body.title) {
-
             return NextResponse.json(
                 {
                     message: "عنوان بار وارد نشده است.",
@@ -116,9 +100,7 @@ export async function POST(request) {
             );
         }
 
-
         if (!body.companyName) {
-
             return NextResponse.json(
                 {
                     message: "شرکت انتخاب نشده است.",
@@ -129,9 +111,7 @@ export async function POST(request) {
             );
         }
 
-
         if (!body.barType) {
-
             return NextResponse.json(
                 {
                     message: "نوع بار انتخاب نشده است.",
@@ -142,12 +122,30 @@ export async function POST(request) {
             );
         }
 
+        // =================================
+        // مبدأ ثابت
+        // =================================
 
-        if (!body.origin) {
+        const originProvince =
+            body.originProvince || "گیلان";
 
+        const originCity =
+            body.originCity || "رشت";
+
+        // =================================
+        // مقصد
+        // =================================
+
+        const destinationProvince =
+            body.destinationProvince;
+
+        const destinationCity =
+            body.destinationCity;
+
+        if (!destinationProvince) {
             return NextResponse.json(
                 {
-                    message: "مبدأ وارد نشده است.",
+                    message: "استان مقصد انتخاب نشده است.",
                 },
                 {
                     status: 400,
@@ -155,19 +153,16 @@ export async function POST(request) {
             );
         }
 
-
-        if (!body.destination) {
-
+        if (!destinationCity) {
             return NextResponse.json(
                 {
-                    message: "مقصد وارد نشده است.",
+                    message: "شهر مقصد انتخاب نشده است.",
                 },
                 {
                     status: 400,
                 }
             );
         }
-
 
         // =================================
         // ساخت شناسه بار
@@ -175,13 +170,11 @@ export async function POST(request) {
 
         const loadId = await generateLoadId();
 
-
         // =================================
         // ساخت اطلاعات بار
         // =================================
 
         const load = await Load.create({
-
             loadId,
 
             title: body.title,
@@ -190,13 +183,23 @@ export async function POST(request) {
 
             companyName: body.companyName,
 
-            origin: body.origin,
+            // مبدأ استاندارد
+            originProvince,
 
-            destination: body.destination,
+            originCity,
 
+            // مقدار قدیمی برای سازگاری
+            origin: originCity,
+
+            // مقصد استاندارد
+            destinationProvince,
+
+            destinationCity,
+
+            // مقدار قدیمی برای سازگاری
+            destination: destinationCity,
 
             // مختصات مقصد
-
             destinationLat:
                 body.destinationLocation?.lat ??
                 body.destinationLat ??
@@ -207,39 +210,31 @@ export async function POST(request) {
                 body.destinationLng ??
                 null,
 
-
             distance:
                 body.distance !== undefined
                     ? Number(body.distance)
                     : 0,
 
-
             address:
                 body.address || "",
-
 
             price:
                 body.price !== undefined
                     ? Number(body.price)
                     : 0,
 
-
             description:
                 body.description || "",
-
 
             vehicleType:
                 body.vehicleType || null,
 
-
             provinceStatus:
                 body.provinceStatus || null,
-
 
             status:
                 body.status || "pending",
         });
-
 
         // =================================
         // پاسخ موفق
@@ -252,14 +247,11 @@ export async function POST(request) {
             }
         );
 
-
     } catch (error) {
-
         console.error(
             "POST /api/loads error:",
             error
         );
-
 
         return NextResponse.json(
             {

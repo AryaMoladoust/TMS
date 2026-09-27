@@ -497,70 +497,144 @@ if (loadId) {
                     qrCode?.trim() || "",
             });
 
-        // ==========================================
-        // حذف کامل بار بعد از ثبت موفق فاکتور
-        // ==========================================
+ // ==========================================
+// حذف بار و راننده روزانه بعد از ثبت موفق فاکتور
+// ==========================================
 
-        if (finalLoadId) {
-            try {
-                const deletedLoad =
-                    await Load.findByIdAndDelete(
-                        finalLoadId
-                    );
+let deletedLoadSnapshot = null;
 
-                if (!deletedLoad) {
-                    // اگر بار پیدا نشد، فاکتور
-                    // تازه ساخته‌شده را حذف می‌کنیم
-                    await Invoice.findByIdAndDelete(
-                        invoice._id
-                    );
+if (finalLoadId) {
+    try {
+        const deletedLoad =
+            await Load.findByIdAndDelete(
+                finalLoadId
+            );
 
-                    return NextResponse.json(
-                        {
-                            message:
-                                "فاکتور ثبت شد اما بار حذف نشد؛ عملیات برگشت داده شد.",
-                        },
-                        {
-                            status: 409,
-                        }
-                    );
+        if (!deletedLoad) {
+            await Invoice.findByIdAndDelete(
+                invoice._id
+            );
+
+            return NextResponse.json(
+                {
+                    message:
+                        "فاکتور ثبت شد اما بار حذف نشد؛ عملیات برگشت داده شد.",
+                },
+                {
+                    status: 409,
                 }
+            );
+        }
 
-                console.log(
-                    "Load deleted after invoice:",
-                    finalLoadId.toString()
+        // نگه داشتن اطلاعات بار برای Rollback احتمالی
+        deletedLoadSnapshot =
+            deletedLoad.toObject();
+
+        console.log(
+            "Load deleted after invoice:",
+            finalLoadId.toString()
+        );
+    } catch (deleteError) {
+        console.error(
+            "Delete load after invoice error:",
+            deleteError
+        );
+
+        await Invoice.findByIdAndDelete(
+            invoice._id
+        );
+
+        return NextResponse.json(
+            {
+                message:
+                    "حذف بار انجام نشد و ثبت فاکتور نیز برگشت داده شد.",
+                error:
+                    deleteError.message,
+            },
+            {
+                status: 500,
+            }
+        );
+    }
+}
+
+// ==========================================
+// حذف راننده از ورود روزانه
+// ==========================================
+
+if (finalDailyDriverId) {
+    try {
+        const deletedDailyDriver =
+            await DailyDriver.findByIdAndDelete(
+                finalDailyDriverId
+            );
+
+        if (!deletedDailyDriver) {
+            // حذف فاکتور
+            await Invoice.findByIdAndDelete(
+                invoice._id
+            );
+
+            // اگر بار حذف شده بود، آن را برمی‌گردانیم
+            if (deletedLoadSnapshot) {
+                await Load.create(
+                    deletedLoadSnapshot
                 );
-            } catch (deleteError) {
+            }
+
+            return NextResponse.json(
+                {
+                    message:
+                        "فاکتور ثبت شد اما راننده از لیست روزانه حذف نشد؛ عملیات برگشت داده شد.",
+                },
+                {
+                    status: 409,
+                }
+            );
+        }
+
+        console.log(
+            "Daily driver removed after invoice:",
+            finalDailyDriverId.toString()
+        );
+    } catch (dailyDriverError) {
+        console.error(
+            "Delete daily driver after invoice error:",
+            dailyDriverError
+        );
+
+        // حذف فاکتور
+        await Invoice.findByIdAndDelete(
+            invoice._id
+        );
+
+        // برگرداندن بار
+        if (deletedLoadSnapshot) {
+            try {
+                await Load.create(
+                    deletedLoadSnapshot
+                );
+            } catch (restoreLoadError) {
                 console.error(
-                    "Delete load after invoice error:",
-                    deleteError
-                );
-
-                // ==================================
-                // Rollback فاکتور
-                // ==================================
-
-                await Invoice.findByIdAndDelete(
-                    invoice._id
-                );
-
-                return NextResponse.json(
-                    {
-                        message:
-                            "حذف بار انجام نشد و ثبت فاکتور نیز برگشت داده شد.",
-                        error:
-                            deleteError.message,
-                    },
-                    {
-                        status: 500,
-                    }
+                    "Restore load error:",
+                    restoreLoadError
                 );
             }
         }
 
-        // ==========================================
-        // پاسخ موفق
-        // ==========================================
+        return NextResponse.json(
+            {
+                message:
+                    "راننده از لیست روزانه حذف نشد؛ عملیات برگشت داده شد.",
+                error:
+                    dailyDriverError.message,
+            },
+            {
+                status: 500,
+            }
+        );
+    }
+}
 
         return NextResponse.json(
             {

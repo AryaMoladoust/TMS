@@ -27,17 +27,58 @@ const LoadSchema = new mongoose.Schema(
             trim: true,
         },
 
+        // ================================
+        // مبدأ
+        // ================================
+
+        originProvince: {
+            type: String,
+            required: true,
+            trim: true,
+            default: "گیلان",
+        },
+
+        originCity: {
+            type: String,
+            required: true,
+            trim: true,
+            default: "رشت",
+        },
+
+        // برای سازگاری با بخش‌های قدیمی سیستم
         origin: {
+            type: String,
+            required: true,
+            trim: true,
+            default: "رشت",
+        },
+
+        // ================================
+        // مقصد
+        // ================================
+
+        destinationProvince: {
             type: String,
             required: true,
             trim: true,
         },
 
+        destinationCity: {
+            type: String,
+            required: true,
+            trim: true,
+        },
+
+        // برای سازگاری با بخش‌های قدیمی سیستم
         destination: {
             type: String,
             required: true,
             trim: true,
         },
+
+        // ================================
+        // مختصات مقصد
+        // ================================
 
         destinationLat: {
             type: Number,
@@ -48,6 +89,10 @@ const LoadSchema = new mongoose.Schema(
             type: Number,
             default: null,
         },
+
+        // ================================
+        // اطلاعات بار
+        // ================================
 
         distance: {
             type: Number,

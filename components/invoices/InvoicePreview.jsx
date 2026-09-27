@@ -22,6 +22,17 @@ function getCargoTypeLabel(value) {
   return cargoTypeLabels[value] || value || "—";
 }
 
+const paymentTypeLabels = {
+  credit: "اعتباری",
+  cash: "نقد",
+  "اعتباری": "اعتباری",
+  "نقد": "نقد",
+};
+
+function getPaymentTypeLabel(value) {
+  return paymentTypeLabels[value] || value || "—";
+}
+
 export default function InvoicePreview({ invoice, onClose }) {
   if (!invoice) return null;
 
@@ -262,7 +273,10 @@ export default function InvoicePreview({ invoice, onClose }) {
             <div className="invoice-cost-wrapper">
 
               <div className="invoice-table-title">
-                جزئیات هزینه‌ها
+                <span>جزئیات هزینه‌ها</span>
+                <span className="invoice-payment-badge">
+                  {getPaymentTypeLabel(invoice.paymentType)}
+                </span>
               </div>
 
               <table className="invoice-cost-table">

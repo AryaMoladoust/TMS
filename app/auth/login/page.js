@@ -21,12 +21,7 @@ function IconLock(props) {
     return (
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" {...props}>
             <rect x="5" y="10.5" width="14" height="9.5" rx="2.5" stroke="currentColor" strokeWidth="1.8" />
-            <path
-                d="M8 10.5V8a4 4 0 0 1 8 0v2.5"
-                stroke="currentColor"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-            />
+            <path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
             <circle cx="12" cy="15" r="1.6" fill="currentColor" />
         </svg>
     );
@@ -62,110 +57,143 @@ function IconEyeOff(props) {
     );
 }
 
-function IconBox(props) {
+function IconShield(props) {
     return (
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" {...props}>
-            <path d="M3.5 8.5 12 4l8.5 4.5L12 13 3.5 8.5Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" {...props}>
             <path
-                d="M3.5 8.5V16l8.5 4.5V13M20.5 8.5V16L12 20.5"
+                d="M12 3.5 19 6.3v5c0 5-3 8.4-7 9.2-4-.8-7-4.2-7-9.2v-5L12 3.5Z"
                 stroke="currentColor"
-                strokeWidth="1.6"
+                strokeWidth="1.7"
                 strokeLinejoin="round"
             />
+            <path d="M9.3 12.2 11.2 14l3.6-3.8" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
     );
 }
 
-function IconUsers(props) {
+function IconPin(props) {
     return (
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" {...props}>
-            <circle cx="9" cy="8" r="3.2" stroke="currentColor" strokeWidth="1.6" />
-            <path d="M3 19c.9-3.4 3-5 6-5s5.1 1.6 6 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
             <path
-                d="M15.5 6.2c1.5.3 2.6 1.5 2.6 3s-1.1 2.7-2.6 3M18.5 19c-.5-2-1.5-3.4-3-4.2"
+                d="M12 21s7-6.1 7-11.5A7 7 0 0 0 5 9.5C5 14.9 12 21 12 21Z"
                 stroke="currentColor"
-                strokeWidth="1.6"
-                strokeLinecap="round"
+                strokeWidth="1.8"
+                strokeLinejoin="round"
             />
+            <circle cx="12" cy="9.5" r="2.4" stroke="currentColor" strokeWidth="1.8" />
         </svg>
     );
 }
 
-function IconChart(props) {
+function IconArrow(props) {
     return (
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" {...props}>
-            <path d="M4 20V10M11 20V4M18 20v-7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-            <path d="M3 20h18" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" {...props}>
+            <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
     );
 }
 
-function TruckRouteIllustration() {
+function LogoMark() {
+    return (
+        <svg viewBox="0 0 64 64" width="100%" height="100%">
+            <defs>
+                <linearGradient id="logoGrad" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0" stopColor="#2f6fef" />
+                    <stop offset="1" stopColor="#0b1f3d" />
+                </linearGradient>
+            </defs>
+            <rect width="64" height="64" rx="18" fill="url(#logoGrad)" />
+            <path d="M14 48 L30 16 L38 16 L22 48 Z" fill="#ffffff" />
+            <path d="M30 48 L46 16 L54 16 L38 48 Z" fill="#ffffff" opacity="0.5" />
+            <rect x="15" y="41.5" width="15" height="4" rx="2" fill="#0b1f3d" transform="rotate(-27 15 41.5)" />
+        </svg>
+    );
+}
+
+function HeroIllustration() {
+    const doors = Array.from({ length: 6 });
     return (
         <svg
-            className="login-route-svg"
-            viewBox="0 0 360 480"
-            preserveAspectRatio="xMidYMax slice"
+            className="login-hero-svg"
+            viewBox="0 0 1440 900"
+            preserveAspectRatio="xMidYMid slice"
             xmlns="http://www.w3.org/2000/svg"
         >
             <defs>
-                <pattern id="loginDots" width="22" height="22" patternUnits="userSpaceOnUse">
-                    <circle cx="1.4" cy="1.4" r="1.4" fill="#ffffff" />
-                </pattern>
-                <radialGradient id="loginGlow" cx="50%" cy="50%" r="50%">
-                    <stop offset="0%" stopColor="var(--primary)" stopOpacity="0.55" />
-                    <stop offset="100%" stopColor="var(--primary)" stopOpacity="0" />
+                <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" stopColor="#bfe0f5" />
+                    <stop offset="0.6" stopColor="#dcecf8" />
+                    <stop offset="1" stopColor="#eef5fa" />
+                </linearGradient>
+                <radialGradient id="sunGlow" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" stopColor="#ffffff" stopOpacity="0.65" />
+                    <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
                 </radialGradient>
             </defs>
 
-            <rect x="0" y="0" width="360" height="480" fill="url(#loginDots)" opacity="0.05" />
+            <rect width="1440" height="900" fill="url(#skyGrad)" />
+            <circle cx="1080" cy="150" r="220" fill="url(#sunGlow)" />
+            <ellipse cx="260" cy="130" rx="90" ry="24" fill="#ffffff" opacity="0.55" />
+            <ellipse cx="420" cy="170" rx="60" ry="16" fill="#ffffff" opacity="0.45" />
 
-            {/* road */}
-            <path d="M40 480 L150 120 L210 120 L320 480 Z" fill="#ffffff" opacity="0.035" />
+            {/* mountains */}
             <path
-                className="login-route-line"
-                d="M180 480 L180 120"
-                stroke="#ffffff"
-                strokeOpacity="0.28"
-                strokeWidth="3"
-                strokeDasharray="10 12"
-                strokeLinecap="round"
+                d="M0,430 L140,340 L280,410 L420,320 L560,420 L720,330 L880,410 L1020,350 L1180,420 L1320,360 L1440,420 L1440,540 L0,540 Z"
+                fill="#b7c9dd"
+                opacity="0.7"
+            />
+            <path
+                d="M0,470 L160,410 L320,460 L480,390 L640,460 L800,400 L960,470 L1120,410 L1280,470 L1440,440 L1440,560 L0,560 Z"
+                fill="#93a8c4"
+                opacity="0.85"
             />
 
-            {/* delivery route */}
-            <path
-                d="M60 300 C 120 250, 90 170, 160 130 S 300 90, 300 40"
-                fill="none"
-                stroke="#8fc1ff"
-                strokeOpacity="0.55"
-                strokeWidth="2"
-                strokeDasharray="1 9"
-                strokeLinecap="round"
-            />
-            <circle cx="120" cy="230" r="4" fill="#8fc1ff" />
-            <circle cx="185" cy="145" r="4" fill="#8fc1ff" />
-            <circle cx="300" cy="40" r="10" fill="none" stroke="#ffffff" strokeOpacity="0.5" strokeWidth="1.5" />
-            <g className="login-pin-pulse">
-                <circle cx="300" cy="40" r="6" fill="#ffffff" />
-            </g>
+            {/* warehouse */}
+            <rect x="60" y="560" width="1320" height="190" fill="#e3e8ee" />
+            <rect x="60" y="560" width="1320" height="12" fill="#c3cdd9" />
+            <rect x="60" y="598" width="1320" height="10" fill="var(--primary, #2563eb)" opacity="0.85" />
+            {doors.map((_, i) => (
+                <rect key={i} x={130 + i * 200} y="648" width="120" height="95" rx="6" fill="#c7d0da" />
+            ))}
 
-            {/* headlight glow */}
-            <circle cx="260" cy="330" r="70" fill="url(#loginGlow)" />
+            {/* gate */}
+            <rect x="640" y="470" width="24" height="280" fill="#4b5b70" />
+            <rect x="800" y="470" width="24" height="280" fill="#4b5b70" />
+            <rect x="622" y="458" width="220" height="16" rx="4" fill="#3a4a5e" />
+            <rect x="650" y="480" width="170" height="44" rx="8" fill="#0f1f3d" opacity="0.92" />
+            <text x="735" y="508" textAnchor="middle" fontSize="15" fontWeight="700" fill="#ffffff" style={{ fontFamily: "inherit" }}>
+                شهرک صنعتی رشت
+            </text>
+
+            {/* flag */}
+            <line x1="880" y1="468" x2="880" y2="560" stroke="#4b5b70" strokeWidth="4" />
+            <rect x="882" y="468" width="46" height="10" fill="#1f8a4c" />
+            <rect x="882" y="478" width="46" height="10" fill="#f4f7fb" />
+            <rect x="882" y="488" width="46" height="10" fill="#c0392b" />
+
+            {/* ground */}
+            <rect x="0" y="700" width="1440" height="200" fill="#c9d0d8" />
+            <path
+                d="M0,780 C 260,720 480,830 860,760 C 1140,710 1280,790 1440,740 L1440,900 L0,900 Z"
+                fill="#0c1526"
+            />
 
             {/* truck */}
             <g>
-                <rect x="40" y="292" width="150" height="66" rx="8" fill="#f4f7fb" />
-                <rect x="52" y="304" width="60" height="18" rx="3" fill="#0b1526" opacity="0.12" />
+                <rect x="120" y="628" width="330" height="132" rx="14" fill="#f5f7fb" />
+                <rect x="120" y="682" width="330" height="15" fill="var(--primary, #2563eb)" opacity="0.85" />
                 <path
-                    d="M190 358 V304 a10 10 0 0 1 10-10 h34 a14 14 0 0 1 12 7 l24 34 a10 10 0 0 1 1.6 5.4 V358 Z"
-                    fill="#f4f7fb"
+                    d="M450 760 V676 a12 12 0 0 1 12-12 h44 a17 17 0 0 1 14 8 l30 42 a12 12 0 0 1 2 6.6 V760 Z"
+                    fill="#f5f7fb"
                 />
-                <rect x="208" y="308" width="30" height="24" rx="4" fill="#0b1526" opacity="0.75" />
-                <circle cx="258" cy="333" r="6" fill="var(--primary)" />
-                <circle cx="88" cy="360" r="20" fill="#0b1526" />
-                <circle cx="88" cy="360" r="8" fill="#3a4a63" />
-                <circle cx="222" cy="360" r="20" fill="#0b1526" />
-                <circle cx="222" cy="360" r="8" fill="#3a4a63" />
+                <rect x="474" y="684" width="38" height="30" rx="5" fill="#0f1f3d" opacity="0.78" />
+                <circle cx="524" cy="712" r="7" fill="var(--primary, #2563eb)" />
+                <circle cx="196" cy="768" r="26" fill="#0f1f3d" />
+                <circle cx="196" cy="768" r="10" fill="#3a4a63" />
+                <circle cx="392" cy="768" r="26" fill="#0f1f3d" />
+                <circle cx="392" cy="768" r="10" fill="#3a4a63" />
+                <circle cx="484" cy="768" r="22" fill="#0f1f3d" />
+                <circle cx="484" cy="768" r="8" fill="#3a4a63" />
             </g>
         </svg>
     );
@@ -214,121 +242,99 @@ export default function LoginPage() {
     }
 
     return (
-        <main className="login-page">
-            <div className="login-shell">
-                <section className="login-visual" aria-hidden="true">
-                    <TruckRouteIllustration />
-                    <div className="login-visual-scrim" />
+        <main className="login-hero">
+            <HeroIllustration />
 
-                    <div className="login-visual-brand">
-                        <span className="login-visual-brand-icon">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                                <path
-                                    d="M2.5 16V7.5A1.5 1.5 0 0 1 4 6h9.5A1.5 1.5 0 0 1 15 7.5V16"
-                                    stroke="#fff"
-                                    strokeWidth="1.7"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                />
-                                <path
-                                    d="M15 10h3.4a1.5 1.5 0 0 1 1.28.72l2.1 3.5A1.5 1.5 0 0 1 22 15v1a1.5 1.5 0 0 1-1.5 1.5H15"
-                                    stroke="#fff"
-                                    strokeWidth="1.7"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                />
-                                <circle cx="7" cy="18.2" r="1.9" stroke="#fff" strokeWidth="1.7" />
-                                <circle cx="17.5" cy="18.2" r="1.9" stroke="#fff" strokeWidth="1.7" />
-                            </svg>
+            <div className="login-hero-content">
+                <div className="login-logo">
+                    <LogoMark />
+                </div>
+
+                <h1 className="login-hero-title">باربری</h1>
+                <p className="login-hero-company">موسسه حمل و نقل کامران</p>
+
+                <div className="login-glass-card">
+                    <h2>ورود به سامانه</h2>
+
+                    <div className="login-badge-row">
+                        <span className="login-badge-line" />
+                        <span className="login-badge">
+                            <IconShield />
+                            فقط برای کاربران شرکت
                         </span>
-                        <span>موسسه حمل و نقل کامران</span>
-                    </div>
-
-                    <div className="login-visual-content">
-                        <h2>از ثبت بار تا تحویل، در یک سامانه</h2>
-                        <ul className="login-visual-features">
-                            <li>
-                                <span className="icon-dot">
-                                    <IconBox />
-                                </span>
-                                ثبت و پیگیری بار
-                            </li>
-                            <li>
-                                <span className="icon-dot">
-                                    <IconUsers />
-                                </span>
-                                مدیریت راننده‌ها و ناوگان
-                            </li>
-                            <li>
-                                <span className="icon-dot">
-                                    <IconChart />
-                                </span>
-                                گزارش‌ها و صورت‌حساب
-                            </li>
-                        </ul>
-                    </div>
-                </section>
-
-                <section className="login-form-panel">
-                    <div className="login-card-header">
-                        <h1>ورود به سیستم</h1>
-                        <p>برای ادامه، وارد حساب کاربری خود شوید</p>
+                        <span className="login-badge-line" />
                     </div>
 
                     <form className="login-form" onSubmit={handleLogin}>
-                        <div className="login-field">
-                            <label htmlFor="username">نام کاربری</label>
-                            <div className="login-input-wrapper">
-                                <span className="login-input-icon">
-                                    <IconUser />
-                                </span>
-                                <input
-                                    id="username"
-                                    type="text"
-                                    value={username}
-                                    onChange={(event) => setUsername(event.target.value)}
-                                    placeholder="نام کاربری"
-                                    autoComplete="username"
-                                    disabled={loading}
-                                />
-                            </div>
+                        <div className="login-input-wrapper">
+                            <label htmlFor="username" className="sr-only">
+                                نام کاربری
+                            </label>
+                            <input
+                                id="username"
+                                type="text"
+                                value={username}
+                                onChange={(event) => setUsername(event.target.value)}
+                                placeholder="نام کاربری"
+                                autoComplete="username"
+                                disabled={loading}
+                            />
+                            <span className="login-input-icon">
+                                <IconUser />
+                            </span>
                         </div>
 
-                        <div className="login-field">
-                            <label htmlFor="password">رمز عبور</label>
-                            <div className="login-input-wrapper">
-                                <span className="login-input-icon">
-                                    <IconLock />
-                                </span>
-                                <input
-                                    id="password"
-                                    type={showPassword ? "text" : "password"}
-                                    value={password}
-                                    onChange={(event) => setPassword(event.target.value)}
-                                    placeholder="رمز عبور"
-                                    autoComplete="current-password"
-                                    disabled={loading}
-                                />
-                                <button
-                                    type="button"
-                                    className="login-password-toggle"
-                                    onClick={() => setShowPassword((value) => !value)}
-                                    disabled={loading}
-                                    aria-label={showPassword ? "پنهان کردن رمز عبور" : "نمایش رمز عبور"}
-                                >
-                                    {showPassword ? <IconEyeOff /> : <IconEye />}
-                                </button>
-                            </div>
+                        <div className="login-input-wrapper">
+                            <label htmlFor="password" className="sr-only">
+                                رمز عبور
+                            </label>
+                            <input
+                                id="password"
+                                type={showPassword ? "text" : "password"}
+                                value={password}
+                                onChange={(event) => setPassword(event.target.value)}
+                                placeholder="رمز عبور"
+                                autoComplete="current-password"
+                                disabled={loading}
+                            />
+                            <button
+                                type="button"
+                                className="login-password-toggle"
+                                onClick={() => setShowPassword((value) => !value)}
+                                disabled={loading}
+                                aria-label={showPassword ? "پنهان کردن رمز عبور" : "نمایش رمز عبور"}
+                            >
+                                {showPassword ? <IconEyeOff /> : <IconEye />}
+                            </button>
+                            <span className="login-input-icon">
+                                <IconLock />
+                            </span>
                         </div>
 
                         {error && <div className="login-error">{error}</div>}
 
                         <button type="submit" className="login-submit-button" disabled={loading}>
-                            {loading && <span className="login-spinner" aria-hidden="true" />}
-                            {loading ? "در حال ورود..." : "ورود"}
+                            {loading ? (
+                                "در حال ورود..."
+                            ) : (
+                                <>
+                                    ورود
+                                    <IconArrow />
+                                </>
+                            )}
                         </button>
                     </form>
-                </section>
+
+                    <p className="login-authorized-note">فقط کاربران مجاز</p>
+                </div>
+
+                <div className="login-hero-footer">
+                    <p className="login-hero-location">
+                        <IconPin />
+                        شهرک صنعتی رشت
+                    </p>
+                    <p className="login-hero-tagline">همراه در مسیر توسعه کسب‌وکار شما</p>
+                </div>
             </div>
         </main>
     );
