@@ -7,9 +7,12 @@ import {
   CalendarDays,
   Wifi,
   PanelRightOpen,
+  User,
+  LogOut,
 } from "lucide-react";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 const persianWeekdays = [
   "یکشنبه",
@@ -146,6 +149,8 @@ export default function Header({
   sidebarOpen,
   setSidebarOpen,
 }) {
+  const router = useRouter();
+
   const [darkMode, setDarkMode] =
     useState(false);
 
@@ -154,12 +159,19 @@ export default function Header({
     time: "",
   });
 
+  const [currentUser, setCurrentUser] =
+    useState(null);
+
+  const [loggingOut, setLoggingOut] =
+    useState(false);
+
   useEffect(() => {
     const savedTheme =
       localStorage.getItem("tms-theme");
 
     if (savedTheme === "dark") {
       setDarkMode(true);
+
       document.documentElement.classList.add(
         "dark"
       );
@@ -171,8 +183,75 @@ export default function Header({
       setLiveDate(getLiveDate());
     }, 1000);
 
+    loadCurrentUser();
+
     return () => clearInterval(timer);
   }, []);
+
+  async function loadCurrentUser() {
+    try {
+      const response = await fetch(
+        "/api/auth/me",
+        {
+          cache: "no-store",
+        }
+      );
+
+      if (!response.ok) {
+        setCurrentUser(null);
+        return;
+      }
+
+      const data = await response.json();
+
+      if (data?.user) {
+        setCurrentUser(data.user);
+      } else {
+        setCurrentUser(null);
+      }
+    } catch (error) {
+      console.error(
+        "خطا در دریافت کاربر:",
+        error
+      );
+
+      setCurrentUser(null);
+    }
+  }
+
+  async function handleLogout() {
+    if (loggingOut) return;
+
+    try {
+      setLoggingOut(true);
+
+      const response = await fetch(
+        "/api/auth/logout",
+        {
+          method: "POST",
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(
+          "خروج از حساب انجام نشد."
+        );
+      }
+
+      router.replace("/auth/login");
+
+      router.refresh();
+    } catch (error) {
+      console.error(error);
+
+      alert(
+        error.message ||
+          "خطا در خروج از حساب"
+      );
+
+      setLoggingOut(false);
+    }
+  }
 
   function toggleTheme() {
     const nextMode = !darkMode;
@@ -238,7 +317,8 @@ export default function Header({
 
         <div className="header-title">
           <h2>
-            موسسه حمل و نقل کامران               </h2>
+            موسسه حمل و نقل کامران
+          </h2>
 
           <span>
             سیستم مدیریت حمل‌ونقل
@@ -250,6 +330,44 @@ export default function Header({
       {/* سمت چپ هدر */}
 
       <div className="header-left">
+
+        {/* کاربر */}
+
+        <div className="header-user">
+
+          <User size={18} />
+
+          <div className="header-user-content">
+
+            <span>
+              کاربر
+            </span>
+
+            <strong>
+              {currentUser?.username || "—"}
+            </strong>
+
+          </div>
+
+        </div>
+
+        {/* خروج */}
+
+        <button
+          className="header-logout-button"
+          onClick={handleLogout}
+          disabled={loggingOut}
+          title="خروج از حساب"
+          aria-label="خروج از حساب"
+        >
+          <LogOut size={18} />
+
+          <span>
+            {loggingOut
+              ? "در حال خروج..."
+              : "خروج"}
+          </span>
+        </button>
 
         {/* تاریخ و ساعت */}
 

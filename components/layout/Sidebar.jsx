@@ -11,6 +11,8 @@ import {
   BarChart3,
   Settings,
   X,
+  UserPlus,
+  KeyRound,
 } from "lucide-react";
 
 import { usePathname } from "next/navigation";
@@ -84,21 +86,20 @@ export default function Sidebar({
       )}
 
       <aside
-        className={`sidebar ${sidebarOpen
-          ? "sidebar-open"
-          : "sidebar-closed"
-          } ${mobileOpen
+        className={`sidebar ${
+          sidebarOpen
+            ? "sidebar-open"
+            : "sidebar-closed"
+        } ${
+          mobileOpen
             ? "sidebar-mobile-open"
             : ""
-          }`}
+        }`}
       >
-
         {/* Header */}
 
         <div className="sidebar-header">
-
           <div className="brand">
-
             <div className="brand-icon">
               <img
                 src="/icons/favicon.png"
@@ -108,12 +109,11 @@ export default function Sidebar({
 
             <div className="brand-text">
               <h2>
-موسسه حمل و نقل کامران              </h2>
+                موسسه حمل و نقل کامران
+              </h2>
 
-              <span>
-                            </span>
+              <span></span>
             </div>
-
           </div>
 
           {/* Close button - Desktop */}
@@ -138,20 +138,16 @@ export default function Sidebar({
           >
             <X size={21} />
           </button>
-
         </div>
-
 
         {/* Navigation */}
 
         <nav className="sidebar-nav">
-
           <div className="nav-section-title">
             منوی اصلی
           </div>
 
           {menuItems.map((item) => {
-
             const Icon = item.icon;
 
             const active = isActive(
@@ -162,13 +158,13 @@ export default function Sidebar({
               <a
                 href={item.href}
                 key={item.title}
-                className={`nav-item ${active
-                  ? "nav-item-active"
-                  : ""
-                  }`}
+                className={`nav-item ${
+                  active
+                    ? "nav-item-active"
+                    : ""
+                }`}
                 title={item.title}
               >
-
                 <Icon
                   size={21}
                   strokeWidth={1.8}
@@ -177,27 +173,67 @@ export default function Sidebar({
                 <span>
                   {item.title}
                 </span>
-
               </a>
             );
           })}
-
         </nav>
-
 
         {/* Bottom */}
 
         <div className="sidebar-bottom">
+          {/* مدیریت کاربران */}
+
+          <a
+            href="/users"
+            className={`nav-item ${
+              isActive("/users")
+                ? "nav-item-active"
+                : ""
+            }`}
+            title="مدیریت کاربران"
+          >
+            <UserPlus
+              size={21}
+              strokeWidth={1.8}
+            />
+
+            <span>
+              مدیریت کاربران
+            </span>
+          </a>
+
+          {/* تغییر رمز عبور */}
+
+          <a
+            href="/change-password"
+            className={`nav-item ${
+              isActive("/change-password")
+                ? "nav-item-active"
+                : ""
+            }`}
+            title="تغییر رمز عبور"
+          >
+            <KeyRound
+              size={21}
+              strokeWidth={1.8}
+            />
+
+            <span>
+              تغییر رمز عبور
+            </span>
+          </a>
+
+          {/* Settings */}
 
           <a
             href="/settings"
-            className={`nav-item ${isActive("/settings")
-              ? "nav-item-active"
-              : ""
-              }`}
+            className={`nav-item ${
+              isActive("/settings")
+                ? "nav-item-active"
+                : ""
+            }`}
             title="تنظیمات"
           >
-
             <Settings
               size={21}
               strokeWidth={1.8}
@@ -206,12 +242,9 @@ export default function Sidebar({
             <span>
               تنظیمات
             </span>
-
           </a>
 
-
           <div className="sidebar-footer">
-
             <div className="server-status-dot" />
 
             <div>
@@ -223,11 +256,8 @@ export default function Sidebar({
                 متصل
               </strong>
             </div>
-
           </div>
-
         </div>
-
       </aside>
     </>
   );
