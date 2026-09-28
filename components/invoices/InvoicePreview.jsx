@@ -98,6 +98,26 @@ export default function InvoicePreview({ invoice, onClose }) {
             watermark.style.direction = "rtl";
             watermark.style.unicodeBidi = "bidi-override";
           }
+
+          // =========================================================
+          // رفع باگ شناخته‌شده‌ی html2canvas:
+          // برخلاف مرورگر، این کتابخانه پرانتزهای داخل متن
+          // راست‌به‌چپ (فارسی) را «آینه» نمی‌کند، پس در PDF برعکس
+          // نمایش داده می‌شوند. چون این تغییر فقط روی سند کلون‌شده
+          // (که صرفاً برای ساخت PDF استفاده می‌شود) اعمال می‌شود،
+          // نمایش زنده‌ی پیش‌نمایش روی صفحه دست‌نخورده می‌ماند.
+          // =========================================================
+
+          const amountHeader = clonedDoc.querySelector(
+            ".invoice-amount-header"
+          );
+
+          if (amountHeader) {
+            amountHeader.textContent = amountHeader.textContent
+              .replace(/\(/g, "\u0001")
+              .replace(/\)/g, "(")
+              .replace(/\u0001/g, ")");
+          }
         },
       });
 
@@ -285,7 +305,7 @@ export default function InvoicePreview({ invoice, onClose }) {
                   <tr>
                     <th>ردیف</th>
                     <th>شرح هزینه</th>
-                    <th>مبلغ (تومان)</th>
+                    <th className="invoice-amount-header">مبلغ (تومان)</th>
                   </tr>
                 </thead>
 

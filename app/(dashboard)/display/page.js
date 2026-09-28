@@ -5,8 +5,6 @@ import { useEffect, useState } from "react";
 import {
     Package,
     UserCheck,
-    Clock3,
-    FileWarning,
     Truck,
     CalendarDays,
     RefreshCw,
@@ -74,9 +72,6 @@ export default function DisplayPage() {
 
     const [loads, setLoads] =
         useState([]);
-
-    const [loading, setLoading] =
-        useState(true);
 
     /*
      * مهم:
@@ -248,8 +243,6 @@ export default function DisplayPage() {
                 "Display data error:",
                 error
             );
-        } finally {
-            setLoading(false);
         }
     }
 
@@ -312,171 +305,265 @@ export default function DisplayPage() {
     }, []);
 
     /* =====================================================
-       LOAD COUNTS
-    ===================================================== */
-
-    const undeliveredLoads =
-        loads.filter(
-            (load) =>
-                load.status !==
-                "delivered"
-        );
-
-    const deliveredLoads =
-        loads.filter(
-            (load) =>
-                load.status ===
-                "delivered"
-        );
-
-    /* =====================================================
        RENDER
     ===================================================== */
 
     return (
         <main className="main-content display-page">
 
-            {/* =================================================
-                HEADER
-            ================================================= */}
+            {/*
+                چیدمان صفحه:
+                - ستون رانندگان (اول در DOM ← سمت راست در RTL) بزرگ‌تر
+                - ستون بارها کوچک‌تر و سمت چپ
+                فقط روی صفحه‌های عریض اعمال می‌شود تا در موبایل/تبلت
+                چیدمان قبلی (responsive) به‌هم نخورد.
+            */}
 
-            <div className="display-page-header">
+            <style>{`
+                @media (min-width: 1100px) {
+                    .display-grid.display-grid-drivers-first {
+                        display: grid;
+                        grid-template-columns: 2fr 1fr;
+                        align-items: start;
+                    }
 
-                <div>
+                    .display-grid.display-grid-drivers-first > .display-panel {
+                        min-width: 0;
+                    }
+                }
 
-                    <div className="display-title-row">
+                .display-panel-drivers .display-driver-name strong {
+                    font-size: 20px;
+                }
 
-                        <div className="display-live-dot" />
+                .display-panel-drivers .display-driver-badge {
+                    font-size: 13px;
+                }
 
-                        <h1>
-                            مانیتورینگ
-                        </h1>
+                .display-panel-drivers .display-driver-phone {
+                    font-size: 15px;
+                }
 
-                    </div>
+                .display-panel-drivers .display-driver-vehicle {
+                    font-size: 16px;
+                }
 
-                    <p>
-                        وضعیت بارها و رانندگان ثبت‌شده امروز
-                    </p>
+                .display-panel-drivers .display-driver-avatar {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    flex-shrink: 0;
+                    width: 52px;
+                    height: 52px;
+                    font-size: 24px;
+                    font-weight: 800;
+                }
 
-                </div>
+                .display-panel-drivers .display-driver-item {
+                    padding-top: 20px;
+                    padding-bottom: 20px;
+                }
 
-                <div className="display-date">
+                /* بارها: متن درشت‌تر برای نمایش روی تلویزیون */
 
-                    <CalendarDays
-                        size={18}
-                    />
+                .display-panel-loads .display-item-title strong {
+                    font-size: 22px;
+                }
 
-                    <div>
+                .display-panel-loads .display-item-title span {
+                    font-size: 14px;
+                }
 
-                        <span>
-                            امروز
-                        </span>
+                .display-panel-loads .display-company {
+                    font-size: 17px;
+                }
 
-                        <strong>
-                            {currentDate
-                                ? toPersianNumber(
-                                    currentDate
-                                )
-                                : "—"}
-                        </strong>
+                .display-panel-loads .display-route {
+                    font-size: 18px;
+                }
 
-                    </div>
+                .display-panel-loads .display-load-meta {
+                    font-size: 16px;
+                }
 
-                </div>
+                .display-panel-loads .display-load-status {
+                    font-size: 16px;
+                }
 
-            </div>
+                .display-panel-loads .display-item-icon svg,
+                .display-panel-loads .display-load-meta svg {
+                    width: 22px;
+                    height: 22px;
+                }
 
-            {/* =================================================
-                STATS
-            ================================================= */}
-
-            <div className="display-stats">
-
-                <div className="display-stat">
-
-                    <div className="display-stat-icon display-stat-orange">
-                        <FileWarning
-                            size={21}
-                        />
-                    </div>
-
-                    <div>
-
-                        <span>
-                            بارهای تحویل نشده
-                        </span>
-
-                        <strong>
-                            {toPersianNumber(
-                                undeliveredLoads.length
-                            )}
-                        </strong>
-
-                    </div>
-
-                </div>
-
-                <div className="display-stat">
-
-                    <div className="display-stat-icon display-stat-blue">
-                        <UserCheck
-                            size={21}
-                        />
-                    </div>
-
-                    <div>
-
-                        <span>
-                            رانندگان امروز
-                        </span>
-
-                        <strong>
-                            {toPersianNumber(
-                                dailyDrivers.length
-                            )}
-                        </strong>
-
-                    </div>
-
-                </div>
-
-                <div className="display-stat">
-
-                    <div className="display-stat-icon display-stat-green">
-                        <Clock3
-                            size={21}
-                        />
-                    </div>
-
-                    <div>
-
-                        <span>
-                            وضعیت سیستم
-                        </span>
-
-                        <strong>
-                            {loading
-                                ? "در حال دریافت"
-                                : "فعال"}
-                        </strong>
-
-                    </div>
-
-                </div>
-
-            </div>
+                .display-panel-loads .display-load-item {
+                    padding-top: 20px;
+                    padding-bottom: 20px;
+                }
+            `}</style>
 
             {/* =================================================
                 GRID
             ================================================= */}
 
-            <div className="display-grid">
+            <div className="display-grid display-grid-drivers-first">
+
+                {/* =================================================
+                    DAILY DRIVERS
+                ================================================= */}
+
+                <section className="display-panel display-panel-drivers">
+
+                    <div className="display-panel-header">
+
+                        <div className="display-panel-title">
+
+                            <div className="display-panel-icon display-panel-blue">
+
+                                <UserCheck
+                                    size={21}
+                                />
+
+                            </div>
+
+                            <div>
+
+                                <h2>
+                                    رانندگان امروز
+                                </h2>
+
+                                <p>
+                                    رانندگان ثبت‌شده در ورود روزانه امروز
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                        <span className="display-count blue">
+
+                            {toPersianNumber(
+                                dailyDrivers.length
+                            )} راننده
+
+                        </span>
+
+                    </div>
+
+                    <div className="display-list">
+
+                        {dailyDrivers.map(
+                            (driver, index) => {
+
+                                const isGuest =
+                                    driver.type ===
+                                    "guest";
+
+                                const realDriver =
+                                    driver.driverId &&
+                                    typeof driver.driverId ===
+                                        "object"
+                                        ? driver.driverId
+                                        : null;
+
+                                return (
+                                    <div
+                                        className="display-driver-item"
+                                        key={
+                                            driver._id
+                                        }
+                                    >
+
+                                        <div className="display-driver-main">
+
+                                            <div className="display-driver-avatar">
+                                                {toPersianNumber(index + 1)}
+                                            </div>
+
+                                            <div className="display-driver-info">
+
+                                                <div className="display-driver-name">
+
+                                                    <strong>
+                                                        {driver.name}
+                                                    </strong>
+
+                                                    <span
+                                                        className={
+                                                            isGuest
+                                                                ? "display-driver-badge guest"
+                                                                : "display-driver-badge"
+                                                        }
+                                                    >
+                                                        {isGuest
+                                                            ? "مهمان"
+                                                            : "اصلی"}
+                                                    </span>
+
+                                                </div>
+
+                                                <span className="display-driver-phone">
+
+                                                    {driver.phone ||
+                                                        "—"}
+
+                                                </span>
+
+                                            </div>
+
+                                        </div>
+
+                                        <div className="display-driver-vehicle">
+
+                                            <Truck
+                                                size={20}
+                                            />
+
+                                            <span>
+
+                                                {getVehicleTypeLabel(
+                                                    driver.vehicleType ||
+                                                    realDriver?.vehicleType
+                                                )}
+
+                                            </span>
+
+                                        </div>
+
+                                    </div>
+                                );
+                            }
+                        )}
+
+                    </div>
+
+                    {dailyDrivers.length === 0 && (
+
+                        <div className="display-empty">
+
+                            <UserCheck
+                                size={30}
+                            />
+
+                            <strong>
+                                امروز راننده‌ای ثبت نشده
+                            </strong>
+
+                            <span>
+                                از بخش ورود روزانه رانندگان، راننده ثبت کنید.
+                            </span>
+
+                        </div>
+
+                    )}
+
+                </section>
 
                 {/* =================================================
                     LOADS
                 ================================================= */}
 
-                <section className="display-panel">
+                <section className="display-panel display-panel-loads">
 
                     <div className="display-panel-header">
 
@@ -648,188 +735,6 @@ export default function DisplayPage() {
                     )}
 
                 </section>
-
-                {/* =================================================
-                    DAILY DRIVERS
-                ================================================= */}
-
-                <section className="display-panel">
-
-                    <div className="display-panel-header">
-
-                        <div className="display-panel-title">
-
-                            <div className="display-panel-icon display-panel-blue">
-
-                                <UserCheck
-                                    size={21}
-                                />
-
-                            </div>
-
-                            <div>
-
-                                <h2>
-                                    رانندگان امروز
-                                </h2>
-
-                                <p>
-                                    رانندگان ثبت‌شده در ورود روزانه امروز
-                                </p>
-
-                            </div>
-
-                        </div>
-
-                        <span className="display-count blue">
-
-                            {toPersianNumber(
-                                dailyDrivers.length
-                            )} راننده
-
-                        </span>
-
-                    </div>
-
-                    <div className="display-list">
-
-                        {dailyDrivers.map(
-                            (driver) => {
-
-                                const isGuest =
-                                    driver.type ===
-                                    "guest";
-
-                                const realDriver =
-                                    driver.driverId &&
-                                    typeof driver.driverId ===
-                                        "object"
-                                        ? driver.driverId
-                                        : null;
-
-                                return (
-                                    <div
-                                        className="display-driver-item"
-                                        key={
-                                            driver._id
-                                        }
-                                    >
-
-                                        <div className="display-driver-main">
-
-                                            <div className="display-driver-avatar">
-
-                                                <UserCheck
-                                                    size={18}
-                                                />
-
-                                            </div>
-
-                                            <div className="display-driver-info">
-
-                                                <div className="display-driver-name">
-
-                                                    <strong>
-                                                        {driver.name}
-                                                    </strong>
-
-                                                    <span
-                                                        className={
-                                                            isGuest
-                                                                ? "display-driver-badge guest"
-                                                                : "display-driver-badge"
-                                                        }
-                                                    >
-                                                        {isGuest
-                                                            ? "مهمان"
-                                                            : "اصلی"}
-                                                    </span>
-
-                                                </div>
-
-                                                <span className="display-driver-phone">
-
-                                                    {driver.phone ||
-                                                        "—"}
-
-                                                </span>
-
-                                            </div>
-
-                                        </div>
-
-                                        <div className="display-driver-vehicle">
-
-                                            <Truck
-                                                size={16}
-                                            />
-
-                                            <span>
-
-                                                {getVehicleTypeLabel(
-                                                    driver.vehicleType ||
-                                                    realDriver?.vehicleType
-                                                )}
-
-                                            </span>
-
-                                        </div>
-
-                                    </div>
-                                );
-                            }
-                        )}
-
-                    </div>
-
-                    {dailyDrivers.length === 0 && (
-
-                        <div className="display-empty">
-
-                            <UserCheck
-                                size={30}
-                            />
-
-                            <strong>
-                                امروز راننده‌ای ثبت نشده
-                            </strong>
-
-                            <span>
-                                از بخش ورود روزانه رانندگان، راننده ثبت کنید.
-                            </span>
-
-                        </div>
-
-                    )}
-
-                </section>
-
-            </div>
-
-            {/* =================================================
-                FOOTER
-            ================================================= */}
-
-            <div className="display-footer">
-
-                <div>
-
-                    <div className="display-live-dot" />
-
-                    <span>
-                        مانیتورینگ فعال است
-                    </span>
-
-                </div>
-
-                <span>
-                    آخرین بروزرسانی:{" "}
-                    {lastUpdate || "—"}
-                </span>
-
-                <RefreshCw
-                    size={16}
-                />
 
             </div>
 
