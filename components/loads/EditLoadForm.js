@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import {
@@ -24,20 +24,57 @@ const MapPicker = dynamic(() => import("@/components/MapPicker"), {
   loading: () => <div className="map-loading">در حال بارگذاری نقشه...</div>,
 });
 
-// باید دقیقاً هماهنگ با گزینه‌های فرم افزودن بار باشد
-const COMPANIES = [
-  { code: "COM-1001", name: "شرکت حمل‌ونقل شمال" },
-  { code: "COM-1002", name: "صنایع شمال" },
-  { code: "COM-1003", name: "بازرگانی گیلان" },
-  { code: "COM-1004", name: "شرکت ساختمانی شمال" },
-];
-
 export default function EditLoadForm({ load }) {
   const router = useRouter();
 
-  // چون فقط اسم شرکت (companyName) ذخیره شده، کد متناظرش رو پیدا می‌کنیم
-  const initialCompanyCode =
-    COMPANIES.find((c) => c.name === load.companyName)?.code || "";
+  // =========================================================
+  // شرکت‌ها (واقعی، از دیتابیس)
+  // =========================================================
+
+  const [companies, setCompanies] = useState([]);
+  const [companiesLoading, setCompaniesLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchCompanies() {
+      try {
+        setCompaniesLoading(true);
+
+        const response = await fetch("/api/companies", {
+          cache: "no-store",
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(
+            result.message || result.error || "خطا در دریافت شرکت‌ها"
+          );
+        }
+
+        const companyList = Array.isArray(result)
+          ? result
+          : Array.isArray(result.companies)
+            ? result.companies
+            : [];
+
+        setCompanies(companyList);
+      } catch (error) {
+        console.error("Fetch companies error:", error);
+        setCompanies([]);
+        alert("خطا در دریافت لیست شرکت‌ها");
+      } finally {
+        setCompaniesLoading(false);
+      }
+    }
+
+    fetchCompanies();
+  }, []);
+
+  // شرکتِ فعلی بار فقط با نام (companyName) ذخیره شده،
+  // پس بعد از دریافت لیست واقعی، همان شرکت را با نام پیدا می‌کنیم
+  // تا مقدار اولیه‌ی select با شناسه‌ی واقعی‌اش ست شود.
+  const initialCompanyId =
+    companies.find((c) => c.name === load.companyName)?._id || "";
 
   const [showDestinationMap, setShowDestinationMap] = useState(false);
 
@@ -54,6 +91,12 @@ export default function EditLoadForm({ load }) {
     const formData = new FormData(form);
 
     const companySelect = form.elements.loadCompany;
+
+    if (!companySelect.value) {
+      alert("لطفاً شرکت را انتخاب کنید.");
+      return;
+    }
+
     const companyName =
       companySelect.options[companySelect.selectedIndex]?.text || "";
 
@@ -153,16 +196,21 @@ export default function EditLoadForm({ load }) {
               <select
                 id="loadCompany"
                 name="loadCompany"
-                defaultValue={initialCompanyCode}
+                defaultValue={initialCompanyId}
+                disabled={companiesLoading}
+                key={initialCompanyId}
               >
                 <option value="" disabled>
-                  شرکت را انتخاب کنید
+                  {companiesLoading
+                    ? "در حال دریافت شرکت‌ها..."
+                    : "شرکت را انتخاب کنید"}
                 </option>
-                {COMPANIES.map((c) => (
-                  <option key={c.code} value={c.code}>
-                    {c.name}
-                  </option>
-                ))}
+                {!companiesLoading &&
+                  companies.map((company) => (
+                    <option key={company._id} value={company._id}>
+                      {company.name}
+                    </option>
+                  ))}
               </select>
             </div>
           </div>

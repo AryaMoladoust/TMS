@@ -222,7 +222,6 @@ export default function AddInvoicePage() {
     ======================================================= */
 
     const [selectedDriver, setSelectedDriver] = useState(null);
-    const [manualDriver, setManualDriver] = useState(false);
 
     const [driverSearch, setDriverSearch] = useState("");
     const [driverSearchOpen, setDriverSearchOpen] = useState(false);
@@ -357,7 +356,6 @@ export default function AddInvoicePage() {
 
     function selectDriver(driver) {
         setSelectedDriver(driver);
-        setManualDriver(false);
 
         const isGuest = driver.type === "guest";
 
@@ -395,37 +393,6 @@ export default function AddInvoicePage() {
         );
 
         setDriverSearchOpen(false);
-    }
-
-    function enableManualDriver() {
-        setSelectedDriver(null);
-        setManualDriver(true);
-
-        setDriverData({
-            name: "",
-            nationalId: "",
-            licenseNumber: "",
-            vehicleType: "",
-            plate: "",
-        });
-
-        setDriverSearch("");
-        setDriverSearchOpen(false);
-    }
-
-    function clearDriver() {
-        setSelectedDriver(null);
-        setManualDriver(false);
-
-        setDriverData({
-            name: "",
-            nationalId: "",
-            licenseNumber: "",
-            vehicleType: "",
-            plate: "",
-        });
-
-        setDriverSearch("");
     }
 
     function editDriverField(field, value) {
@@ -752,11 +719,9 @@ export default function AddInvoicePage() {
                 selectedDriver?.type === "guest";
 
             const driverType =
-                manualDriver
-                    ? "manual"
-                    : isGuest
-                        ? "guest"
-                        : "main";
+                isGuest
+                    ? "guest"
+                    : "main";
 
             /*
              * مهم:
@@ -1043,150 +1008,111 @@ export default function AddInvoicePage() {
                             انتخاب راننده
                         </label>
 
-                        {!manualDriver && (
+                        <div className="invoice-search-container">
 
-                            <div className="invoice-search-container">
+                            <div className="invoice-search-input-wrapper">
 
-                                <div className="invoice-search-input-wrapper">
+                                <Search size={18} />
 
-                                    <Search size={18} />
+                                <input
+                                    type="text"
+                                    value={driverSearch}
+                                    onChange={(event) => {
 
-                                    <input
-                                        type="text"
-                                        value={driverSearch}
-                                        onChange={(event) => {
+                                        setDriverSearch(
+                                            event.target.value
+                                        );
 
-                                            setDriverSearch(
-                                                event.target.value
-                                            );
+                                        setDriverSearchOpen(
+                                            true
+                                        );
 
-                                            setDriverSearchOpen(
-                                                true
-                                            );
+                                        setSelectedDriver(
+                                            null
+                                        );
 
-                                            setSelectedDriver(
-                                                null
-                                            );
+                                    }}
+                                    onFocus={() =>
+                                        setDriverSearchOpen(
+                                            true
+                                        )
+                                    }
+                                    placeholder="نام راننده را جستجو کنید..."
+                                />
 
-                                        }}
-                                        onFocus={() =>
-                                            setDriverSearchOpen(
-                                                true
-                                            )
-                                        }
-                                        placeholder="نام راننده را جستجو کنید..."
-                                    />
-
-                                </div>
+                            </div>
 
 
-                                {driverSearchOpen && (
+                            {driverSearchOpen && (
 
-                                    <div className="invoice-search-dropdown">
+                                <div className="invoice-search-dropdown">
 
-                                        {filteredDrivers.length > 0 ? (
+                                    {filteredDrivers.length > 0 ? (
 
-                                            filteredDrivers.map(
-                                                (driver) => {
+                                        filteredDrivers.map(
+                                            (driver) => {
 
-                                                    const isGuest =
-                                                        driver.type === "guest";
+                                                const isGuest =
+                                                    driver.type === "guest";
 
-                                                    return (
-                                                        <button
-                                                            type="button"
-                                                            key={driver._id}
-                                                            className="invoice-search-option"
-                                                            onClick={() =>
-                                                                selectDriver(
-                                                                    driver
-                                                                )
-                                                            }
-                                                        >
+                                                return (
+                                                    <button
+                                                        type="button"
+                                                        key={driver._id}
+                                                        className="invoice-search-option"
+                                                        onClick={() =>
+                                                            selectDriver(
+                                                                driver
+                                                            )
+                                                        }
+                                                    >
 
-                                                            <div className="invoice-option-icon">
+                                                        <div className="invoice-option-icon">
 
-                                                                <UserRound
-                                                                    size={18}
-                                                                />
+                                                            <UserRound
+                                                                size={18}
+                                                            />
 
-                                                            </div>
+                                                        </div>
 
-                                                            <div>
+                                                        <div>
 
-                                                                <strong>
-                                                                    {driver.name}
-                                                                </strong>
+                                                            <strong>
+                                                                {driver.name}
+                                                            </strong>
 
-                                                                <span>
-                                                                    {isGuest
-                                                                        ? "راننده مهمان"
-                                                                        : "راننده اصلی"}
-                                                                    {" - "}
-                                                                    {getVehicleTypeLabel(
-                                                                        driver.vehicleType
-                                                                    )}
-                                                                </span>
+                                                            <span>
+                                                                {isGuest
+                                                                    ? "راننده مهمان"
+                                                                    : "راننده اصلی"}
+                                                                {" - "}
+                                                                {getVehicleTypeLabel(
+                                                                    driver.vehicleType
+                                                                )}
+                                                            </span>
 
-                                                            </div>
+                                                        </div>
 
-                                                        </button>
-                                                    );
-                                                }
-                                            )
-
-                                        ) : (
-
-                                            <div className="invoice-search-empty">
-
-                                                راننده‌ای برای امروز پیدا نشد
-
-                                            </div>
-
-                                        )}
-
-
-                                        <button
-                                            type="button"
-                                            className="invoice-manual-button"
-                                            onClick={
-                                                enableManualDriver
+                                                    </button>
+                                                );
                                             }
-                                        >
-                                            + ورود دستی اطلاعات راننده
-                                        </button>
+                                        )
 
-                                    </div>
+                                    ) : (
 
-                                )}
+                                        <div className="invoice-search-empty">
 
-                            </div>
+                                            راننده‌ای برای امروز پیدا نشد
 
-                        )}
+                                        </div>
 
-
-                        {manualDriver && (
-
-                            <div className="invoice-manual-mode">
-
-                                <div className="invoice-manual-mode-header">
-
-                                    <span>
-                                        ورود دستی اطلاعات راننده
-                                    </span>
-
-                                    <button
-                                        type="button"
-                                        onClick={clearDriver}
-                                    >
-                                        انتخاب راننده موجود
-                                    </button>
+                                    )}
 
                                 </div>
 
-                            </div>
+                            )}
 
-                        )}
+                        </div>
 
                     </div>
 

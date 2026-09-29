@@ -9,7 +9,6 @@ import {
   FileText,
   Monitor,
   BarChart3,
-  Settings,
   X,
   UserPlus,
   KeyRound,
@@ -57,6 +56,16 @@ const menuItems = [
     title: "گزارشات",
     href: "/reports",
     icon: BarChart3,
+  },
+  {
+    title: "مدیریت کاربران",
+    href: "/users",
+    icon: UserPlus,
+  },
+  {
+    title: "تغییر رمز عبور",
+    href: "/change-password",
+    icon: KeyRound,
   },
 ];
 
@@ -174,66 +183,6 @@ export default function Sidebar({
         {/* Bottom */}
 
         <div className="sidebar-bottom">
-          {/* مدیریت کاربران */}
-
-          <a
-            href="/users"
-            className={`nav-item ${isActive("/users")
-                ? "nav-item-active"
-                : ""
-              }`}
-            title="مدیریت کاربران"
-          >
-            <UserPlus
-              size={21}
-              strokeWidth={1.8}
-            />
-
-            <span>
-              مدیریت کاربران
-            </span>
-          </a>
-
-          {/* تغییر رمز عبور */}
-
-          <a
-            href="/change-password"
-            className={`nav-item ${isActive("/change-password")
-                ? "nav-item-active"
-                : ""
-              }`}
-            title="تغییر رمز عبور"
-          >
-            <KeyRound
-              size={21}
-              strokeWidth={1.8}
-            />
-
-            <span>
-              تغییر رمز عبور
-            </span>
-          </a>
-
-          {/* Settings */}
-
-          <a
-            href="/settings"
-            className={`nav-item ${isActive("/settings")
-                ? "nav-item-active"
-                : ""
-              }`}
-            title="تنظیمات"
-          >
-            <Settings
-              size={21}
-              strokeWidth={1.8}
-            />
-
-            <span>
-              تنظیمات
-            </span>
-          </a>
-
           <div className="sidebar-footer">
             <div className="server-status-dot" />
 

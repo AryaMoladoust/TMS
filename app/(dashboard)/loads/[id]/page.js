@@ -11,6 +11,37 @@ import {
   Pencil,
 } from "lucide-react";
 
+/* =========================================================
+   تبدیل نوع بار به فارسی
+========================================================= */
+
+const barTypeLabels = {
+  food: "مواد غذایی",
+  industrial: "قطعات صنعتی",
+  construction: "مصالح ساختمانی",
+  agriculture: "محصولات کشاورزی",
+  other: "سایر",
+};
+
+function getBarTypeLabel(value) {
+  return barTypeLabels[value] || value || "—";
+}
+
+/* =========================================================
+   تبدیل نوع خودرو به فارسی
+========================================================= */
+
+const vehicleTypeLabels = {
+  truck: "کامیون",
+  trailer: "تریلی",
+  pickup: "نیسان",
+  van: "وانت",
+};
+
+function getVehicleTypeLabel(value) {
+  return vehicleTypeLabels[value] || value || "—";
+}
+
 async function getLoad(id) {
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/api/loads/${id}`,
@@ -67,7 +98,7 @@ export default async function LoadDetailsPage({ params }) {
             <Package size={20} />
             <div>
               <span>نوع بار</span>
-              <strong>{load.barType}</strong>
+              <strong>{getBarTypeLabel(load.barType)}</strong>
             </div>
           </div>
 
@@ -75,7 +106,7 @@ export default async function LoadDetailsPage({ params }) {
             <Building2 size={20} />
             <div>
               <span>شرکت</span>
-              <strong>{load.company}</strong>
+              <strong>{load.companyName || "—"}</strong>
             </div>
           </div>
 
@@ -107,7 +138,7 @@ export default async function LoadDetailsPage({ params }) {
             <Truck size={20} />
             <div>
               <span>نوع خودرو</span>
-              <strong>{load.vehicleType}</strong>
+              <strong>{getVehicleTypeLabel(load.vehicleType)}</strong>
             </div>
           </div>
 

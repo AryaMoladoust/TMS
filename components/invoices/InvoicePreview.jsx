@@ -106,18 +106,21 @@ export default function InvoicePreview({ invoice, onClose }) {
           // نمایش داده می‌شوند. چون این تغییر فقط روی سند کلون‌شده
           // (که صرفاً برای ساخت PDF استفاده می‌شود) اعمال می‌شود،
           // نمایش زنده‌ی پیش‌نمایش روی صفحه دست‌نخورده می‌ماند.
+          //
+          // برای رفع این مشکل هر جای دیگری هم که لازم شد، کافیست
+          // کلاس invoice-paren-fix را به همان المان اضافه کنید.
           // =========================================================
 
-          const amountHeader = clonedDoc.querySelector(
-            ".invoice-amount-header"
+          const parenFixElements = clonedDoc.querySelectorAll(
+            ".invoice-paren-fix"
           );
 
-          if (amountHeader) {
-            amountHeader.textContent = amountHeader.textContent
+          parenFixElements.forEach((element) => {
+            element.textContent = element.textContent
               .replace(/\(/g, "\u0001")
               .replace(/\)/g, "(")
               .replace(/\u0001/g, ")");
-          }
+          });
         },
       });
 
@@ -256,7 +259,7 @@ export default function InvoicePreview({ invoice, onClose }) {
             <div className="invoice-info-grid">
 
               <div className="invoice-info-card">
-                <h3>اطلاعات شرکت (فرستنده)</h3>
+                <h3 className="invoice-paren-fix">اطلاعات شرکت (فرستنده)</h3>
                 <p><strong>نام:</strong> {invoice.clientCompanyName || "—"}</p>
                 <p><strong>نوع بار:</strong> {getCargoTypeLabel(invoice.cargoType)}</p>
               </div>
@@ -305,7 +308,7 @@ export default function InvoicePreview({ invoice, onClose }) {
                   <tr>
                     <th>ردیف</th>
                     <th>شرح هزینه</th>
-                    <th className="invoice-amount-header">مبلغ (تومان)</th>
+                    <th className="invoice-amount-header invoice-paren-fix">مبلغ (تومان)</th>
                   </tr>
                 </thead>
 

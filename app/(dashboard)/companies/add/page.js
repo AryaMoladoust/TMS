@@ -355,7 +355,7 @@ export default function AddCompanyPage() {
                                 onChange={
                                     handleChange
                                 }
-                                placeholder="مثلاً ۰۱۳۳۳۳۳۴۵۶۷"
+                                placeholder="مثلاً 09123456789"
                                 required
                             />
 
