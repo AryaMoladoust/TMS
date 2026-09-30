@@ -195,6 +195,18 @@ const InvoiceSchema = new mongoose.Schema(
            OTHER
         ========================= */
 
+                createdByUserId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+            default: null,
+        },
+
+        createdByUserName: {
+            type: String,
+            default: "",
+            trim: true,
+        },
+
         description: {
             type: String,
             default: "",

@@ -6,6 +6,9 @@ import DailyDriver from "@/models/DailyDriver";
 import Load from "@/models/Load";
 import Company from "@/models/Company";
 
+import { getUserFromSessionToken } from "@/lib/auth";
+
+
 function getTodayKey() {
     const today = new Date();
 
@@ -15,6 +18,7 @@ function getTodayKey() {
 
     return `${year}-${month}-${day}`;
 }
+
 
 async function generateInvoiceNumber() {
     const today = new Date();
@@ -38,8 +42,13 @@ async function generateInvoiceNumber() {
     let nextNumber = 1;
 
     if (lastInvoice?.invoiceNumber) {
-        const lastPart = lastInvoice.invoiceNumber.split("-").pop();
-        const lastNumber = Number(lastPart);
+        const lastPart =
+            lastInvoice.invoiceNumber
+                .split("-")
+                .pop();
+
+        const lastNumber =
+            Number(lastPart);
 
         if (!Number.isNaN(lastNumber)) {
             nextNumber = lastNumber + 1;
@@ -48,6 +57,7 @@ async function generateInvoiceNumber() {
 
     return `${prefix}${String(nextNumber).padStart(4, "0")}`;
 }
+
 
 export async function GET() {
     try {
@@ -58,16 +68,21 @@ export async function GET() {
             .populate("dailyDriverId")
             .populate("loadId")
             .populate("companyId")
+            .populate("createdByUserId", "username")
             .sort({ createdAt: -1 })
             .lean();
 
         return NextResponse.json(invoices);
     } catch (error) {
-        console.error("Get invoices error:", error);
+        console.error(
+            "Get invoices error:",
+            error
+        );
 
         return NextResponse.json(
             {
-                message: "خطا در دریافت فاکتورها",
+                message:
+                    "خطا در دریافت فاکتورها",
                 error: error.message,
             },
             { status: 500 }
@@ -75,54 +90,116 @@ export async function GET() {
     }
 }
 
+
 export async function POST(request) {
     try {
         await connectDB();
 
-        const body = await request.json();
+        const body =
+            await request.json();
+
+
+        // ==========================================
+        // کاربر ثبت‌کننده فاکتور
+        // ==========================================
+
+        const sessionToken =
+            request.cookies
+                .get("tms_session")
+                ?.value;
+
+        const sessionData =
+            await getUserFromSessionToken(
+                sessionToken
+            );
+
+        if (!sessionData) {
+            return NextResponse.json(
+                {
+                    message:
+                        "جلسه کاربری معتبر نیست. دوباره وارد سیستم شوید.",
+                },
+                {
+                    status: 401,
+                }
+            );
+        }
+
+        const currentUser =
+            sessionData.user;
+
+        const createdByUserId =
+            currentUser._id;
+
+        const createdByUserName =
+            currentUser.username;
+
 
         const {
-            invoiceNumber: requestedInvoiceNumber = "",
+            invoiceNumber:
+                requestedInvoiceNumber = "",
+
             date,
+
             startTime = "",
 
             dailyDriverId = null,
+
             driverId = null,
+
             driverType = "main",
 
             driverName = "",
+
             driverPhone = "",
+
             driverNationalId = "",
+
             driverLicenseNumber = "",
 
             vehicleId = "",
+
             vehicleType = "",
+
             vehiclePlate = "",
 
             loadId = null,
+
             loadType = "",
 
             companyId = null,
+
             companyName = "",
 
             origin = "",
+
             destination = "",
+
             distance = 0,
+
             address = "",
 
             cost = 0,
+
             costType = "نقد",
 
             insuranceCost = 0,
+
             workerCost = 0,
+
             scaleCost = 0,
+
             stopCost = 0,
+
             commissionCost = 0,
 
             description = "",
+
             receiverName = "",
+
             qrCode = "",
         } = body;
+
 
         // ==========================================
         // بررسی اطلاعات ضروری
@@ -131,29 +208,34 @@ export async function POST(request) {
         if (!date) {
             return NextResponse.json(
                 {
-                    message: "تاریخ فاکتور الزامی است.",
+                    message:
+                        "تاریخ فاکتور الزامی است.",
                 },
                 {
                     status: 400,
                 }
             );
         }
+
 
         if (!driverName?.trim()) {
             return NextResponse.json(
                 {
-                    message: "نام راننده الزامی است.",
+                    message:
+                        "نام راننده الزامی است.",
                 },
                 {
                     status: 400,
                 }
             );
         }
+
 
         if (!vehicleType?.trim()) {
             return NextResponse.json(
                 {
-                    message: "نوع خودرو الزامی است.",
+                    message:
+                        "نوع خودرو الزامی است.",
                 },
                 {
                     status: 400,
@@ -161,16 +243,19 @@ export async function POST(request) {
             );
         }
 
+
         if (!loadType?.trim()) {
             return NextResponse.json(
                 {
-                    message: "نوع بار الزامی است.",
+                    message:
+                        "نوع بار الزامی است.",
                 },
                 {
                     status: 400,
                 }
             );
         }
+
 
         // ==========================================
         // اطلاعات راننده
@@ -206,11 +291,13 @@ export async function POST(request) {
         let finalVehiclePlate =
             vehiclePlate?.trim() || "";
 
+
         if (dailyDriverId) {
             const dailyDriver =
                 await DailyDriver.findById(
                     dailyDriverId
                 ).populate("driverId");
+
 
             if (!dailyDriver) {
                 return NextResponse.json(
@@ -223,6 +310,7 @@ export async function POST(request) {
                     }
                 );
             }
+
 
             if (
                 dailyDriver.date !==
@@ -239,6 +327,7 @@ export async function POST(request) {
                 );
             }
 
+
             finalDailyDriverId =
                 dailyDriver._id;
 
@@ -253,6 +342,7 @@ export async function POST(request) {
 
             finalVehicleType =
                 dailyDriver.vehicleType;
+
 
             // ======================================
             // راننده اصلی
@@ -281,6 +371,7 @@ export async function POST(request) {
                     String(realDriver._id);
             }
 
+
             // ======================================
             // راننده مهمان
             // ======================================
@@ -304,53 +395,72 @@ export async function POST(request) {
             }
         }
 
+
         if (!dailyDriverId) {
             finalDriverType = "manual";
             finalDailyDriverId = null;
         }
+
 
         // ==========================================
         // بررسی بار
         // ==========================================
 
         // ==========================================
-// پیدا کردن بار
-// ==========================================
+        // پیدا کردن بار
+        // ==========================================
 
-let finalLoadId = null;
+        let finalLoadId = null;
 
-if (loadId) {
-    let load = null;
 
-    // اگر MongoDB ObjectId باشد
-    if (
-        typeof loadId === "string" &&
-        /^[0-9a-fA-F]{24}$/.test(loadId)
-    ) {
-        load = await Load.findById(loadId);
-    }
+        if (loadId) {
+            let load = null;
 
-    // اگر شناسه داخلی بار باشد
-    if (!load) {
-        load = await Load.findOne({
-            loadId: String(loadId),
-        });
-    }
 
-    if (!load) {
-        return NextResponse.json(
-            {
-                message:
-                    "بار انتخاب‌شده پیدا نشد.",
-            },
-            {
-                status: 400,
+            // اگر MongoDB ObjectId باشد
+
+            if (
+                typeof loadId === "string" &&
+                /^[0-9a-fA-F]{24}$/.test(
+                    loadId
+                )
+            ) {
+                load =
+                    await Load.findById(
+                        loadId
+                    );
             }
-        );
-    }
 
-    finalLoadId = load._id;
-}
+
+            // اگر شناسه داخلی بار باشد
+
+            if (!load) {
+                load =
+                    await Load.findOne({
+                        loadId: String(
+                            loadId
+                        ),
+                    });
+            }
+
+
+            if (!load) {
+                return NextResponse.json(
+                    {
+                        message:
+                            "بار انتخاب‌شده پیدا نشد.",
+                    },
+                    {
+                        status: 400,
+                    }
+                );
+            }
+
+
+            finalLoadId =
+                load._id;
+        }
+
 
         // ==========================================
         // بررسی شرکت
@@ -359,11 +469,13 @@ if (loadId) {
         let finalCompanyId =
             companyId || null;
 
+
         if (companyId) {
             const company =
                 await Company.findById(
                     companyId
                 );
+
 
             if (!company) {
                 return NextResponse.json(
@@ -377,9 +489,11 @@ if (loadId) {
                 );
             }
 
+
             finalCompanyId =
                 company._id;
         }
+
 
         // ==========================================
         // شماره فاکتور
@@ -389,47 +503,73 @@ if (loadId) {
             requestedInvoiceNumber?.trim() ||
             (await generateInvoiceNumber());
 
+
         // ==========================================
         // ساخت فاکتور
         // ==========================================
 
         const invoice =
             await Invoice.create({
+
                 invoiceNumber,
+
+
+                // ==================================
+                // کاربر ثبت‌کننده
+                // ==================================
+
+                createdByUserId:
+                    createdByUserId,
+
+                createdByUserName:
+                    createdByUserName,
+
 
                 date,
 
+
                 startTime,
+
 
                 driverId:
                     finalDriverId,
 
+
                 dailyDriverId:
                     finalDailyDriverId,
+
 
                 driverType:
                     finalDriverType,
 
+
                 driverName:
                     finalDriverName,
+
 
                 driverPhone:
                     finalDriverPhone,
 
+
                 driverNationalId:
                     finalDriverNationalId,
+
 
                 driverLicenseNumber:
                     finalDriverLicenseNumber,
 
+
                 vehicleId:
                     finalVehicleId,
+
 
                 vehicleType:
                     finalVehicleType,
 
+
                 vehiclePlate:
                     finalVehiclePlate,
+
 
                 // ==================================
                 // اطلاعات بار
@@ -438,26 +578,34 @@ if (loadId) {
                 loadId:
                     finalLoadId,
 
+
                 loadType:
                     loadType?.trim() || "",
+
 
                 companyId:
                     finalCompanyId,
 
+
                 companyName:
                     companyName?.trim() || "",
+
 
                 origin:
                     origin?.trim() || "",
 
+
                 destination:
                     destination?.trim() || "",
+
 
                 distance:
                     Number(distance) || 0,
 
+
                 address:
                     address?.trim() || "",
+
 
                 // ==================================
                 // هزینه‌ها
@@ -466,22 +614,29 @@ if (loadId) {
                 cost:
                     Number(cost) || 0,
 
+
                 costType,
+
 
                 insuranceCost:
                     Number(insuranceCost) || 0,
 
+
                 workerCost:
                     Number(workerCost) || 0,
+
 
                 scaleCost:
                     Number(scaleCost) || 0,
 
+
                 stopCost:
                     Number(stopCost) || 0,
 
+
                 commissionCost:
                     Number(commissionCost) || 0,
+
 
                 // ==================================
                 // اطلاعات تکمیلی
@@ -490,151 +645,182 @@ if (loadId) {
                 description:
                     description?.trim() || "",
 
+
                 receiverName:
                     receiverName?.trim() || "",
+
 
                 qrCode:
                     qrCode?.trim() || "",
             });
 
- // ==========================================
-// حذف بار و راننده روزانه بعد از ثبت موفق فاکتور
-// ==========================================
 
-let deletedLoadSnapshot = null;
+        // ==========================================
+        // حذف بار و راننده روزانه بعد از ثبت موفق فاکتور
+        // ==========================================
 
-if (finalLoadId) {
-    try {
-        const deletedLoad =
-            await Load.findByIdAndDelete(
-                finalLoadId
-            );
+        let deletedLoadSnapshot = null;
 
-        if (!deletedLoad) {
-            await Invoice.findByIdAndDelete(
-                invoice._id
-            );
 
-            return NextResponse.json(
-                {
-                    message:
-                        "فاکتور ثبت شد اما بار حذف نشد؛ عملیات برگشت داده شد.",
-                },
-                {
-                    status: 409,
-                }
-            );
-        }
-
-        // نگه داشتن اطلاعات بار برای Rollback احتمالی
-        deletedLoadSnapshot =
-            deletedLoad.toObject();
-
-        console.log(
-            "Load deleted after invoice:",
-            finalLoadId.toString()
-        );
-    } catch (deleteError) {
-        console.error(
-            "Delete load after invoice error:",
-            deleteError
-        );
-
-        await Invoice.findByIdAndDelete(
-            invoice._id
-        );
-
-        return NextResponse.json(
-            {
-                message:
-                    "حذف بار انجام نشد و ثبت فاکتور نیز برگشت داده شد.",
-                error:
-                    deleteError.message,
-            },
-            {
-                status: 500,
-            }
-        );
-    }
-}
-
-// ==========================================
-// حذف راننده از ورود روزانه
-// ==========================================
-
-if (finalDailyDriverId) {
-    try {
-        const deletedDailyDriver =
-            await DailyDriver.findByIdAndDelete(
-                finalDailyDriverId
-            );
-
-        if (!deletedDailyDriver) {
-            // حذف فاکتور
-            await Invoice.findByIdAndDelete(
-                invoice._id
-            );
-
-            // اگر بار حذف شده بود، آن را برمی‌گردانیم
-            if (deletedLoadSnapshot) {
-                await Load.create(
-                    deletedLoadSnapshot
-                );
-            }
-
-            return NextResponse.json(
-                {
-                    message:
-                        "فاکتور ثبت شد اما راننده از لیست روزانه حذف نشد؛ عملیات برگشت داده شد.",
-                },
-                {
-                    status: 409,
-                }
-            );
-        }
-
-        console.log(
-            "Daily driver removed after invoice:",
-            finalDailyDriverId.toString()
-        );
-    } catch (dailyDriverError) {
-        console.error(
-            "Delete daily driver after invoice error:",
-            dailyDriverError
-        );
-
-        // حذف فاکتور
-        await Invoice.findByIdAndDelete(
-            invoice._id
-        );
-
-        // برگرداندن بار
-        if (deletedLoadSnapshot) {
+        if (finalLoadId) {
             try {
-                await Load.create(
-                    deletedLoadSnapshot
+                const deletedLoad =
+                    await Load.findByIdAndDelete(
+                        finalLoadId
+                    );
+
+
+                if (!deletedLoad) {
+                    await Invoice.findByIdAndDelete(
+                        invoice._id
+                    );
+
+
+                    return NextResponse.json(
+                        {
+                            message:
+                                "فاکتور ثبت شد اما بار حذف نشد؛ عملیات برگشت داده شد.",
+                        },
+                        {
+                            status: 409,
+                        }
+                    );
+                }
+
+
+                // نگه داشتن اطلاعات بار برای Rollback احتمالی
+
+                deletedLoadSnapshot =
+                    deletedLoad.toObject();
+
+
+                console.log(
+                    "Load deleted after invoice:",
+                    finalLoadId.toString()
                 );
-            } catch (restoreLoadError) {
+
+            } catch (deleteError) {
                 console.error(
-                    "Restore load error:",
-                    restoreLoadError
+                    "Delete load after invoice error:",
+                    deleteError
+                );
+
+
+                await Invoice.findByIdAndDelete(
+                    invoice._id
+                );
+
+
+                return NextResponse.json(
+                    {
+                        message:
+                            "حذف بار انجام نشد و ثبت فاکتور نیز برگشت داده شد.",
+
+                        error:
+                            deleteError.message,
+                    },
+                    {
+                        status: 500,
+                    }
                 );
             }
         }
 
-        return NextResponse.json(
-            {
-                message:
-                    "راننده از لیست روزانه حذف نشد؛ عملیات برگشت داده شد.",
-                error:
-                    dailyDriverError.message,
-            },
-            {
-                status: 500,
+
+        // ==========================================
+        // حذف راننده از ورود روزانه
+        // ==========================================
+
+        if (finalDailyDriverId) {
+            try {
+                const deletedDailyDriver =
+                    await DailyDriver.findByIdAndDelete(
+                        finalDailyDriverId
+                    );
+
+
+                if (!deletedDailyDriver) {
+
+                    // حذف فاکتور
+
+                    await Invoice.findByIdAndDelete(
+                        invoice._id
+                    );
+
+
+                    // اگر بار حذف شده بود، آن را برمی‌گردانیم
+
+                    if (deletedLoadSnapshot) {
+                        await Load.create(
+                            deletedLoadSnapshot
+                        );
+                    }
+
+
+                    return NextResponse.json(
+                        {
+                            message:
+                                "فاکتور ثبت شد اما راننده از لیست روزانه حذف نشد؛ عملیات برگشت داده شد.",
+                        },
+                        {
+                            status: 409,
+                        }
+                    );
+                }
+
+
+                console.log(
+                    "Daily driver removed after invoice:",
+                    finalDailyDriverId.toString()
+                );
+
+            } catch (dailyDriverError) {
+                console.error(
+                    "Delete daily driver after invoice error:",
+                    dailyDriverError
+                );
+
+
+                // حذف فاکتور
+
+                await Invoice.findByIdAndDelete(
+                    invoice._id
+                );
+
+
+                // برگرداندن بار
+
+                if (deletedLoadSnapshot) {
+                    try {
+                        await Load.create(
+                            deletedLoadSnapshot
+                        );
+                    } catch (
+                        restoreLoadError
+                    ) {
+                        console.error(
+                            "Restore load error:",
+                            restoreLoadError
+                        );
+                    }
+                }
+
+
+                return NextResponse.json(
+                    {
+                        message:
+                            "راننده از لیست روزانه حذف نشد؛ عملیات برگشت داده شد.",
+
+                        error:
+                            dailyDriverError.message,
+                    },
+                    {
+                        status: 500,
+                    }
+                );
             }
-        );
-    }
-}
+        }
+
 
         return NextResponse.json(
             {
@@ -650,11 +836,13 @@ if (finalDailyDriverId) {
                 status: 201,
             }
         );
+
     } catch (error) {
         console.error(
             "Create invoice error:",
             error
         );
+
 
         // ==========================================
         // شماره فاکتور تکراری
@@ -671,6 +859,7 @@ if (finalDailyDriverId) {
                 }
             );
         }
+
 
         return NextResponse.json(
             {
