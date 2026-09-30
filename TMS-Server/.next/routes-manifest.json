@@ -249,6 +249,12 @@
       "namedRegex": "^/favicon\\.ico(?:/)?$"
     },
     {
+      "page": "/icon.png",
+      "regex": "^/icon\\.png(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/icon\\.png(?:/)?$"
+    },
+    {
       "page": "/invoices",
       "regex": "^/invoices(?:/)?$",
       "routeKeys": {},
@@ -271,6 +277,12 @@
       "regex": "^/loads/add(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/loads/add(?:/)?$"
+    },
+    {
+      "page": "/manifest.webmanifest",
+      "regex": "^/manifest\\.webmanifest(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/manifest\\.webmanifest(?:/)?$"
     },
     {
       "page": "/reports",

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import connectDB from "@/lib/mongodb";
 import Driver from "@/models/Driver";
+import { touchSyncState } from "@/lib/sync";
 
 export async function GET() {
     try {
@@ -106,6 +107,8 @@ export async function POST(request) {
             licenseExpiry,
             status: "available",
         });
+
+        await touchSyncState();
 
         return NextResponse.json(
             {

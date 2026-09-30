@@ -7,7 +7,7 @@ import Load from "@/models/Load";
 import Company from "@/models/Company";
 
 import { getUserFromSessionToken } from "@/lib/auth";
-
+import { touchSyncState } from "@/lib/sync";
 
 function getTodayKey() {
     const today = new Date();
@@ -18,7 +18,6 @@ function getTodayKey() {
 
     return `${year}-${month}-${day}`;
 }
-
 
 async function generateInvoiceNumber() {
     const today = new Date();
@@ -58,7 +57,6 @@ async function generateInvoiceNumber() {
     return `${prefix}${String(nextNumber).padStart(4, "0")}`;
 }
 
-
 export async function GET() {
     try {
         await connectDB();
@@ -90,14 +88,12 @@ export async function GET() {
     }
 }
 
-
 export async function POST(request) {
     try {
         await connectDB();
 
         const body =
             await request.json();
-
 
         // ==========================================
         // کاربر ثبت‌کننده فاکتور
@@ -133,7 +129,6 @@ export async function POST(request) {
 
         const createdByUserName =
             currentUser.username;
-
 
         const {
             invoiceNumber:
@@ -200,7 +195,6 @@ export async function POST(request) {
             qrCode = "",
         } = body;
 
-
         // ==========================================
         // بررسی اطلاعات ضروری
         // ==========================================
@@ -217,7 +211,6 @@ export async function POST(request) {
             );
         }
 
-
         if (!driverName?.trim()) {
             return NextResponse.json(
                 {
@@ -229,7 +222,6 @@ export async function POST(request) {
                 }
             );
         }
-
 
         if (!vehicleType?.trim()) {
             return NextResponse.json(
@@ -243,7 +235,6 @@ export async function POST(request) {
             );
         }
 
-
         if (!loadType?.trim()) {
             return NextResponse.json(
                 {
@@ -255,7 +246,6 @@ export async function POST(request) {
                 }
             );
         }
-
 
         // ==========================================
         // اطلاعات راننده
@@ -291,13 +281,11 @@ export async function POST(request) {
         let finalVehiclePlate =
             vehiclePlate?.trim() || "";
 
-
         if (dailyDriverId) {
             const dailyDriver =
                 await DailyDriver.findById(
                     dailyDriverId
                 ).populate("driverId");
-
 
             if (!dailyDriver) {
                 return NextResponse.json(
@@ -310,7 +298,6 @@ export async function POST(request) {
                     }
                 );
             }
-
 
             if (
                 dailyDriver.date !==
@@ -327,7 +314,6 @@ export async function POST(request) {
                 );
             }
 
-
             finalDailyDriverId =
                 dailyDriver._id;
 
@@ -342,7 +328,6 @@ export async function POST(request) {
 
             finalVehicleType =
                 dailyDriver.vehicleType;
-
 
             // ======================================
             // راننده اصلی
@@ -371,7 +356,6 @@ export async function POST(request) {
                     String(realDriver._id);
             }
 
-
             // ======================================
             // راننده مهمان
             // ======================================
@@ -395,30 +379,21 @@ export async function POST(request) {
             }
         }
 
-
         if (!dailyDriverId) {
             finalDriverType = "manual";
             finalDailyDriverId = null;
         }
 
-
         // ==========================================
         // بررسی بار
         // ==========================================
 
-        // ==========================================
-        // پیدا کردن بار
-        // ==========================================
-
         let finalLoadId = null;
-
 
         if (loadId) {
             let load = null;
 
-
             // اگر MongoDB ObjectId باشد
-
             if (
                 typeof loadId === "string" &&
                 /^[0-9a-fA-F]{24}$/.test(
@@ -431,9 +406,7 @@ export async function POST(request) {
                     );
             }
 
-
             // اگر شناسه داخلی بار باشد
-
             if (!load) {
                 load =
                     await Load.findOne({
@@ -442,7 +415,6 @@ export async function POST(request) {
                         ),
                     });
             }
-
 
             if (!load) {
                 return NextResponse.json(
@@ -456,11 +428,9 @@ export async function POST(request) {
                 );
             }
 
-
             finalLoadId =
                 load._id;
         }
-
 
         // ==========================================
         // بررسی شرکت
@@ -469,13 +439,11 @@ export async function POST(request) {
         let finalCompanyId =
             companyId || null;
 
-
         if (companyId) {
             const company =
                 await Company.findById(
                     companyId
                 );
-
 
             if (!company) {
                 return NextResponse.json(
@@ -489,11 +457,9 @@ export async function POST(request) {
                 );
             }
 
-
             finalCompanyId =
                 company._id;
         }
-
 
         // ==========================================
         // شماره فاکتور
@@ -503,7 +469,6 @@ export async function POST(request) {
             requestedInvoiceNumber?.trim() ||
             (await generateInvoiceNumber());
 
-
         // ==========================================
         // ساخت فاکتور
         // ==========================================
@@ -512,7 +477,6 @@ export async function POST(request) {
             await Invoice.create({
 
                 invoiceNumber,
-
 
                 // ==================================
                 // کاربر ثبت‌کننده
@@ -524,52 +488,39 @@ export async function POST(request) {
                 createdByUserName:
                     createdByUserName,
 
-
                 date,
 
-
                 startTime,
-
 
                 driverId:
                     finalDriverId,
 
-
                 dailyDriverId:
                     finalDailyDriverId,
-
 
                 driverType:
                     finalDriverType,
 
-
                 driverName:
                     finalDriverName,
-
 
                 driverPhone:
                     finalDriverPhone,
 
-
                 driverNationalId:
                     finalDriverNationalId,
-
 
                 driverLicenseNumber:
                     finalDriverLicenseNumber,
 
-
                 vehicleId:
                     finalVehicleId,
-
 
                 vehicleType:
                     finalVehicleType,
 
-
                 vehiclePlate:
                     finalVehiclePlate,
-
 
                 // ==================================
                 // اطلاعات بار
@@ -578,34 +529,26 @@ export async function POST(request) {
                 loadId:
                     finalLoadId,
 
-
                 loadType:
                     loadType?.trim() || "",
-
 
                 companyId:
                     finalCompanyId,
 
-
                 companyName:
                     companyName?.trim() || "",
-
 
                 origin:
                     origin?.trim() || "",
 
-
                 destination:
                     destination?.trim() || "",
-
 
                 distance:
                     Number(distance) || 0,
 
-
                 address:
                     address?.trim() || "",
-
 
                 // ==================================
                 // هزینه‌ها
@@ -614,29 +557,22 @@ export async function POST(request) {
                 cost:
                     Number(cost) || 0,
 
-
                 costType,
-
 
                 insuranceCost:
                     Number(insuranceCost) || 0,
 
-
                 workerCost:
                     Number(workerCost) || 0,
-
 
                 scaleCost:
                     Number(scaleCost) || 0,
 
-
                 stopCost:
                     Number(stopCost) || 0,
 
-
                 commissionCost:
                     Number(commissionCost) || 0,
-
 
                 // ==================================
                 // اطلاعات تکمیلی
@@ -645,22 +581,18 @@ export async function POST(request) {
                 description:
                     description?.trim() || "",
 
-
                 receiverName:
                     receiverName?.trim() || "",
-
 
                 qrCode:
                     qrCode?.trim() || "",
             });
-
 
         // ==========================================
         // حذف بار و راننده روزانه بعد از ثبت موفق فاکتور
         // ==========================================
 
         let deletedLoadSnapshot = null;
-
 
         if (finalLoadId) {
             try {
@@ -669,12 +601,10 @@ export async function POST(request) {
                         finalLoadId
                     );
 
-
                 if (!deletedLoad) {
                     await Invoice.findByIdAndDelete(
                         invoice._id
                     );
-
 
                     return NextResponse.json(
                         {
@@ -687,29 +617,23 @@ export async function POST(request) {
                     );
                 }
 
-
                 // نگه داشتن اطلاعات بار برای Rollback احتمالی
-
                 deletedLoadSnapshot =
                     deletedLoad.toObject();
-
 
                 console.log(
                     "Load deleted after invoice:",
                     finalLoadId.toString()
                 );
-
             } catch (deleteError) {
                 console.error(
                     "Delete load after invoice error:",
                     deleteError
                 );
 
-
                 await Invoice.findByIdAndDelete(
                     invoice._id
                 );
-
 
                 return NextResponse.json(
                     {
@@ -726,7 +650,6 @@ export async function POST(request) {
             }
         }
 
-
         // ==========================================
         // حذف راننده از ورود روزانه
         // ==========================================
@@ -738,24 +661,19 @@ export async function POST(request) {
                         finalDailyDriverId
                     );
 
-
                 if (!deletedDailyDriver) {
 
                     // حذف فاکتور
-
                     await Invoice.findByIdAndDelete(
                         invoice._id
                     );
 
-
                     // اگر بار حذف شده بود، آن را برمی‌گردانیم
-
                     if (deletedLoadSnapshot) {
                         await Load.create(
                             deletedLoadSnapshot
                         );
                     }
-
 
                     return NextResponse.json(
                         {
@@ -768,7 +686,6 @@ export async function POST(request) {
                     );
                 }
 
-
                 console.log(
                     "Daily driver removed after invoice:",
                     finalDailyDriverId.toString()
@@ -780,16 +697,12 @@ export async function POST(request) {
                     dailyDriverError
                 );
 
-
                 // حذف فاکتور
-
                 await Invoice.findByIdAndDelete(
                     invoice._id
                 );
 
-
                 // برگرداندن بار
-
                 if (deletedLoadSnapshot) {
                     try {
                         await Load.create(
@@ -804,7 +717,6 @@ export async function POST(request) {
                         );
                     }
                 }
-
 
                 return NextResponse.json(
                     {
@@ -821,6 +733,12 @@ export async function POST(request) {
             }
         }
 
+        // ==========================================
+        // ثبت تغییر برای همگام‌سازی کلاینت‌ها
+        // فقط بعد از موفقیت کامل عملیات
+        // ==========================================
+
+        await touchSyncState();
 
         return NextResponse.json(
             {
@@ -843,7 +761,6 @@ export async function POST(request) {
             error
         );
 
-
         // ==========================================
         // شماره فاکتور تکراری
         // ==========================================
@@ -859,7 +776,6 @@ export async function POST(request) {
                 }
             );
         }
-
 
         return NextResponse.json(
             {

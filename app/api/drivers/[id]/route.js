@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import connectDB from "@/lib/mongodb";
 import Driver from "@/models/Driver";
 import mongoose from "mongoose";
+import { touchSyncState } from "@/lib/sync";
 
 export async function GET(request, { params }) {
     try {
@@ -151,6 +152,8 @@ export async function PUT(request, { params }) {
             );
         }
 
+        await touchSyncState();
+
         return NextResponse.json({
             success: true,
             message: "اطلاعات راننده با موفقیت ویرایش شد",
@@ -196,6 +199,8 @@ export async function DELETE(request, { params }) {
                 { status: 404 }
             );
         }
+
+        await touchSyncState();
 
         return NextResponse.json({
             success: true,

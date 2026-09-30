@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import connectDB from "@/lib/mongodb";
 import Company from "@/models/Company";
+import { touchSyncState } from "@/lib/sync";
 
 export async function GET(request, { params }) {
     try {
@@ -132,6 +133,8 @@ export async function PUT(request, { params }) {
             );
         }
 
+        await touchSyncState();
+
         return NextResponse.json(
             {
                 success: true,
@@ -180,6 +183,8 @@ export async function DELETE(request, { params }) {
                 }
             );
         }
+
+        await touchSyncState();
 
         return NextResponse.json(
             {

@@ -3,6 +3,7 @@ import connectDB from "@/lib/mongodb";
 
 import DailyDriver from "@/models/DailyDriver";
 import Driver from "@/models/Driver";
+import { touchSyncState } from "@/lib/sync";
 
 /* =========================================================
    تاریخ امروز میلادی برای کلید دیتابیس
@@ -174,6 +175,7 @@ function parseLicenseExpiry(value) {
        2026-09-25T00:00:00.000Z
        باشد
     */
+
     if (
         normalized.includes("T") ||
         /^\d{4}-\d{2}-\d{2}/.test(
@@ -533,6 +535,8 @@ export async function POST(request) {
                     .populate("driverId")
                     .lean();
 
+            await touchSyncState();
+
             return NextResponse.json(
                 {
                     success: true,
@@ -605,6 +609,8 @@ export async function POST(request) {
                 dailyDriver._id
             ).lean();
 
+        await touchSyncState();
+
         return NextResponse.json(
             {
                 success: true,
@@ -665,6 +671,8 @@ export async function DELETE(request) {
                     date,
                 });
 
+            await touchSyncState();
+
             return NextResponse.json({
                 success: true,
                 message:
@@ -711,6 +719,8 @@ export async function DELETE(request) {
                 }
             );
         }
+
+        await touchSyncState();
 
         return NextResponse.json({
             success: true,

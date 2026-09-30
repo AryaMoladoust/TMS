@@ -2,42 +2,47 @@ import { NextResponse } from "next/server";
 
 import connectDB from "@/lib/mongodb";
 import Company from "@/models/Company";
+import { touchSyncState } from "@/lib/sync";
 
-
-// ==========================================
-// GET
-// دریافت لیست شرکت‌ها
-// ==========================================
-
-export async function GET() {
+export async function GET(request, { params }) {
     try {
         await connectDB();
 
-        const companies = await Company.find()
-            .sort({ createdAt: -1 })
-            .lean();
+        const { id } = await params;
+
+        const company = await Company.findById(id).lean();
+
+        if (!company) {
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "شرکت موردنظر پیدا نشد.",
+                },
+                {
+                    status: 404,
+                }
+            );
+        }
 
         return NextResponse.json(
             {
                 success: true,
-                companies,
+                company,
             },
             {
                 status: 200,
             }
         );
-
     } catch (error) {
-
         console.error(
-            "GET /api/companies error:",
+            "GET /api/companies/[id] error:",
             error
         );
 
         return NextResponse.json(
             {
                 success: false,
-                message: "خطا در دریافت لیست شرکت‌ها",
+                message: "خطا در دریافت اطلاعات شرکت.",
             },
             {
                 status: 500,
@@ -46,15 +51,11 @@ export async function GET() {
     }
 }
 
-
-// ==========================================
-// POST
-// ثبت شرکت جدید
-// ==========================================
-
-export async function POST(request) {
+export async function PUT(request, { params }) {
     try {
         await connectDB();
+
+        const { id } = await params;
 
         const body = await request.json();
 
@@ -67,17 +68,11 @@ export async function POST(request) {
             description,
         } = body;
 
-
-        // ==================================
-        // بررسی فیلدهای اجباری
-        // ==================================
-
         if (
             !name?.trim() ||
             !managerName?.trim() ||
             !phone?.trim()
         ) {
-
             return NextResponse.json(
                 {
                     success: false,
@@ -90,24 +85,18 @@ export async function POST(request) {
             );
         }
 
-
-        // ==================================
-        // بررسی شرکت تکراری
-        // ==================================
-
-        const existingCompany =
+        const duplicateCompany =
             await Company.findOne({
                 name: name.trim(),
+                _id: { $ne: id },
             });
 
-
-        if (existingCompany) {
-
+        if (duplicateCompany) {
             return NextResponse.json(
                 {
                     success: false,
                     message:
-                        "این شرکت قبلاً ثبت شده است.",
+                        "شرکت دیگری با این نام قبلاً ثبت شده است.",
                 },
                 {
                     status: 409,
@@ -115,56 +104,107 @@ export async function POST(request) {
             );
         }
 
-
-        // ==================================
-        // ایجاد شرکت
-        // ==================================
-
         const company =
-            await Company.create({
-                name: name.trim(),
+            await Company.findByIdAndUpdate(
+                id,
+                {
+                    name: name.trim(),
+                    managerName: managerName.trim(),
+                    phone: phone.trim(),
+                    landline: landline?.trim() || "",
+                    address: address?.trim() || "",
+                    description: description?.trim() || "",
+                },
+                {
+                    new: true,
+                    runValidators: true,
+                }
+            );
 
-                managerName:
-                    managerName.trim(),
+        if (!company) {
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "شرکت موردنظر پیدا نشد.",
+                },
+                {
+                    status: 404,
+                }
+            );
+        }
 
-                phone:
-                    phone.trim(),
-
-                landline:
-                    landline?.trim() || "",
-
-                address:
-                    address?.trim() || "",
-
-                description:
-                    description?.trim() || "",
-            });
-
+        await touchSyncState();
 
         return NextResponse.json(
             {
                 success: true,
-                message:
-                    "شرکت با موفقیت ثبت شد.",
+                message: "اطلاعات شرکت با موفقیت ویرایش شد.",
                 company,
             },
             {
-                status: 201,
+                status: 200,
             }
         );
-
     } catch (error) {
-
         console.error(
-            "POST /api/companies error:",
+            "PUT /api/companies/[id] error:",
             error
         );
 
         return NextResponse.json(
             {
                 success: false,
-                message:
-                    "خطا در ثبت شرکت.",
+                message: "خطا در ویرایش شرکت.",
+            },
+            {
+                status: 500,
+            }
+        );
+    }
+}
+
+export async function DELETE(request, { params }) {
+    try {
+        await connectDB();
+
+        const { id } = await params;
+
+        const company =
+            await Company.findByIdAndDelete(id);
+
+        if (!company) {
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "شرکت موردنظر پیدا نشد.",
+                },
+                {
+                    status: 404,
+                }
+            );
+        }
+
+        await touchSyncState();
+
+        return NextResponse.json(
+            {
+                success: true,
+                message: "شرکت با موفقیت حذف شد.",
+            },
+            {
+                status: 200,
+            }
+        );
+    } catch (error) {
+        console.error(
+            "DELETE /api/companies/[id] error:",
+            error
+        );
+
+        return NextResponse.json(
+            {
+                success: false,
+                message: "خطا در حذف شرکت.",
             },
             {
                 status: 500,

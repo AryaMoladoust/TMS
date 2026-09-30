@@ -17,6 +17,8 @@
   "/api/reports/route": "/api/reports",
   "/api/users/route": "/api/users",
   "/favicon.ico/route": "/favicon.ico",
+  "/icon.png/route": "/icon.png",
+  "/manifest.webmanifest/route": "/manifest.webmanifest",
   "/auth/login/page": "/auth/login",
   "/page": "/",
   "/(dashboard)/change-password/page": "/change-password",

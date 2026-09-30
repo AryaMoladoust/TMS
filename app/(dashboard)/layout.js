@@ -7,6 +7,7 @@ import {
 
 import Sidebar from "@/components/layout/Sidebar";
 import Header from "@/components/layout/Header";
+import SyncPolling from "@/components/SyncPolling";
 
 export default function DashboardLayout({
   children,
@@ -61,6 +62,8 @@ export default function DashboardLayout({
             setSidebarOpen
           }
         />
+
+        <SyncPolling />
 
         {children}
       </div>

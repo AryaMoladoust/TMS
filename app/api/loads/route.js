@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import connectToDatabase from "@/lib/mongodb";
 import Load from "@/models/Load";
+import { touchSyncState } from "@/lib/sync";
 
 // =====================================
 // گرفتن همه بارها
@@ -15,7 +16,6 @@ export async function GET() {
         });
 
         return NextResponse.json(loads);
-
     } catch (error) {
         console.error("GET /api/loads error:", error);
 
@@ -29,7 +29,6 @@ export async function GET() {
         );
     }
 }
-
 
 // =====================================
 // ساخت Load ID
@@ -73,7 +72,6 @@ async function generateLoadId() {
 
     return `${prefix}-${String(number).padStart(4, "0")}`;
 }
-
 
 // =====================================
 // ثبت بار جدید
@@ -237,6 +235,12 @@ export async function POST(request) {
         });
 
         // =================================
+        // اعلام تغییر به تمام کلاینت‌ها
+        // =================================
+
+        await touchSyncState();
+
+        // =================================
         // پاسخ موفق
         // =================================
 
@@ -246,7 +250,6 @@ export async function POST(request) {
                 status: 201,
             }
         );
-
     } catch (error) {
         console.error(
             "POST /api/loads error:",
