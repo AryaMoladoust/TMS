@@ -169,9 +169,7 @@ export async function POST(request) {
 
             sameSite: "lax",
 
-            secure:
-                process.env.NODE_ENV ===
-                "production",
+            secure: false,
 
             path: "/",
 
