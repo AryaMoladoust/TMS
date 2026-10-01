@@ -1,48 +1,75 @@
 import { NextResponse } from "next/server";
-
-import connectToDatabase from "@/lib/mongodb";
+import connectDB from "@/lib/mongodb";
 import { getUserFromSessionToken } from "@/lib/auth";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(request) {
-  try {
-    await connectToDatabase();
+    try {
+        await connectDB();
 
-    const token = request.cookies.get("tms_session")?.value;
+        const sessionToken =
+            request.cookies.get("tms_session")?.value;
 
-    const sessionData =
-      await getUserFromSessionToken(token);
+        if (!sessionToken) {
+            return NextResponse.json(
+                {
+                    success: false,
+                    user: null,
+                    message: "کاربر وارد نشده است.",
+                },
+                {
+                    status: 401,
+                }
+            );
+        }
 
-    if (!sessionData) {
-      return NextResponse.json(
-        {
-          success: false,
-          authenticated: false,
-        },
-        { status: 401 }
-      );
+        const result =
+            await getUserFromSessionToken(sessionToken);
+
+        if (!result || !result.user) {
+            return NextResponse.json(
+                {
+                    success: false,
+                    user: null,
+                    message: "جلسه کاربر معتبر نیست.",
+                },
+                {
+                    status: 401,
+                }
+            );
+        }
+
+        return NextResponse.json(
+            {
+                success: true,
+                user: {
+                    id: result.user._id,
+                    username: result.user.username,
+                    name: result.user.name,
+                    role: result.user.role,
+                },
+            },
+            {
+                status: 200,
+                headers: {
+                    "Cache-Control":
+                        "no-store, no-cache, must-revalidate",
+                },
+            }
+        );
+    } catch (error) {
+        console.error("AUTH_ME_ERROR:", error);
+
+        return NextResponse.json(
+            {
+                success: false,
+                user: null,
+                message: "خطا در بررسی ورود کاربر.",
+            },
+            {
+                status: 500,
+            }
+        );
     }
-
-    const { user } = sessionData;
-
-    return NextResponse.json({
-      success: true,
-      authenticated: true,
-
-      user: {
-        id: user._id.toString(),
-        username: user.username,
-        role: user.role,
-      },
-    });
-  } catch (error) {
-    console.error("ME_ERROR:", error);
-
-    return NextResponse.json(
-      {
-        success: false,
-        authenticated: false,
-      },
-      { status: 500 }
-    );
-  }
 }
