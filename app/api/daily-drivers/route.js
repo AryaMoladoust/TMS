@@ -10,11 +10,29 @@ import { touchSyncState } from "@/lib/sync";
 ========================================================= */
 
 function getTodayKey() {
-    const today = new Date();
+    const now = new Date();
 
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, "0");
-    const day = String(today.getDate()).padStart(2, "0");
+    const parts = new Intl.DateTimeFormat(
+        "en-US",
+        {
+            timeZone: "Asia/Tehran",
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+        }
+    ).formatToParts(now);
+
+    const year = parts.find(
+        (part) => part.type === "year"
+    )?.value;
+
+    const month = parts.find(
+        (part) => part.type === "month"
+    )?.value;
+
+    const day = parts.find(
+        (part) => part.type === "day"
+    )?.value;
 
     return `${year}-${month}-${day}`;
 }

@@ -23,9 +23,13 @@ export default function SyncPolling() {
                     return;
                 }
 
-                const data = await response.json();
+                const data =
+                    await response.json();
 
-                if (!data.success || !data.version) {
+                if (
+                    !data.success ||
+                    !data.version
+                ) {
                     return;
                 }
 
@@ -33,13 +37,29 @@ export default function SyncPolling() {
                     return;
                 }
 
-                // اولین دریافت فقط نسخه فعلی را ذخیره می‌کند
-                if (lastVersion.current === null) {
-                    lastVersion.current = data.version;
+                /*
+                 * اولین دریافت:
+                 * فقط نسخه فعلی سرور ذخیره می‌شود.
+                 * هیچ رویدادی اجرا نمی‌شود.
+                 */
+                if (
+                    lastVersion.current === null
+                ) {
+                    lastVersion.current =
+                        data.version;
+
                     return;
                 }
 
-                // اگر تغییری روی سرور اتفاق افتاده باشد
+                /*
+                 * اگر داده‌ای روی سرور تغییر کرده باشد:
+                 *
+                 * به جای reload کردن کل صفحه،
+                 * یک Event سراسری ارسال می‌کنیم.
+                 *
+                 * کامپوننت‌هایی که نیاز به بروزرسانی
+                 * دارند خودشان به این Event گوش می‌دهند.
+                 */
                 if (
                     data.version !==
                     lastVersion.current
@@ -47,7 +67,11 @@ export default function SyncPolling() {
                     lastVersion.current =
                         data.version;
 
-                    window.location.reload();
+                    window.dispatchEvent(
+                        new Event(
+                            "tms-sync-updated"
+                        )
+                    );
                 }
             } catch (error) {
                 console.error(
@@ -57,16 +81,26 @@ export default function SyncPolling() {
             }
         }
 
+        /*
+         * بررسی اولیه
+         */
         checkSync();
 
-        const interval = setInterval(
-            checkSync,
-            POLLING_INTERVAL
-        );
+        /*
+         * بررسی تغییرات هر ۵ ثانیه
+         */
+        const interval =
+            setInterval(
+                checkSync,
+                POLLING_INTERVAL
+            );
 
         return () => {
             isMounted = false;
-            clearInterval(interval);
+
+            clearInterval(
+                interval
+            );
         };
     }, []);
 

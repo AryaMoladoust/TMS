@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+
 import {
     Users,
     UserRound,
@@ -9,54 +10,73 @@ import {
 } from "lucide-react";
 
 const vehicleTypes = [
-    { value: "truck", label: "کامیون" },
-    { value: "trailer", label: "تریلی" },
-    { value: "pickup", label: "وانت" },
-    { value: "van", label: "ون" },
+    {
+        value: "truck",
+        label: "کامیون",
+    },
+    {
+        value: "trailer",
+        label: "تریلی",
+    },
+    {
+        value: "pickup",
+        label: "وانت",
+    },
+    {
+        value: "van",
+        label: "ون",
+    },
 ];
 
 function getVehicleLabel(vehicleType) {
     const vehicle = vehicleTypes.find(
-        (item) => item.value === vehicleType
+        (item) =>
+            item.value === vehicleType
     );
 
-    return vehicle?.label || vehicleType || "-";
-}
-
-function getTodayKey() {
-    const now = new Date();
-
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, "0");
-    const day = String(now.getDate()).padStart(2, "0");
-
-    return `${year}-${month}-${day}`;
+    return (
+        vehicle?.label ||
+        vehicleType ||
+        "-"
+    );
 }
 
 export default function DailyDriversList() {
-    const [dailyDrivers, setDailyDrivers] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [dailyDrivers, setDailyDrivers] =
+        useState([]);
+
+    const [loading, setLoading] =
+        useState(true);
 
     async function loadDailyDrivers() {
         try {
             const response = await fetch(
-                `/api/daily-drivers?date=${getTodayKey()}`,
+                "/api/daily-drivers",
                 {
                     cache: "no-store",
                 }
             );
 
             if (!response.ok) {
-                throw new Error("خطا در دریافت رانندگان");
+                throw new Error(
+                    "خطا در دریافت رانندگان"
+                );
             }
 
-            const data = await response.json();
+            const data =
+                await response.json();
 
             setDailyDrivers(
-                Array.isArray(data) ? data : data.dailyDrivers || []
+                Array.isArray(data)
+                    ? data
+                    : data.dailyDrivers || []
             );
         } catch (error) {
-            console.error("Daily drivers fetch error:", error);
+            console.error(
+                "Daily drivers fetch error:",
+                error
+            );
+
             setDailyDrivers([]);
         } finally {
             setLoading(false);
@@ -66,25 +86,19 @@ export default function DailyDriversList() {
     useEffect(() => {
         loadDailyDrivers();
 
-        const interval = setInterval(() => {
-            loadDailyDrivers();
-        }, 5000);
-
-        function handleDailyDriversUpdated() {
+        function handleSyncUpdate() {
             loadDailyDrivers();
         }
 
         window.addEventListener(
-            "daily-drivers-updated",
-            handleDailyDriversUpdated
+            "tms-sync-updated",
+            handleSyncUpdate
         );
 
         return () => {
-            clearInterval(interval);
-
             window.removeEventListener(
-                "daily-drivers-updated",
-                handleDailyDriversUpdated
+                "tms-sync-updated",
+                handleSyncUpdate
             );
         };
     }, []);
@@ -101,6 +115,7 @@ export default function DailyDriversList() {
                     </div>
 
                     <div>
+
                         <h2>
                             رانندگان امروز
                         </h2>
@@ -108,6 +123,7 @@ export default function DailyDriversList() {
                         <p>
                             رانندگانی که امروز به شرکت مراجعه کرده‌اند
                         </p>
+
                     </div>
 
                 </div>
@@ -130,6 +146,7 @@ export default function DailyDriversList() {
             </div>
 
             {loading ? (
+
                 <div className="daily-drivers-list-empty">
 
                     <Users size={30} />
@@ -139,7 +156,9 @@ export default function DailyDriversList() {
                     </strong>
 
                 </div>
+
             ) : dailyDrivers.length === 0 ? (
+
                 <div className="daily-drivers-list-empty">
 
                     <Users size={30} />
@@ -160,18 +179,22 @@ export default function DailyDriversList() {
                     </a>
 
                 </div>
+
             ) : (
+
                 <div className="daily-drivers-mini-table-wrapper">
 
                     <table className="daily-drivers-mini-table">
 
                         <thead>
+
                             <tr>
                                 <th>نام راننده</th>
                                 <th>شماره</th>
                                 <th>نوع ماشین</th>
                                 <th>نوع ورود</th>
                             </tr>
+
                         </thead>
 
                         <tbody>
@@ -179,7 +202,11 @@ export default function DailyDriversList() {
                             {dailyDrivers.map(
                                 (driver, index) => (
 
-                                    <tr key={driver._id}>
+                                    <tr
+                                        key={
+                                            driver._id
+                                        }
+                                    >
 
                                         <td>
 
@@ -196,7 +223,8 @@ export default function DailyDriversList() {
                                                     </strong>
 
                                                     <span>
-                                                        نفر {index + 1}
+                                                        نفر{" "}
+                                                        {index + 1}
                                                     </span>
 
                                                 </div>
@@ -212,7 +240,8 @@ export default function DailyDriversList() {
                                                 <Phone size={15} />
 
                                                 <span>
-                                                    {driver.phone || "-"}
+                                                    {driver.phone ||
+                                                        "-"}
                                                 </span>
 
                                             </div>
@@ -226,7 +255,9 @@ export default function DailyDriversList() {
                                                 <Truck size={15} />
 
                                                 <span>
-                                                    {getVehicleLabel(driver.vehicleType)}
+                                                    {getVehicleLabel(
+                                                        driver.vehicleType
+                                                    )}
                                                 </span>
 
                                             </div>
@@ -238,13 +269,15 @@ export default function DailyDriversList() {
                                             <span
                                                 className={
                                                     `daily-driver-mini-type ${
-                                                        driver.type === "main"
+                                                        driver.type ===
+                                                        "main"
                                                             ? "daily-driver-mini-type-main"
                                                             : "daily-driver-mini-type-guest"
                                                     }`
                                                 }
                                             >
-                                                {driver.type === "main"
+                                                {driver.type ===
+                                                "main"
                                                     ? "اصلی"
                                                     : "مهمان"}
                                             </span>
@@ -261,6 +294,7 @@ export default function DailyDriversList() {
                     </table>
 
                 </div>
+
             )}
 
         </section>

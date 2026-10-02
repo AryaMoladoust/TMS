@@ -36,68 +36,85 @@ export default function StatsCards() {
 
     const [loading, setLoading] = useState(true);
 
+    async function loadCounts() {
+        try {
+            const [
+                driversResponse,
+                companiesResponse,
+            ] = await Promise.all([
+                fetch("/api/drivers", {
+                    cache: "no-store",
+                }),
+                fetch("/api/companies", {
+                    cache: "no-store",
+                }),
+            ]);
+
+            const driversData =
+                await driversResponse.json();
+
+            const companiesData =
+                await companiesResponse.json();
+
+            setCounts({
+                drivers: Array.isArray(
+                    driversData.drivers
+                )
+                    ? driversData.drivers.length
+                    : 0,
+
+                companies: Array.isArray(
+                    companiesData.companies
+                )
+                    ? companiesData.companies.length
+                    : 0,
+            });
+        } catch (error) {
+            console.error(
+                "Stats cards fetch error:",
+                error
+            );
+
+            setCounts({
+                drivers: 0,
+                companies: 0,
+            });
+        } finally {
+            setLoading(false);
+        }
+    }
+
     useEffect(() => {
-        async function loadCounts() {
-            try {
-                setLoading(true);
+        loadCounts();
 
-                const [driversResponse, companiesResponse] =
-                    await Promise.all([
-                        fetch("/api/drivers", {
-                            cache: "no-store",
-                        }),
-                        fetch("/api/companies", {
-                            cache: "no-store",
-                        }),
-                    ]);
-
-                const driversData =
-                    await driversResponse.json();
-
-                const companiesData =
-                    await companiesResponse.json();
-
-                setCounts({
-                    drivers: Array.isArray(
-                        driversData.drivers
-                    )
-                        ? driversData.drivers.length
-                        : 0,
-
-                    companies: Array.isArray(
-                        companiesData.companies
-                    )
-                        ? companiesData.companies.length
-                        : 0,
-                });
-            } catch (error) {
-                console.error(
-                    "Stats cards fetch error:",
-                    error
-                );
-
-                setCounts({
-                    drivers: 0,
-                    companies: 0,
-                });
-            } finally {
-                setLoading(false);
-            }
+        function handleSyncUpdate() {
+            loadCounts();
         }
 
-        loadCounts();
+        window.addEventListener(
+            "tms-sync-updated",
+            handleSyncUpdate
+        );
+
+        return () => {
+            window.removeEventListener(
+                "tms-sync-updated",
+                handleSyncUpdate
+            );
+        };
     }, []);
 
     return (
         <section className="stats-grid">
+
             {statsConfig.map((stat) => {
                 const Icon = stat.icon;
 
                 const value = loading
                     ? "..."
                     : (
-                          counts[stat.key] ?? 0
-                      ).toLocaleString("fa-IR");
+                        counts[stat.key] ?? 0
+                    ).toLocaleString("fa-IR");
 
                 return (
                     <Link
@@ -105,7 +122,9 @@ export default function StatsCards() {
                         className="stat-card stat-card-clickable"
                         key={stat.title}
                     >
+
                         <div className="stat-card-top">
+
                             <div
                                 className={`stat-icon stat-icon-${stat.type}`}
                             >
@@ -115,22 +134,31 @@ export default function StatsCards() {
                             <div className="stat-arrow">
                                 <ArrowUpLeft size={16} />
                             </div>
+
                         </div>
 
                         <div className="stat-info">
-                            <span>{stat.title}</span>
 
-                            <strong>{value}</strong>
+                            <span>
+                                {stat.title}
+                            </span>
+
+                            <strong>
+                                {value}
+                            </strong>
 
                             <small>
                                 {stat.description}
                             </small>
+
                         </div>
+
                     </Link>
                 );
             })}
 
             <AnimatedTruck />
+
         </section>
     );
 }

@@ -26,9 +26,27 @@ const vehicleTypes = [
 function getTodayKey() {
     const now = new Date();
 
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, "0");
-    const day = String(now.getDate()).padStart(2, "0");
+    const parts = new Intl.DateTimeFormat(
+        "en-US",
+        {
+            timeZone: "Asia/Tehran",
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+        }
+    ).formatToParts(now);
+
+    const year = parts.find(
+        (part) => part.type === "year"
+    )?.value;
+
+    const month = parts.find(
+        (part) => part.type === "month"
+    )?.value;
+
+    const day = parts.find(
+        (part) => part.type === "day"
+    )?.value;
 
     return `${year}-${month}-${day}`;
 }
@@ -100,42 +118,45 @@ export default function DailyDriversPage() {
     // دریافت ورودهای امروز
     // =========================
 
-    async function fetchDailyDrivers() {
-        try {
-            setLoadingDailyDrivers(true);
+async function fetchDailyDrivers() {
+    try {
+        setLoadingDailyDrivers(true);
 
-            const response = await fetch(
-                `/api/daily-drivers?date=${today}`,
-                {
-                    cache: "no-store",
-                }
-            );
-
-            const data = await response.json();
-
-            if (!response.ok || !data.success) {
-                throw new Error(
-                    data.message ||
-                    "خطا در دریافت ورود روزانه رانندگان"
-                );
+        const response = await fetch(
+            "/api/daily-drivers",
+            {
+                cache: "no-store",
             }
+        );
 
-            setDailyDrivers(data.dailyDrivers || []);
-        } catch (err) {
-            console.error(err);
-            setError(
-                err.message ||
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+            throw new Error(
+                data.message ||
                 "خطا در دریافت ورود روزانه رانندگان"
             );
-        } finally {
-            setLoadingDailyDrivers(false);
         }
-    }
 
-    useEffect(() => {
-        fetchDrivers();
-        fetchDailyDrivers();
-    }, []);
+        setDailyDrivers(
+            data.dailyDrivers || []
+        );
+    } catch (err) {
+        console.error(err);
+
+        setError(
+            err.message ||
+            "خطا در دریافت ورود روزانه رانندگان"
+        );
+    } finally {
+        setLoadingDailyDrivers(false);
+    }
+}
+
+  useEffect(() => {
+    fetchDrivers();
+    fetchDailyDrivers();
+}, []);
 
     // =========================
     // نمایش پیام

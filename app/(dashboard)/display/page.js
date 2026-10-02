@@ -6,8 +6,6 @@ import {
     Package,
     UserCheck,
     Truck,
-    CalendarDays,
-    RefreshCw,
     MapPin,
 } from "lucide-react";
 
@@ -26,11 +24,10 @@ function getTodayKey() {
 }
 
 function toPersianNumber(value) {
-    return String(value ?? "")
-        .replace(
-            /\d/g,
-            (digit) => "۰۱۲۳۴۵۶۷۸۹"[digit]
-        );
+    return String(value ?? "").replace(
+        /\d/g,
+        (digit) => "۰۱۲۳۴۵۶۷۸۹"[digit]
+    );
 }
 
 function getVehicleTypeLabel(type) {
@@ -41,11 +38,7 @@ function getVehicleTypeLabel(type) {
         van: "ون",
     };
 
-    return (
-        vehicleTypes[type] ||
-        type ||
-        "—"
-    );
+    return vehicleTypes[type] || type || "—";
 }
 
 function getLoadStatus(status) {
@@ -67,22 +60,11 @@ function getLoadStatus(status) {
 ========================================================= */
 
 export default function DisplayPage() {
-    const [dailyDrivers, setDailyDrivers] =
-        useState([]);
+    const [dailyDrivers, setDailyDrivers] = useState([]);
+    const [loads, setLoads] = useState([]);
 
-    const [loads, setLoads] =
-        useState([]);
-
-    /*
-     * مهم:
-     * مقدار اولیه نباید new Date() باشد.
-     * چون باعث اختلاف SSR و Client می‌شود.
-     */
-    const [currentDate, setCurrentDate] =
-        useState("");
-
-    const [lastUpdate, setLastUpdate] =
-        useState("");
+    const [currentDate, setCurrentDate] = useState("");
+    const [lastUpdate, setLastUpdate] = useState("");
 
     /* =====================================================
        LOAD DATABASE DATA
@@ -90,24 +72,22 @@ export default function DisplayPage() {
 
     async function fetchDisplayData() {
         try {
-            const [
-                driversResponse,
-                loadsResponse,
-            ] = await Promise.all([
-                fetch(
-                    `/api/daily-drivers?date=${getTodayKey()}`,
-                    {
-                        cache: "no-store",
-                    }
-                ),
+            const [driversResponse, loadsResponse] =
+                await Promise.all([
+                    fetch(
+                        "/api/daily-drivers",
+                        {
+                            cache: "no-store",
+                        }
+                    ),
 
-                fetch(
-                    "/api/loads",
-                    {
-                        cache: "no-store",
-                    }
-                ),
-            ]);
+                    fetch(
+                        "/api/loads",
+                        {
+                            cache: "no-store",
+                        }
+                    ),
+                ]);
 
             /* ---------------------------------------------
                DAILY DRIVERS
@@ -145,9 +125,7 @@ export default function DisplayPage() {
                                     b.createdAt || 0
                                 ).getTime();
 
-                            return (
-                                aTime - bTime
-                            );
+                            return aTime - bTime;
                         }
                     );
 
@@ -224,10 +202,10 @@ export default function DisplayPage() {
                 );
             }
 
-            /*
-             * زمان آخرین بروزرسانی فقط بعد از
-             * دریافت اطلاعات روی Client تنظیم می‌شود.
-             */
+            /* ---------------------------------------------
+               LAST UPDATE
+            --------------------------------------------- */
+
             setLastUpdate(
                 new Date().toLocaleTimeString(
                     "fa-IR",
@@ -247,15 +225,10 @@ export default function DisplayPage() {
     }
 
     /* =====================================================
-       INITIAL LOAD + AUTO REFRESH + CLOCK
+       INITIAL LOAD + CLOCK + SYNC
     ===================================================== */
 
     useEffect(() => {
-        /*
-         * تاریخ و ساعت فقط بعد از Mount شدن Client
-         * ساخته می‌شوند تا Hydration Error نداشته باشیم.
-         */
-
         const updateClock = () => {
             const now = new Date();
 
@@ -287,19 +260,30 @@ export default function DisplayPage() {
                 1000
             );
 
-        const dataInterval =
-            setInterval(
-                fetchDisplayData,
-                5000
-            );
+        /*
+         * وقتی Sync تغییر را تشخیص داد،
+         * فقط اطلاعات مانیتورینگ دوباره دریافت می‌شود.
+         *
+         * کل صفحه reload نمی‌شود.
+         */
+
+        const handleSyncUpdate = () => {
+            fetchDisplayData();
+        };
+
+        window.addEventListener(
+            "tms-sync-updated",
+            handleSyncUpdate
+        );
 
         return () => {
             clearInterval(
                 clockInterval
             );
 
-            clearInterval(
-                dataInterval
+            window.removeEventListener(
+                "tms-sync-updated",
+                handleSyncUpdate
             );
         };
     }, []);
@@ -310,14 +294,6 @@ export default function DisplayPage() {
 
     return (
         <main className="main-content display-page">
-
-            {/*
-                چیدمان صفحه:
-                - ستون رانندگان (اول در DOM ← سمت راست در RTL) بزرگ‌تر
-                - ستون بارها کوچک‌تر و سمت چپ
-                فقط روی صفحه‌های عریض اعمال می‌شود تا در موبایل/تبلت
-                چیدمان قبلی (responsive) به‌هم نخورد.
-            */}
 
             <style>{`
                 @media (min-width: 1100px) {
@@ -363,8 +339,6 @@ export default function DisplayPage() {
                     padding-top: 20px;
                     padding-bottom: 20px;
                 }
-
-                /* بارها: متن درشت‌تر برای نمایش روی تلویزیون */
 
                 .display-panel-loads .display-item-title strong {
                     font-size: 22px;
@@ -419,11 +393,9 @@ export default function DisplayPage() {
                         <div className="display-panel-title">
 
                             <div className="display-panel-icon display-panel-blue">
-
                                 <UserCheck
                                     size={21}
                                 />
-
                             </div>
 
                             <div>
@@ -462,7 +434,7 @@ export default function DisplayPage() {
                                 const realDriver =
                                     driver.driverId &&
                                     typeof driver.driverId ===
-                                        "object"
+                                    "object"
                                         ? driver.driverId
                                         : null;
 
@@ -477,7 +449,9 @@ export default function DisplayPage() {
                                         <div className="display-driver-main">
 
                                             <div className="display-driver-avatar">
-                                                {toPersianNumber(index + 1)}
+                                                {toPersianNumber(
+                                                    index + 1
+                                                )}
                                             </div>
 
                                             <div className="display-driver-info">
@@ -503,10 +477,8 @@ export default function DisplayPage() {
                                                 </div>
 
                                                 <span className="display-driver-phone">
-
                                                     {driver.phone ||
                                                         "—"}
-
                                                 </span>
 
                                             </div>
@@ -520,12 +492,10 @@ export default function DisplayPage() {
                                             />
 
                                             <span>
-
                                                 {getVehicleTypeLabel(
                                                     driver.vehicleType ||
                                                     realDriver?.vehicleType
                                                 )}
-
                                             </span>
 
                                         </div>
@@ -590,9 +560,11 @@ export default function DisplayPage() {
                         </div>
 
                         <span className="display-count orange">
+
                             {toPersianNumber(
                                 loads.length
                             )} بار
+
                         </span>
 
                     </div>
