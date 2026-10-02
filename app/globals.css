@@ -68,14 +68,11 @@ html.dark {
 
 html {
   direction: rtl;
+  background: var(--background);
 }
 
 body {
-  font-family:
-    "Vazirmatn",
-    Tahoma,
-    Arial,
-    sans-serif;
+  font-family: "Vazirmatn", Tahoma, Arial, sans-serif;
 
   background: var(--background);
   color: var(--text);
@@ -132,8 +129,7 @@ a {
 
   z-index: 1000;
 
-  transition:
-    transform 0.25s ease;
+  transition: transform 0.25s ease;
 }
 
 .sidebar-header {
@@ -243,8 +239,7 @@ a {
 
   color: white;
 
-  box-shadow:
-    0 5px 14px rgba(37, 99, 235, 0.2);
+  box-shadow: 0 5px 14px rgba(37, 99, 235, 0.2);
 }
 
 .sidebar-bottom {
@@ -272,8 +267,7 @@ a {
 
   background: #22c55e;
 
-  box-shadow:
-    0 0 0 4px rgba(34, 197, 94, 0.1);
+  box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.1);
 }
 
 .sidebar-footer span {
@@ -351,7 +345,7 @@ a {
   direction: rtl;
 }
 
-.header-date>svg {
+.header-date > svg {
   flex-shrink: 0;
   color: var(--text-muted);
 }
@@ -474,7 +468,7 @@ a {
     gap: 7px;
   }
 
-  .header-date>svg {
+  .header-date > svg {
     width: 16px;
     height: 16px;
   }
@@ -864,8 +858,7 @@ a {
 
 .dashboard-grid {
   display: grid;
-  grid-template-columns:
-    minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 18px;
   margin-bottom: 18px;
 }
@@ -1052,8 +1045,7 @@ a {
 .invoice-row {
   min-width: 750px;
   display: grid;
-  grid-template-columns:
-    1.1fr 1fr 1.3fr 0.7fr 1fr 35px;
+  grid-template-columns: 1.1fr 1fr 1.3fr 0.7fr 1fr 35px;
   align-items: center;
   column-gap: 15px;
   padding: 13px 20px;
@@ -1071,7 +1063,7 @@ a {
   color: var(--text-secondary);
 }
 
-.invoice-row>strong {
+.invoice-row > strong {
   color: var(--text);
 }
 
@@ -1198,8 +1190,6 @@ a {
     transform 0.25s ease;
   overflow: hidden;
 }
-
-
 
 /* ========================================
    BIGGER FONT
@@ -1407,7 +1397,6 @@ body {
   }
 }
 
-
 /* ========================================
    SIDEBAR TOP CLOSE BUTTON
 ======================================== */
@@ -1435,10 +1424,7 @@ body {
 }
 
 .sidebar-close-top:hover {
-  background: rgba(255,
-      255,
-      255,
-      0.08);
+  background: rgba(255, 255, 255, 0.08);
 
   color: #fff;
 }
@@ -1480,8 +1466,7 @@ body {
   min-width: 0;
   margin-right: 270px;
 
-  transition:
-    margin-right 0.25s ease;
+  transition: margin-right 0.25s ease;
 }
 
 .sidebar-is-closed .main-wrapper {
@@ -1821,14 +1806,13 @@ body {
   height: 34px;
 }
 
-.invoice-row>strong {
+.invoice-row > strong {
   font-size: 13px;
 }
 
 /* ---------- Mobile ---------- */
 
 @media (max-width: 800px) {
-
   .header {
     height: 76px;
     padding: 0 18px;
@@ -1882,7 +1866,6 @@ body {
 }
 
 @media (max-width: 550px) {
-
   .header {
     height: 70px;
   }
@@ -1984,8 +1967,10 @@ body {
   color: #fff;
   font-size: 13px;
   font-weight: 600;
-  box-shadow: 0 5px 14px rgba(37, 99, 235, .18);
-  transition: transform .18s ease, background .18s ease;
+  box-shadow: 0 5px 14px rgba(37, 99, 235, 0.18);
+  transition:
+    transform 0.18s ease,
+    background 0.18s ease;
 }
 
 .primary-action-button:hover {
@@ -2084,7 +2069,7 @@ body {
   margin-top: 4px;
 }
 
-.driver-search-title>svg {
+.driver-search-title > svg {
   color: var(--text-muted);
 }
 
@@ -2155,7 +2140,9 @@ body {
   background: var(--surface);
   color: var(--text-secondary);
   font-size: 12px;
-  transition: background .18s ease, color .18s ease;
+  transition:
+    background 0.18s ease,
+    color 0.18s ease;
 }
 
 .reset-filter-button:hover {
@@ -2232,7 +2219,7 @@ body {
 }
 
 .driver-table tbody tr {
-  transition: background .15s ease;
+  transition: background 0.15s ease;
 }
 
 .driver-table tbody tr:hover {
@@ -2364,7 +2351,7 @@ body {
   border-radius: 8px;
   color: var(--text-secondary);
   background: var(--surface);
-  transition: all .15s ease;
+  transition: all 0.15s ease;
 }
 
 .driver-action-button:hover {
@@ -2409,7 +2396,7 @@ body {
 }
 
 .pagination button:disabled {
-  opacity: .45;
+  opacity: 0.45;
   cursor: not-allowed;
 }
 
@@ -2422,7 +2409,6 @@ body {
 /* ---------- Responsive ---------- */
 
 @media (max-width: 1100px) {
-
   .driver-stats-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -2434,11 +2420,9 @@ body {
   .driver-search-box {
     grid-column: 1 / -1;
   }
-
 }
 
 @media (max-width: 650px) {
-
   .page-heading-with-action {
     align-items: flex-start;
   }
@@ -2490,7 +2474,6 @@ body {
     flex-direction: column;
     gap: 12px;
   }
-
 }
 
 /* =========================================================
@@ -2561,7 +2544,6 @@ body {
   line-height: 1.2;
 }
 
-
 /* =========================================================
    LOAD SEARCH
    ========================================================= */
@@ -2595,7 +2577,7 @@ body {
   font-size: 13px;
 }
 
-.load-search-title>svg {
+.load-search-title > svg {
   color: var(--text-muted);
 }
 
@@ -2688,7 +2670,6 @@ body {
   background: var(--primary-soft);
 }
 
-
 /* =========================================================
    LOAD TABLE
    ========================================================= */
@@ -2771,7 +2752,6 @@ body {
   background: var(--background);
 }
 
-
 /* Load name */
 
 .load-table-name {
@@ -2806,7 +2786,6 @@ body {
   font-size: 11px;
 }
 
-
 /* Company */
 
 .load-company {
@@ -2821,7 +2800,6 @@ body {
   flex-shrink: 0;
 }
 
-
 /* Route */
 
 .load-route {
@@ -2830,7 +2808,7 @@ body {
   gap: 8px;
 }
 
-.load-route>div {
+.load-route > div {
   display: flex;
   align-items: center;
   gap: 5px;
@@ -2840,10 +2818,9 @@ body {
   color: var(--text-muted);
 }
 
-.load-route>svg {
+.load-route > svg {
   color: var(--primary);
 }
-
 
 /* Driver */
 
@@ -2852,7 +2829,6 @@ body {
   font-size: 13px;
   font-weight: 650;
 }
-
 
 /* Vehicle */
 
@@ -2867,14 +2843,12 @@ body {
   color: var(--text-muted);
 }
 
-
 /* Date */
 
 .load-date {
   color: var(--text-secondary);
   font-size: 13px;
 }
-
 
 /* Status */
 
@@ -2915,7 +2889,6 @@ body {
   background: #16a34a;
 }
 
-
 /* Actions */
 
 .load-actions {
@@ -2946,7 +2919,6 @@ body {
   background: var(--primary-soft);
 }
 
-
 /* =========================================================
    LOAD TABLE FOOTER
    ========================================================= */
@@ -2960,7 +2932,7 @@ body {
   border-top: 1px solid var(--border);
 }
 
-.load-table-footer>span {
+.load-table-footer > span {
   color: var(--text-muted);
   font-size: 12px;
 }
@@ -3001,11 +2973,10 @@ body {
   color: #fff;
 }
 
-.pagination>span {
+.pagination > span {
   padding: 0 4px;
   color: var(--text-muted);
 }
-
 
 /* =========================================================
    RESPONSIVE
@@ -3028,7 +2999,6 @@ body {
     width: 100%;
   }
 }
-
 
 @media (max-width: 800px) {
   .load-stats-grid {
@@ -3077,7 +3047,6 @@ body {
     gap: 13px;
   }
 }
-
 
 @media (max-width: 550px) {
   .load-stats-grid {
@@ -3131,11 +3100,9 @@ body {
   }
 }
 
-
 /* =========================================================
    COMPANIES PAGE
    ========================================================= */
-
 
 /* =========================================================
    SEARCH PANEL
@@ -3170,7 +3137,7 @@ body {
   font-size: 13px;
 }
 
-.company-search-title>svg {
+.company-search-title > svg {
   color: var(--text-muted);
 }
 
@@ -3212,7 +3179,6 @@ body {
 .company-search-box input::placeholder {
   color: var(--text-muted);
 }
-
 
 /* =========================================================
    COMPANY TABLE
@@ -3257,7 +3223,6 @@ body {
   font-weight: 700;
 }
 
-
 /* =========================================================
    TABLE
    ========================================================= */
@@ -3301,7 +3266,6 @@ body {
   background: var(--background);
 }
 
-
 /* =========================================================
    COMPANY NAME
    ========================================================= */
@@ -3338,7 +3302,6 @@ body {
   font-size: 11px;
 }
 
-
 /* =========================================================
    MANAGER
    ========================================================= */
@@ -3354,7 +3317,6 @@ body {
   color: var(--text-muted);
   flex-shrink: 0;
 }
-
 
 /* =========================================================
    PHONE
@@ -3372,7 +3334,6 @@ body {
   flex-shrink: 0;
 }
 
-
 /* =========================================================
    LOAD COUNT
    ========================================================= */
@@ -3382,7 +3343,6 @@ body {
   font-size: 14px;
   font-weight: 700;
 }
-
 
 /* =========================================================
    ACTIONS
@@ -3416,7 +3376,6 @@ body {
   background: var(--primary-soft);
 }
 
-
 /* =========================================================
    FOOTER
    ========================================================= */
@@ -3430,18 +3389,16 @@ body {
   border-top: 1px solid var(--border);
 }
 
-.company-table-footer>span {
+.company-table-footer > span {
   color: var(--text-muted);
   font-size: 12px;
 }
-
 
 /* =========================================================
    RESPONSIVE
    ========================================================= */
 
 @media (max-width: 800px) {
-
   .company-search-panel {
     padding: 17px;
   }
@@ -3461,12 +3418,9 @@ body {
   .company-table-footer {
     padding: 14px 16px;
   }
-
 }
 
-
 @media (max-width: 550px) {
-
   .company-search-title h2,
   .company-table-header h2 {
     font-size: 16px;
@@ -3485,7 +3439,6 @@ body {
   .company-table {
     min-width: 760px;
   }
-
 }
 
 /* =========================================================
@@ -3509,7 +3462,6 @@ body {
 .page-back-link a:hover {
   color: var(--primary);
 }
-
 
 /* =========================================================
    COMPANY FORM
@@ -3558,7 +3510,6 @@ body {
   color: var(--text-muted);
   font-size: 13px;
 }
-
 
 /* =========================================================
    FORM
@@ -3639,7 +3590,6 @@ body {
   color: var(--text-muted);
 }
 
-
 /* =========================================================
    TEXTAREA
    ========================================================= */
@@ -3654,7 +3604,6 @@ body {
   margin-top: 14px;
   flex-shrink: 0;
 }
-
 
 /* =========================================================
    FORM ACTIONS
@@ -3710,13 +3659,11 @@ body {
   background: var(--primary-soft);
 }
 
-
 /* =========================================================
    RESPONSIVE
    ========================================================= */
 
 @media (max-width: 700px) {
-
   .company-form-panel {
     border-radius: 15px;
   }
@@ -3745,7 +3692,6 @@ body {
   .company-cancel-button {
     width: 100%;
   }
-
 }
 
 /* =========================
@@ -4367,7 +4313,6 @@ body {
    ========================================================= */
 
 @media (max-width: 700px) {
-
   .load-form-panel {
     border-radius: 15px;
   }
@@ -4412,7 +4357,6 @@ body {
 }
 
 @media (max-width: 450px) {
-
   .load-form-header {
     gap: 11px;
   }
@@ -4610,8 +4554,7 @@ body {
 .invoice-input-wrapper:focus-within {
   border-color: var(--primary);
 
-  box-shadow:
-    0 0 0 3px var(--primary-soft);
+  box-shadow: 0 0 0 3px var(--primary-soft);
 }
 
 .invoice-input-wrapper input,
@@ -4738,8 +4681,7 @@ body {
 .invoice-search-input-wrapper:focus-within {
   border-color: var(--primary);
 
-  box-shadow:
-    0 0 0 3px var(--primary-soft);
+  box-shadow: 0 0 0 3px var(--primary-soft);
 }
 
 .invoice-search-input-wrapper input {
@@ -5075,7 +5017,6 @@ body {
    ========================================================= */
 
 @media (max-width: 800px) {
-
   .invoice-form-panel {
     border-radius: 15px;
   }
@@ -5096,7 +5037,6 @@ body {
    ========================================================= */
 
 @media (max-width: 700px) {
-
   .invoice-form {
     grid-template-columns: 1fr;
 
@@ -5142,7 +5082,6 @@ body {
    ========================================================= */
 
 @media (max-width: 450px) {
-
   .invoice-form-header {
     gap: 11px;
 
@@ -5189,7 +5128,6 @@ body {
     font-size: 10px;
   }
 }
-
 
 .invoice-date-wrapper {
   position: relative;
@@ -5409,7 +5347,7 @@ body {
   color: var(--primary);
 }
 
-.daily-driver-entry-title>svg {
+.daily-driver-entry-title > svg {
   flex-shrink: 0;
 }
 
@@ -6138,14 +6076,14 @@ body {
   border-radius: 12px;
 }
 
-.daily-entry-mode>div:first-child strong {
+.daily-entry-mode > div:first-child strong {
   display: block;
   color: var(--text-primary);
   font-size: 13px;
   font-weight: 700;
 }
 
-.daily-entry-mode>div:first-child span {
+.daily-entry-mode > div:first-child span {
   display: block;
   margin-top: 4px;
   color: var(--text-muted);
@@ -6211,7 +6149,7 @@ body {
   color: var(--primary);
 }
 
-.daily-entry-form-title>svg {
+.daily-entry-form-title > svg {
   flex-shrink: 0;
 }
 
@@ -6567,7 +6505,6 @@ body {
 }
 
 @media (max-width: 750px) {
-
   .daily-entry-page {
     border-radius: 15px;
   }
@@ -6626,7 +6563,6 @@ body {
 }
 
 @media (max-width: 500px) {
-
   .daily-entry-page-header {
     gap: 11px;
     padding: 17px;
@@ -6736,7 +6672,7 @@ body {
   color: var(--primary);
 }
 
-.display-date>div {
+.display-date > div {
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -6751,7 +6687,6 @@ body {
   color: var(--text-primary);
   font-size: 11px;
 }
-
 
 /* Stats */
 
@@ -6799,7 +6734,7 @@ body {
   color: #16a34a;
 }
 
-.display-stat>div:last-child {
+.display-stat > div:last-child {
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -6815,7 +6750,6 @@ body {
   font-size: 18px;
   font-weight: 800;
 }
-
 
 /* Main panels */
 
@@ -6903,14 +6837,12 @@ body {
   color: var(--primary);
 }
 
-
 /* Lists */
 
 .display-list {
   display: flex;
   flex-direction: column;
 }
-
 
 /* Load */
 
@@ -7013,7 +6945,6 @@ body {
   font-size: 8px;
 }
 
-
 /* Drivers */
 
 .display-driver-item {
@@ -7102,7 +7033,6 @@ body {
   font-size: 9px;
 }
 
-
 /* Empty */
 
 .display-empty {
@@ -7131,7 +7061,6 @@ body {
   font-size: 9px;
 }
 
-
 /* Footer */
 
 .display-footer {
@@ -7146,12 +7075,11 @@ body {
   font-size: 9px;
 }
 
-.display-footer>div {
+.display-footer > div {
   display: flex;
   align-items: center;
   gap: 8px;
 }
-
 
 /* Responsive */
 
@@ -7250,7 +7178,6 @@ body {
   color: var(--text-muted);
   font-size: 11px;
 }
-
 
 /* =========================================
    FILTER PANEL
@@ -7369,7 +7296,6 @@ body {
   color: var(--text-muted);
 }
 
-
 /* =========================================
    FILTER BUTTONS
 ========================================= */
@@ -7425,7 +7351,6 @@ body {
 .reports-generate-button:hover {
   opacity: 0.9;
 }
-
 
 /* =========================================
    SUMMARY
@@ -7485,7 +7410,7 @@ body {
   color: #0891b2;
 }
 
-.reports-summary-card>div:last-child {
+.reports-summary-card > div:last-child {
   min-width: 0;
 }
 
@@ -7502,7 +7427,6 @@ body {
   font-size: 14px;
   font-weight: 800;
 }
-
 
 /* =========================================
    RESULTS
@@ -7550,7 +7474,6 @@ body {
   color: var(--primary);
   border-color: var(--primary);
 }
-
 
 /* =========================================
    TABLE
@@ -7626,7 +7549,6 @@ body {
   font-size: 10px;
 }
 
-
 /* =========================================
    EMPTY
 ========================================= */
@@ -7655,7 +7577,6 @@ body {
   margin-top: 5px;
   font-size: 9px;
 }
-
 
 /* =========================================
    RESPONSIVE
@@ -7799,8 +7720,7 @@ body {
 .driver-picker-box-open {
   border-color: var(--primary);
 
-  box-shadow:
-    0 0 0 3px var(--primary-soft);
+  box-shadow: 0 0 0 3px var(--primary-soft);
 }
 
 .driver-picker-search-icon {
@@ -7876,14 +7796,12 @@ body {
 .driver-picker-arrow {
   flex-shrink: 0;
 
-  transition:
-    transform 0.18s ease;
+  transition: transform 0.18s ease;
 }
 
 .driver-picker-arrow-open {
   transform: rotate(180deg);
 }
-
 
 /* Dropdown */
 
@@ -7904,10 +7822,8 @@ body {
 
   border-radius: 11px;
 
-  box-shadow:
-    0 16px 40px rgba(15, 23, 42, 0.16);
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.16);
 }
-
 
 /* Dropdown header */
 
@@ -7928,7 +7844,6 @@ body {
   font-size: 9px;
 }
 
-
 /* Driver list */
 
 .driver-picker-list {
@@ -7936,7 +7851,6 @@ body {
 
   overflow-y: auto;
 }
-
 
 /* Driver option */
 
@@ -7981,7 +7895,6 @@ body {
   background: var(--primary-soft);
 }
 
-
 /* Avatar */
 
 .driver-picker-avatar {
@@ -8000,7 +7913,6 @@ body {
 
   color: var(--primary);
 }
-
 
 /* Driver info */
 
@@ -8038,7 +7950,6 @@ body {
   text-overflow: ellipsis;
 }
 
-
 /* Check */
 
 .driver-picker-check {
@@ -8046,7 +7957,6 @@ body {
 
   color: var(--primary);
 }
-
 
 /* Empty */
 
@@ -8084,7 +7994,6 @@ body {
   font-size: 9px;
 }
 
-
 /* Mobile */
 
 @media (max-width: 750px) {
@@ -8119,7 +8028,6 @@ body {
   color: var(--text-muted) !important;
 }
 
-
 /* =========================
    COMPANIES - SEARCH
    ========================= */
@@ -8131,7 +8039,6 @@ body {
 .company-search-box input::placeholder {
   color: var(--text-muted) !important;
 }
-
 
 /* =========================
    REPORTS - FILTERS
@@ -8151,7 +8058,6 @@ body {
   color: var(--text-muted) !important;
 }
 
-
 /* =========================
    DAILY DRIVERS - MAIN
    ========================= */
@@ -8169,7 +8075,6 @@ body {
   color: var(--text-primary) !important;
   background: var(--surface) !important;
 }
-
 
 /* =========================
    DAILY DRIVERS - GUEST
@@ -8191,7 +8096,6 @@ body {
   background: var(--surface) !important;
 }
 
-
 /* =========================
    DRIVER SEARCH
    ========================= */
@@ -8205,7 +8109,6 @@ body {
 .driver-search-box input::placeholder {
   color: var(--text-muted) !important;
 }
-
 
 /* =========================
    DRIVER PICKER
@@ -8222,7 +8125,6 @@ body {
 .driver-picker-selected {
   color: var(--text-primary) !important;
 }
-
 
 /* =========================
    GENERAL FORM FIELDS
@@ -8253,7 +8155,6 @@ body {
   color: var(--text-muted) !important;
 }
 
-
 /* =========================
    INVOICE SEARCH
    ========================= */
@@ -8266,7 +8167,6 @@ body {
   color: var(--text-muted) !important;
 }
 
-
 /* =========================
    PERSIAN DATE INPUT
    ========================= */
@@ -8278,7 +8178,6 @@ body {
 .persian-date-input::placeholder {
   color: var(--text-muted) !important;
 }
-
 
 /* =========================================================
    INVOICES PAGE
@@ -8319,7 +8218,6 @@ body {
   transform: translateY(0);
 }
 
-
 /* فیلتر */
 
 .invoice-filter-card,
@@ -8349,7 +8247,7 @@ body {
   gap: 11px;
 }
 
-.invoice-filter-title>svg {
+.invoice-filter-title > svg {
   color: var(--primary);
 }
 
@@ -8427,7 +8325,7 @@ body {
   box-shadow: 0 0 0 3px var(--primary-soft);
 }
 
-.invoice-input-with-icon>svg {
+.invoice-input-with-icon > svg {
   flex-shrink: 0;
   margin-right: 12px;
   color: var(--text-muted);
@@ -8460,7 +8358,7 @@ body {
   cursor: pointer;
 }
 
-.invoice-select-wrapper>svg {
+.invoice-select-wrapper > svg {
   position: absolute;
   left: 11px;
   pointer-events: none;
@@ -8471,7 +8369,6 @@ body {
   background: var(--surface);
   color: var(--text-primary);
 }
-
 
 /* لیست */
 
@@ -8622,7 +8519,6 @@ body {
   transform: translateY(-1px);
 }
 
-
 /* حالت خالی */
 
 .invoice-empty {
@@ -8652,7 +8548,6 @@ body {
   color: var(--text-muted);
   font-size: 10px;
 }
-
 
 /* موبایل */
 
@@ -8746,7 +8641,6 @@ body {
   border-color: #2563eb;
 }
 
-
 /* بخش نقشه */
 
 .load-map-section {
@@ -8760,7 +8654,6 @@ body {
 
   background: #f8fafc;
 }
-
 
 /* Header نقشه */
 
@@ -8776,7 +8669,7 @@ body {
   margin-bottom: 14px;
 }
 
-.map-section-header>div {
+.map-section-header > div {
   display: flex;
 
   align-items: center;
@@ -8791,7 +8684,6 @@ body {
 
   font-size: 12px;
 }
-
 
 /* خود نقشه */
 
@@ -8811,7 +8703,6 @@ body {
   z-index: 1;
 }
 
-
 /* مختصات */
 
 .map-coordinates {
@@ -8822,7 +8713,7 @@ body {
   gap: 10px;
 }
 
-.map-coordinates>div {
+.map-coordinates > div {
   flex: 1;
 
   display: flex;
@@ -8856,7 +8747,6 @@ body {
   font-size: 12px;
 }
 
-
 /* محل انتخاب شده */
 
 .selected-location {
@@ -8879,7 +8769,7 @@ body {
   gap: 10px;
 }
 
-.selected-location>div {
+.selected-location > div {
   display: flex;
 
   flex-direction: column;
@@ -8900,7 +8790,6 @@ body {
 
   color: #475569;
 }
-
 
 /* Loading */
 
@@ -8923,7 +8812,6 @@ body {
 
   font-size: 14px;
 }
-
 
 /* =========================================
    DARK MODE
@@ -8949,7 +8837,7 @@ body {
   border-color: #334155;
 }
 
-.dark .map-section-header>div {
+.dark .map-section-header > div {
   color: #e2e8f0;
 }
 
@@ -8957,7 +8845,7 @@ body {
   color: #94a3b8;
 }
 
-.dark .map-coordinates>div {
+.dark .map-coordinates > div {
   background: #0f172a;
 
   border-color: #334155;
@@ -8987,13 +8875,11 @@ body {
   color: #94a3b8;
 }
 
-
 /* =========================================
    MOBILE
 ========================================= */
 
 @media (max-width: 800px) {
-
   .map-section-header {
     align-items: flex-start;
 
@@ -9011,7 +8897,6 @@ body {
   .map-coordinates {
     flex-direction: column;
   }
-
 }
 
 /* =========================================
@@ -9034,7 +8919,6 @@ body {
   box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
 }
 
-
 /* =========================================
    مختصات انتخاب شده
 ========================================= */
@@ -9048,7 +8932,7 @@ body {
   gap: 10px;
 }
 
-.map-selected-info>div {
+.map-selected-info > div {
   min-height: 48px;
 
   padding: 7px 12px;
@@ -9090,7 +8974,6 @@ body {
   white-space: nowrap;
 }
 
-
 /* =========================================
    متن راهنما
 ========================================= */
@@ -9121,7 +9004,6 @@ body {
 
   text-align: right;
 }
-
 
 /* =========================================
    دکمه تأیید موقعیت
@@ -9181,7 +9063,6 @@ body {
   opacity: 0.8;
 }
 
-
 /* =========================================
    DARK MODE
 ========================================= */
@@ -9194,7 +9075,7 @@ body {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
 }
 
-.dark .map-selected-info>div,
+.dark .map-selected-info > div,
 .dark .map-hint {
   background: var(--background);
 
@@ -9207,13 +9088,11 @@ body {
   color: var(--text-muted);
 }
 
-
 /* =========================================
    MOBILE
 ========================================= */
 
 @media (max-width: 800px) {
-
   .map-picker-footer {
     flex-direction: column;
 
@@ -9228,7 +9107,7 @@ body {
     grid-template-columns: 1fr;
   }
 
-  .map-selected-info>div {
+  .map-selected-info > div {
     min-height: 46px;
   }
 
@@ -9248,7 +9127,7 @@ body {
 .invoice-preview-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, .55);
+  background: rgba(0, 0, 0, 0.55);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -9275,7 +9154,7 @@ body {
   color: #111827;
   padding: 14mm;
   border-radius: 16px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, .25);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
 }
 
 .invoice-head {
@@ -9350,7 +9229,6 @@ body {
 }
 
 @media print {
-
   body * {
     visibility: hidden;
   }
@@ -9374,7 +9252,6 @@ body {
   .invoice-preview-actions {
     display: none;
   }
-
 
   .map-confirm-button {
     width: 100%;
@@ -9557,7 +9434,9 @@ body {
   background: transparent;
   color: #94a3b8;
   cursor: pointer;
-  transition: background 0.2s ease, color 0.2s ease;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
 }
 
 .login-password-toggle:hover {
@@ -9597,7 +9476,9 @@ body {
   justify-content: center;
   gap: 8px;
   box-shadow: 0 14px 26px rgba(13, 31, 59, 0.35);
-  transition: transform 0.15s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.2s ease;
 }
 
 .login-submit-button:hover {
@@ -9683,7 +9564,6 @@ body {
   box-sizing: border-box;
 }
 
-
 /* ================================
    Main Wrapper
 ================================ */
@@ -9701,10 +9581,8 @@ body {
   display: flex;
   flex-direction: column;
 
-  box-shadow:
-    0 25px 70px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.25);
 }
-
 
 /* ================================
    Toolbar
@@ -9729,7 +9607,6 @@ body {
 
   box-sizing: border-box;
 }
-
 
 /* ================================
    Brand
@@ -9783,7 +9660,6 @@ body {
   font-size: 12px;
 }
 
-
 /* ================================
    Buttons
 ================================ */
@@ -9832,7 +9708,6 @@ body {
   transform: translateY(0);
 }
 
-
 /* Print */
 
 .invoice-print-btn {
@@ -9840,14 +9715,12 @@ body {
 
   color: #ffffff;
 
-  box-shadow:
-    0 4px 12px rgba(17, 24, 39, 0.18);
+  box-shadow: 0 4px 12px rgba(17, 24, 39, 0.18);
 }
 
 .invoice-print-btn:hover {
   background: #1f2937;
 }
-
 
 /* Download */
 
@@ -9856,14 +9729,12 @@ body {
 
   color: #ffffff;
 
-  box-shadow:
-    0 4px 12px rgba(37, 99, 235, 0.22);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.22);
 }
 
 .invoice-download-btn:hover {
   background: #1d4ed8;
 }
-
 
 /* Close */
 
@@ -9880,7 +9751,6 @@ body {
 .invoice-close-btn:hover {
   background: #e2e8f0;
 }
-
 
 /* ================================
    Invoice Scroll Area
@@ -9899,7 +9769,6 @@ body {
 
   box-sizing: border-box;
 }
-
 
 /* ================================
    A5 Invoice
@@ -9926,14 +9795,12 @@ body {
 
   font-family: "Vazirmatn", Arial, sans-serif;
 
-  box-shadow:
-    0 10px 35px rgba(0, 0, 0, 0.14);
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.14);
 
   flex-shrink: 0;
 
   overflow: hidden;
 }
-
 
 /* ================================
    بسمی تعالی
@@ -9957,7 +9824,6 @@ body {
   color: #111827;
   direction: rtl;
 }
-
 
 /* ================================
    Watermark
@@ -9989,7 +9855,6 @@ body {
   letter-spacing: 0 !important;
   word-spacing: 0 !important;
 }
-
 
 /* ================================
    Invoice Header
@@ -10072,7 +9937,6 @@ body {
   border-radius: 6px;
 }
 
-
 /* ================================
    Info Grid (3 cards)
 ================================ */
@@ -10106,7 +9970,6 @@ body {
   line-height: 1.4;
   color: #334155;
 }
-
 
 /* ================================
    Cost Table
@@ -10161,7 +10024,6 @@ body {
   font-weight: 900;
   padding: 7px;
 }
-
 
 /* ================================
    Route Box
@@ -10244,7 +10106,6 @@ body {
   font-weight: 700;
 }
 
-
 /* ================================
    Signatures
 ================================ */
@@ -10287,7 +10148,6 @@ body {
   font-weight: 700;
   text-align: center;
 }
-
 
 /* ================================
    Footer row: freight address + notes
@@ -10377,13 +10237,11 @@ body {
   color: #475569;
 }
 
-
 /* ================================
    Mobile
 ================================ */
 
 @media (max-width: 800px) {
-
   .invoice-preview-overlay {
     padding: 0;
   }
@@ -10435,16 +10293,13 @@ body {
   .invoice-footer-row {
     flex-direction: column;
   }
-
 }
-
 
 /* ================================
    Print
 ================================ */
 
 @media print {
-
   body * {
     visibility: hidden;
   }
@@ -10508,7 +10363,6 @@ body {
   }
 }
 
-
 /* ================================
    Invoice Preview Overlay
 ================================ */
@@ -10532,7 +10386,6 @@ body {
   box-sizing: border-box;
 }
 
-
 /* ================================
    Main Wrapper
 ================================ */
@@ -10550,10 +10403,8 @@ body {
   display: flex;
   flex-direction: column;
 
-  box-shadow:
-    0 25px 70px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.25);
 }
-
 
 /* ================================
    Toolbar
@@ -10578,7 +10429,6 @@ body {
 
   box-sizing: border-box;
 }
-
 
 /* ================================
    Brand
@@ -10632,7 +10482,6 @@ body {
   font-size: 12px;
 }
 
-
 /* ================================
    Buttons
 ================================ */
@@ -10681,7 +10530,6 @@ body {
   transform: translateY(0);
 }
 
-
 /* Print */
 
 .invoice-print-btn {
@@ -10689,14 +10537,12 @@ body {
 
   color: #ffffff;
 
-  box-shadow:
-    0 4px 12px rgba(17, 24, 39, 0.18);
+  box-shadow: 0 4px 12px rgba(17, 24, 39, 0.18);
 }
 
 .invoice-print-btn:hover {
   background: #1f2937;
 }
-
 
 /* Download */
 
@@ -10705,14 +10551,12 @@ body {
 
   color: #ffffff;
 
-  box-shadow:
-    0 4px 12px rgba(37, 99, 235, 0.22);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.22);
 }
 
 .invoice-download-btn:hover {
   background: #1d4ed8;
 }
-
 
 /* Close */
 
@@ -10729,7 +10573,6 @@ body {
 .invoice-close-btn:hover {
   background: #e2e8f0;
 }
-
 
 /* ================================
    Invoice Scroll Area
@@ -10748,7 +10591,6 @@ body {
 
   box-sizing: border-box;
 }
-
 
 /* ================================
    A5 Invoice
@@ -10775,14 +10617,12 @@ body {
 
   font-family: "Vazirmatn", Arial, sans-serif;
 
-  box-shadow:
-    0 10px 35px rgba(0, 0, 0, 0.14);
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.14);
 
   flex-shrink: 0;
 
   overflow: hidden;
 }
-
 
 /* ================================
    بسمی تعالی
@@ -10806,7 +10646,6 @@ body {
   color: #111827;
   direction: rtl;
 }
-
 
 /* ================================
    Watermark
@@ -10838,7 +10677,6 @@ body {
   letter-spacing: 0 !important;
   word-spacing: 0 !important;
 }
-
 
 /* ================================
    Invoice Header
@@ -10921,7 +10759,6 @@ body {
   border-radius: 6px;
 }
 
-
 /* ================================
    Info Grid (3 cards)
 ================================ */
@@ -10955,7 +10792,6 @@ body {
   line-height: 1.4;
   color: #334155;
 }
-
 
 /* ================================
    Cost Table
@@ -11010,7 +10846,6 @@ body {
   font-weight: 900;
   padding: 7px;
 }
-
 
 /* ================================
    Route Box
@@ -11094,7 +10929,6 @@ body {
   font-weight: 700;
 }
 
-
 /* ================================
    Signatures
 ================================ */
@@ -11136,7 +10970,6 @@ body {
   font-weight: 700;
   text-align: center;
 }
-
 
 /* ================================
    Footer row: freight address + notes
@@ -11226,13 +11059,11 @@ body {
   color: #475569;
 }
 
-
 /* ================================
    Mobile
 ================================ */
 
 @media (max-width: 800px) {
-
   .invoice-preview-overlay {
     padding: 0;
   }
@@ -11284,16 +11115,13 @@ body {
   .invoice-footer-row {
     flex-direction: column;
   }
-
 }
-
 
 /* ================================
    Print
 ================================ */
 
 @media print {
-
   body * {
     visibility: hidden;
   }
@@ -11380,7 +11208,6 @@ body {
   box-sizing: border-box;
 }
 
-
 /* ================================
    Main Wrapper
 ================================ */
@@ -11398,10 +11225,8 @@ body {
   display: flex;
   flex-direction: column;
 
-  box-shadow:
-    0 25px 70px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.25);
 }
-
 
 /* ================================
    Toolbar
@@ -11426,7 +11251,6 @@ body {
 
   box-sizing: border-box;
 }
-
 
 /* ================================
    Brand
@@ -11481,7 +11305,6 @@ body {
   font-size: 12px;
 }
 
-
 /* ================================
    Buttons
 ================================ */
@@ -11530,7 +11353,6 @@ body {
   transform: translateY(0);
 }
 
-
 /* Print */
 
 .invoice-print-btn {
@@ -11538,14 +11360,12 @@ body {
 
   color: #ffffff;
 
-  box-shadow:
-    0 4px 12px rgba(17, 24, 39, 0.18);
+  box-shadow: 0 4px 12px rgba(17, 24, 39, 0.18);
 }
 
 .invoice-print-btn:hover {
   background: #1f2937;
 }
-
 
 /* Download */
 
@@ -11554,14 +11374,12 @@ body {
 
   color: #ffffff;
 
-  box-shadow:
-    0 4px 12px rgba(37, 99, 235, 0.22);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.22);
 }
 
 .invoice-download-btn:hover {
   background: #1d4ed8;
 }
-
 
 /* Close */
 
@@ -11578,7 +11396,6 @@ body {
 .invoice-close-btn:hover {
   background: #e2e8f0;
 }
-
 
 /* ================================
    Invoice Scroll Area
@@ -11597,7 +11414,6 @@ body {
 
   box-sizing: border-box;
 }
-
 
 /* ================================
    A5 Invoice
@@ -11624,14 +11440,12 @@ body {
 
   font-family: "Vazirmatn", Arial, sans-serif;
 
-  box-shadow:
-    0 10px 35px rgba(0, 0, 0, 0.14);
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.14);
 
   flex-shrink: 0;
 
   overflow: hidden;
 }
-
 
 /* ================================
    بسمی تعالی
@@ -11655,7 +11469,6 @@ body {
   color: #111827;
   direction: rtl;
 }
-
 
 /* ================================
    Watermark
@@ -11687,7 +11500,6 @@ body {
   letter-spacing: 0 !important;
   word-spacing: 0 !important;
 }
-
 
 /* ================================
    Invoice Header
@@ -11771,7 +11583,6 @@ body {
   border-radius: 6px;
 }
 
-
 /* ================================
    Info Grid (3 cards)
 ================================ */
@@ -11805,7 +11616,6 @@ body {
   line-height: 1.4;
   color: #334155;
 }
-
 
 /* ================================
    Cost Table
@@ -11871,7 +11681,6 @@ body {
   font-weight: 900;
   white-space: nowrap;
 }
-
 
 /* ================================
    Route Box
@@ -11955,7 +11764,6 @@ body {
   font-weight: 700;
 }
 
-
 /* ================================
    Signatures
 ================================ */
@@ -11991,7 +11799,6 @@ body {
   font-weight: 700;
   text-align: center;
 }
-
 
 /* ================================
    Footer row: freight address + notes
@@ -12081,13 +11888,11 @@ body {
   color: #475569;
 }
 
-
 /* ================================
    Mobile
 ================================ */
 
 @media (max-width: 800px) {
-
   .invoice-preview-overlay {
     padding: 0;
   }
@@ -12139,16 +11944,13 @@ body {
   .invoice-footer-row {
     flex-direction: column;
   }
-
 }
-
 
 /* ================================
    Print
 ================================ */
 
 @media print {
-
   body * {
     visibility: hidden;
   }
@@ -12235,7 +12037,6 @@ body {
   box-sizing: border-box;
 }
 
-
 /* ================================
    Main Wrapper
 ================================ */
@@ -12253,10 +12054,8 @@ body {
   display: flex;
   flex-direction: column;
 
-  box-shadow:
-    0 25px 70px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.25);
 }
-
 
 /* ================================
    Toolbar
@@ -12281,7 +12080,6 @@ body {
 
   box-sizing: border-box;
 }
-
 
 /* ================================
    Brand
@@ -12336,7 +12134,6 @@ body {
   font-size: 12px;
 }
 
-
 /* ================================
    Buttons
 ================================ */
@@ -12385,7 +12182,6 @@ body {
   transform: translateY(0);
 }
 
-
 /* Print */
 
 .invoice-print-btn {
@@ -12393,14 +12189,12 @@ body {
 
   color: #ffffff;
 
-  box-shadow:
-    0 4px 12px rgba(17, 24, 39, 0.18);
+  box-shadow: 0 4px 12px rgba(17, 24, 39, 0.18);
 }
 
 .invoice-print-btn:hover {
   background: #1f2937;
 }
-
 
 /* Download */
 
@@ -12409,14 +12203,12 @@ body {
 
   color: #ffffff;
 
-  box-shadow:
-    0 4px 12px rgba(37, 99, 235, 0.22);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.22);
 }
 
 .invoice-download-btn:hover {
   background: #1d4ed8;
 }
-
 
 /* Close */
 
@@ -12433,7 +12225,6 @@ body {
 .invoice-close-btn:hover {
   background: #e2e8f0;
 }
-
 
 /* ================================
    Invoice Scroll Area
@@ -12452,7 +12243,6 @@ body {
 
   box-sizing: border-box;
 }
-
 
 /* ================================
    A5 Invoice
@@ -12479,14 +12269,12 @@ body {
 
   font-family: "Vazirmatn", Arial, sans-serif;
 
-  box-shadow:
-    0 10px 35px rgba(0, 0, 0, 0.14);
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.14);
 
   flex-shrink: 0;
 
   overflow: hidden;
 }
-
 
 /* ================================
    بسمی تعالی
@@ -12510,7 +12298,6 @@ body {
   color: #111827;
   direction: rtl;
 }
-
 
 /* ================================
    Watermark
@@ -12542,7 +12329,6 @@ body {
   letter-spacing: 0 !important;
   word-spacing: 0 !important;
 }
-
 
 /* ================================
    Invoice Header
@@ -12636,7 +12422,6 @@ body {
   color: #1d4ed8;
 }
 
-
 /* ================================
    Info Grid (3 cards)
 ================================ */
@@ -12670,7 +12455,6 @@ body {
   line-height: 1.4;
   color: #334155;
 }
-
 
 /* ================================
    Cost Table
@@ -12736,7 +12520,6 @@ body {
   font-weight: 900;
   white-space: nowrap;
 }
-
 
 /* ================================
    Route Box
@@ -12820,7 +12603,6 @@ body {
   font-weight: 700;
 }
 
-
 /* ================================
    Signatures
 ================================ */
@@ -12857,7 +12639,6 @@ body {
   text-align: center;
 }
 
-
 /* ================================
    Liability Notice
 ================================ */
@@ -12879,7 +12660,6 @@ body {
   line-height: 1.5;
   text-align: justify;
 }
-
 
 /* ================================
    Footer row: freight address + notes
@@ -12969,13 +12749,11 @@ body {
   color: #475569;
 }
 
-
 /* ================================
    Mobile
 ================================ */
 
 @media (max-width: 800px) {
-
   .invoice-preview-overlay {
     padding: 0;
   }
@@ -13027,16 +12805,13 @@ body {
   .invoice-footer-row {
     flex-direction: column;
   }
-
 }
-
 
 /* ================================
    Print
 ================================ */
 
 @media print {
-
   body * {
     visibility: hidden;
   }
@@ -13268,7 +13043,6 @@ html.dark .driver-delete-button:hover {
   }
 }
 
-
 /* =========================================
    Driver Form
 ========================================= */
@@ -13290,7 +13064,6 @@ html.dark .driver-form-error {
   border-color: #641b25;
   color: #f87171;
 }
-
 
 /* =========================================
    Driver License Status
@@ -13351,7 +13124,6 @@ html.dark .driver-license-expired {
   color: #f87171;
   background: #3b1118;
 }
-
 
 /* =========================================
    Responsive Driver Details
@@ -13589,7 +13361,6 @@ html.dark .driver-license-expired {
   box-sizing: border-box;
 }
 
-
 /* ================================
    Main Wrapper
 ================================ */
@@ -13607,10 +13378,8 @@ html.dark .driver-license-expired {
   display: flex;
   flex-direction: column;
 
-  box-shadow:
-    0 25px 70px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.25);
 }
-
 
 /* ================================
    Toolbar
@@ -13635,7 +13404,6 @@ html.dark .driver-license-expired {
 
   box-sizing: border-box;
 }
-
 
 /* ================================
    Brand
@@ -13690,7 +13458,6 @@ html.dark .driver-license-expired {
   font-size: 12px;
 }
 
-
 /* ================================
    Buttons
 ================================ */
@@ -13739,7 +13506,6 @@ html.dark .driver-license-expired {
   transform: translateY(0);
 }
 
-
 /* Print */
 
 .invoice-print-btn {
@@ -13747,14 +13513,12 @@ html.dark .driver-license-expired {
 
   color: #ffffff;
 
-  box-shadow:
-    0 4px 12px rgba(17, 24, 39, 0.18);
+  box-shadow: 0 4px 12px rgba(17, 24, 39, 0.18);
 }
 
 .invoice-print-btn:hover {
   background: #1f2937;
 }
-
 
 /* Download */
 
@@ -13763,14 +13527,12 @@ html.dark .driver-license-expired {
 
   color: #ffffff;
 
-  box-shadow:
-    0 4px 12px rgba(37, 99, 235, 0.22);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.22);
 }
 
 .invoice-download-btn:hover {
   background: #1d4ed8;
 }
-
 
 /* Close */
 
@@ -13787,7 +13549,6 @@ html.dark .driver-license-expired {
 .invoice-close-btn:hover {
   background: #e2e8f0;
 }
-
 
 /* ================================
    Invoice Scroll Area
@@ -13806,7 +13567,6 @@ html.dark .driver-license-expired {
 
   box-sizing: border-box;
 }
-
 
 /* ================================
    A5 Invoice
@@ -13833,14 +13593,12 @@ html.dark .driver-license-expired {
 
   font-family: "Vazirmatn", Arial, sans-serif;
 
-  box-shadow:
-    0 10px 35px rgba(0, 0, 0, 0.14);
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.14);
 
   flex-shrink: 0;
 
   overflow: hidden;
 }
-
 
 /* ================================
    بسمی تعالی
@@ -13864,7 +13622,6 @@ html.dark .driver-license-expired {
   color: #111827;
   direction: rtl;
 }
-
 
 /* ================================
    Watermark
@@ -13896,7 +13653,6 @@ html.dark .driver-license-expired {
   letter-spacing: 0 !important;
   word-spacing: 0 !important;
 }
-
 
 /* ================================
    Invoice Header
@@ -13990,7 +13746,6 @@ html.dark .driver-license-expired {
   color: #1d4ed8;
 }
 
-
 /* ================================
    Info Grid (3 cards)
 ================================ */
@@ -14024,7 +13779,6 @@ html.dark .driver-license-expired {
   line-height: 1.4;
   color: #334155;
 }
-
 
 /* ================================
    Cost Table
@@ -14090,7 +13844,6 @@ html.dark .driver-license-expired {
   font-weight: 900;
   white-space: nowrap;
 }
-
 
 /* ================================
    Route Box
@@ -14174,7 +13927,6 @@ html.dark .driver-license-expired {
   font-weight: 700;
 }
 
-
 /* ================================
    Signatures
 ================================ */
@@ -14210,7 +13962,6 @@ html.dark .driver-license-expired {
   font-weight: 700;
   text-align: center;
 }
-
 
 /* ================================
    Liability Notice
@@ -14251,7 +14002,6 @@ html.dark .driver-license-expired {
 .invoice-legal-notice-item strong {
   font-weight: 800;
 }
-
 
 /* ================================
    Footer row: freight address + notes
@@ -14341,13 +14091,11 @@ html.dark .driver-license-expired {
   color: #475569;
 }
 
-
 /* ================================
    Mobile
 ================================ */
 
 @media (max-width: 800px) {
-
   .invoice-preview-overlay {
     padding: 0;
   }
@@ -14399,16 +14147,13 @@ html.dark .driver-license-expired {
   .invoice-footer-row {
     flex-direction: column;
   }
-
 }
-
 
 /* ================================
    Print
 ================================ */
 
 @media print {
-
   body * {
     visibility: hidden;
   }
@@ -14495,7 +14240,6 @@ html.dark .driver-license-expired {
   box-sizing: border-box;
 }
 
-
 /* ================================
    Main Wrapper
 ================================ */
@@ -14513,10 +14257,8 @@ html.dark .driver-license-expired {
   display: flex;
   flex-direction: column;
 
-  box-shadow:
-    0 25px 70px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.25);
 }
-
 
 /* ================================
    Toolbar
@@ -14541,7 +14283,6 @@ html.dark .driver-license-expired {
 
   box-sizing: border-box;
 }
-
 
 /* ================================
    Brand
@@ -14596,7 +14337,6 @@ html.dark .driver-license-expired {
   font-size: 12px;
 }
 
-
 /* ================================
    Buttons
 ================================ */
@@ -14645,7 +14385,6 @@ html.dark .driver-license-expired {
   transform: translateY(0);
 }
 
-
 /* Print */
 
 .invoice-print-btn {
@@ -14653,14 +14392,12 @@ html.dark .driver-license-expired {
 
   color: #ffffff;
 
-  box-shadow:
-    0 4px 12px rgba(17, 24, 39, 0.18);
+  box-shadow: 0 4px 12px rgba(17, 24, 39, 0.18);
 }
 
 .invoice-print-btn:hover {
   background: #1f2937;
 }
-
 
 /* Download */
 
@@ -14669,14 +14406,12 @@ html.dark .driver-license-expired {
 
   color: #ffffff;
 
-  box-shadow:
-    0 4px 12px rgba(37, 99, 235, 0.22);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.22);
 }
 
 .invoice-download-btn:hover {
   background: #1d4ed8;
 }
-
 
 /* Close */
 
@@ -14693,7 +14428,6 @@ html.dark .driver-license-expired {
 .invoice-close-btn:hover {
   background: #e2e8f0;
 }
-
 
 /* ================================
    Invoice Scroll Area
@@ -14712,7 +14446,6 @@ html.dark .driver-license-expired {
 
   box-sizing: border-box;
 }
-
 
 /* ================================
    A5 Invoice
@@ -14739,14 +14472,12 @@ html.dark .driver-license-expired {
 
   font-family: "Vazirmatn", Arial, sans-serif;
 
-  box-shadow:
-    0 10px 35px rgba(0, 0, 0, 0.14);
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.14);
 
   flex-shrink: 0;
 
   overflow: hidden;
 }
-
 
 /* ================================
    بسمی تعالی
@@ -14770,7 +14501,6 @@ html.dark .driver-license-expired {
   color: #111827;
   direction: rtl;
 }
-
 
 /* ================================
    Watermark
@@ -14802,7 +14532,6 @@ html.dark .driver-license-expired {
   letter-spacing: 0 !important;
   word-spacing: 0 !important;
 }
-
 
 /* ================================
    Invoice Header
@@ -14896,7 +14625,6 @@ html.dark .driver-license-expired {
   color: #1d4ed8;
 }
 
-
 /* ================================
    Info Grid (3 cards)
 ================================ */
@@ -14930,7 +14658,6 @@ html.dark .driver-license-expired {
   line-height: 1.4;
   color: #334155;
 }
-
 
 /* ================================
    Cost Table
@@ -14996,7 +14723,6 @@ html.dark .driver-license-expired {
   font-weight: 900;
   white-space: nowrap;
 }
-
 
 /* ================================
    Route Box
@@ -15080,7 +14806,6 @@ html.dark .driver-license-expired {
   font-weight: 700;
 }
 
-
 /* ================================
    Signatures
 ================================ */
@@ -15116,7 +14841,6 @@ html.dark .driver-license-expired {
   font-weight: 700;
   text-align: center;
 }
-
 
 /* ================================
    Liability Notice
@@ -15157,7 +14881,6 @@ html.dark .driver-license-expired {
 .invoice-legal-notice-item strong {
   font-weight: 800;
 }
-
 
 /* ================================
    Footer row: freight address + notes
@@ -15247,13 +14970,11 @@ html.dark .driver-license-expired {
   color: #475569;
 }
 
-
 /* ================================
    Mobile
 ================================ */
 
 @media (max-width: 800px) {
-
   .invoice-preview-overlay {
     padding: 0;
   }
@@ -15305,9 +15026,7 @@ html.dark .driver-license-expired {
   .invoice-footer-row {
     flex-direction: column;
   }
-
 }
-
 
 /* ================================
    Print
@@ -15319,7 +15038,6 @@ html.dark .driver-license-expired {
 }
 
 @media print {
-
   body * {
     visibility: hidden;
   }
@@ -15459,401 +15177,402 @@ html.dark .driver-license-expired {
   }
 }
 
-
 /* =========================================
    Daily Drivers
    ========================================= */
 
 .daily-driver-add-card,
 .daily-driver-list-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-    margin-bottom: 24px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  margin-bottom: 24px;
 }
 
 .daily-driver-add-card {
-    padding: 24px;
+  padding: 24px;
 }
 
 .daily-driver-card-header,
 .daily-driver-list-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 20px;
-    margin-bottom: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 22px;
 }
 
 .daily-driver-card-header h2,
 .daily-driver-list-header h2 {
-    margin: 0 0 6px;
-    color: var(--text-primary);
-    font-size: 20px;
-    font-weight: 700;
+  margin: 0 0 6px;
+  color: var(--text-primary);
+  font-size: 20px;
+  font-weight: 700;
 }
 
 .daily-driver-card-header p,
 .daily-driver-list-header p {
-    margin: 0;
-    color: var(--text-secondary);
-    font-size: 14px;
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 14px;
 }
 
 .daily-driver-date {
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    padding: 9px 13px;
-    border-radius: 10px;
-    background: var(--primary-soft);
-    color: var(--primary);
-    font-size: 13px;
-    font-weight: 600;
-    white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 13px;
+  border-radius: 10px;
+  background: var(--primary-soft);
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 /* Mode buttons */
 
 .daily-driver-mode {
-    display: flex;
-    gap: 10px;
-    padding: 5px;
-    margin-bottom: 22px;
-    width: fit-content;
-    background: var(--surface-soft);
-    border: 1px solid var(--border);
-    border-radius: 12px;
+  display: flex;
+  gap: 10px;
+  padding: 5px;
+  margin-bottom: 22px;
+  width: fit-content;
+  background: var(--surface-soft);
+  border: 1px solid var(--border);
+  border-radius: 12px;
 }
 
 .daily-driver-mode button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    min-width: 150px;
-    height: 42px;
-    padding: 0 16px;
-    border: none;
-    border-radius: 9px;
-    background: transparent;
-    color: var(--text-secondary);
-    font-family: inherit;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 150px;
+  height: 42px;
+  padding: 0 16px;
+  border: none;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
 }
 
 .daily-driver-mode button:hover {
-    color: var(--text-primary);
+  color: var(--text-primary);
 }
 
 .daily-driver-mode-active {
-    background: var(--surface) !important;
-    color: var(--primary) !important;
-    box-shadow: 0 2px 8px rgba(16, 24, 40, 0.08);
+  background: var(--surface) !important;
+  color: var(--primary) !important;
+  box-shadow: 0 2px 8px rgba(16, 24, 40, 0.08);
 }
 
 /* Form */
 
 .daily-driver-form {
-    display: flex;
-    align-items: flex-end;
-    gap: 16px;
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
 }
 
 .daily-driver-guest-form {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr) auto;
-    align-items: end;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr) auto;
+  align-items: end;
 }
 
 .daily-driver-field {
-    flex: 1;
-    min-width: 0;
+  flex: 1;
+  min-width: 0;
 }
 
 .daily-driver-field label {
-    display: block;
-    margin-bottom: 8px;
-    color: var(--text-primary);
-    font-size: 14px;
-    font-weight: 600;
+  display: block;
+  margin-bottom: 8px;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 600;
 }
 
 .daily-driver-field input,
 .daily-driver-field select {
-    width: 100%;
-    height: 46px;
-    padding: 0 13px;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    outline: none;
-    background: var(--surface);
-    color: var(--text-primary);
-    font-family: inherit;
-    font-size: 14px;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  width: 100%;
+  height: 46px;
+  padding: 0 13px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  outline: none;
+  background: var(--surface);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 14px;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .daily-driver-field input::placeholder {
-    color: var(--text-muted);
+  color: var(--text-muted);
 }
 
 .daily-driver-field input:focus,
 .daily-driver-field select:focus {
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px var(--primary-soft);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-soft);
 }
 
 .daily-driver-field select {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .daily-driver-submit {
-    height: 46px;
-    flex-shrink: 0;
-    white-space: nowrap;
+  height: 46px;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .daily-driver-submit:disabled {
-    opacity: 0.55;
-    cursor: not-allowed;
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 
 .daily-driver-loading {
-    display: flex;
-    align-items: center;
-    height: 46px;
-    padding: 0 14px;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    background: var(--surface-soft);
-    color: var(--text-secondary);
-    font-size: 13px;
+  display: flex;
+  align-items: center;
+  height: 46px;
+  padding: 0 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface-soft);
+  color: var(--text-secondary);
+  font-size: 13px;
 }
 
 /* Messages */
 
 .company-form-error {
-    display: flex;
-    align-items: center;
-    min-height: 46px;
-    margin-bottom: 18px;
-    padding: 10px 14px;
-    border: 1px solid #fecaca;
-    border-radius: 10px;
-    background: #fef2f2;
-    color: #b91c1c;
-    font-size: 14px;
-    font-weight: 500;
+  display: flex;
+  align-items: center;
+  min-height: 46px;
+  margin-bottom: 18px;
+  padding: 10px 14px;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  background: #fef2f2;
+  color: #b91c1c;
+  font-size: 14px;
+  font-weight: 500;
 }
 
 .company-form-success {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    min-height: 46px;
-    margin-bottom: 18px;
-    padding: 10px 14px;
-    border: 1px solid #bbf7d0;
-    border-radius: 10px;
-    background: var(--success-soft);
-    color: var(--success);
-    font-size: 14px;
-    font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 46px;
+  margin-bottom: 18px;
+  padding: 10px 14px;
+  border: 1px solid #bbf7d0;
+  border-radius: 10px;
+  background: var(--success-soft);
+  color: var(--success);
+  font-size: 14px;
+  font-weight: 500;
 }
 
 /* Daily list */
 
 .daily-driver-list-card {
-    overflow: hidden;
+  overflow: hidden;
 }
 
 .daily-driver-list-header {
-    padding: 24px 24px 0;
+  padding: 24px 24px 0;
 }
 
 .daily-driver-count {
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    padding: 8px 12px;
-    border-radius: 10px;
-    background: var(--surface-soft);
-    border: 1px solid var(--border);
-    color: var(--text-secondary);
-    font-size: 13px;
-    font-weight: 600;
-    white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: var(--surface-soft);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 /* Empty state */
 
 .daily-driver-empty {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 230px;
-    padding: 30px;
-    color: var(--text-muted);
-    text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 230px;
+  padding: 30px;
+  color: var(--text-muted);
+  text-align: center;
 }
 
 .daily-driver-empty svg {
-    margin-bottom: 12px;
-    opacity: 0.7;
+  margin-bottom: 12px;
+  opacity: 0.7;
 }
 
 .daily-driver-empty strong {
-    margin-bottom: 7px;
-    color: var(--text-primary);
-    font-size: 15px;
+  margin-bottom: 7px;
+  color: var(--text-primary);
+  font-size: 15px;
 }
 
 .daily-driver-empty span {
-    color: var(--text-secondary);
-    font-size: 13px;
+  color: var(--text-secondary);
+  font-size: 13px;
 }
 
 /* Table */
 
 .daily-driver-table-wrapper {
-    width: 100%;
-    overflow-x: auto;
+  width: 100%;
+  overflow-x: auto;
 }
 
 .daily-driver-table {
-    width: 100%;
-    border-collapse: collapse;
-    min-width: 760px;
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 760px;
 }
 
 .daily-driver-table th {
-    height: 50px;
-    padding: 0 18px;
-    border-top: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
-    background: var(--surface-soft);
-    color: var(--text-secondary);
-    font-size: 13px;
-    font-weight: 600;
-    text-align: right;
-    white-space: nowrap;
+  height: 50px;
+  padding: 0 18px;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-soft);
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: right;
+  white-space: nowrap;
 }
 
 .daily-driver-table td {
-    height: 68px;
-    padding: 10px 18px;
-    border-bottom: 1px solid var(--border);
-    color: var(--text-primary);
-    font-size: 14px;
-    vertical-align: middle;
+  height: 68px;
+  padding: 10px 18px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-primary);
+  font-size: 14px;
+  vertical-align: middle;
 }
 
 .daily-driver-table tbody tr:last-child td {
-    border-bottom: none;
+  border-bottom: none;
 }
 
 .daily-driver-table tbody tr {
-    transition: background 0.15s ease;
+  transition: background 0.15s ease;
 }
 
 .daily-driver-table tbody tr:hover {
-    background: var(--surface-soft);
+  background: var(--surface-soft);
 }
 
 /* Driver name */
 
 .daily-driver-name {
-    display: flex;
-    align-items: center;
-    gap: 11px;
+  display: flex;
+  align-items: center;
+  gap: 11px;
 }
 
 .daily-driver-avatar {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 38px;
-    height: 38px;
-    flex-shrink: 0;
-    border-radius: 50%;
-    background: var(--primary-soft);
-    color: var(--primary);
-    font-size: 15px;
-    font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--primary-soft);
+  color: var(--primary);
+  font-size: 15px;
+  font-weight: 700;
 }
 
 .daily-driver-name > div:last-child {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
 }
 
 .daily-driver-name strong {
-    color: var(--text-primary);
-    font-size: 14px;
-    font-weight: 700;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 700;
 }
 
 .daily-driver-name span {
-    color: var(--text-muted);
-    font-size: 11px;
+  color: var(--text-muted);
+  font-size: 11px;
 }
 
 /* Type badge */
 
 .daily-driver-type-badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 55px;
-    height: 28px;
-    padding: 0 9px;
-    border-radius: 8px;
-    font-size: 12px;
-    font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 55px;
+  height: 28px;
+  padding: 0 9px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
 }
 
 .daily-driver-type-main {
-    background: var(--success-soft);
-    color: var(--success);
+  background: var(--success-soft);
+  color: var(--success);
 }
 
 .daily-driver-type-guest {
-    background: var(--warning-soft);
-    color: var(--warning);
+  background: var(--warning-soft);
+  color: var(--warning);
 }
 
 /* Delete */
 
 .daily-driver-delete-button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 34px;
-    height: 34px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    background: transparent;
-    color: var(--text-secondary);
-    cursor: pointer;
-    transition: 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: 0.2s ease;
 }
 
 .daily-driver-delete-button:hover {
-    border-color: #fecaca;
-    background: #fef2f2;
-    color: #dc2626;
+  border-color: #fecaca;
+  background: #fef2f2;
+  color: #dc2626;
 }
 
 .daily-driver-delete-button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* =========================================
@@ -15861,66 +15580,66 @@ html.dark .driver-license-expired {
    ========================================= */
 
 @media (max-width: 900px) {
-    .daily-driver-form {
-        flex-direction: column;
-        align-items: stretch;
-    }
+  .daily-driver-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
 
-    .daily-driver-submit {
-        width: 100%;
-    }
+  .daily-driver-submit {
+    width: 100%;
+  }
 
-    .daily-driver-guest-form {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-    }
+  .daily-driver-guest-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
 
-    .daily-driver-guest-form .daily-driver-submit {
-        grid-column: 1 / -1;
-    }
+  .daily-driver-guest-form .daily-driver-submit {
+    grid-column: 1 / -1;
+  }
 }
 
 @media (max-width: 640px) {
-    .daily-driver-add-card {
-        padding: 18px;
-    }
+  .daily-driver-add-card {
+    padding: 18px;
+  }
 
-    .daily-driver-list-header {
-        padding: 18px 18px 0;
-    }
+  .daily-driver-list-header {
+    padding: 18px 18px 0;
+  }
 
-    .daily-driver-card-header,
-    .daily-driver-list-header {
-        align-items: flex-start;
-        flex-direction: column;
-    }
+  .daily-driver-card-header,
+  .daily-driver-list-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
 
-    .daily-driver-date {
-        width: 100%;
-        justify-content: center;
-    }
+  .daily-driver-date {
+    width: 100%;
+    justify-content: center;
+  }
 
-    .daily-driver-mode {
-        width: 100%;
-    }
+  .daily-driver-mode {
+    width: 100%;
+  }
 
-    .daily-driver-mode button {
-        min-width: 0;
-        flex: 1;
-        padding: 0 10px;
-    }
+  .daily-driver-mode button {
+    min-width: 0;
+    flex: 1;
+    padding: 0 10px;
+  }
 
-    .daily-driver-guest-form {
-        grid-template-columns: 1fr;
-    }
+  .daily-driver-guest-form {
+    grid-template-columns: 1fr;
+  }
 
-    .daily-driver-guest-form .daily-driver-submit {
-        grid-column: auto;
-    }
+  .daily-driver-guest-form .daily-driver-submit {
+    grid-column: auto;
+  }
 
-    .daily-driver-table {
-        min-width: 700px;
-    }
+  .daily-driver-table {
+    min-width: 700px;
+  }
 }
 
 /* ================================
@@ -15946,7 +15665,6 @@ html.dark .driver-license-expired {
   box-sizing: border-box;
 }
 
-
 /* ================================
    Main Wrapper
 ================================ */
@@ -15964,10 +15682,8 @@ html.dark .driver-license-expired {
   display: flex;
   flex-direction: column;
 
-  box-shadow:
-    0 25px 70px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.25);
 }
-
 
 /* ================================
    Toolbar
@@ -15992,7 +15708,6 @@ html.dark .driver-license-expired {
 
   box-sizing: border-box;
 }
-
 
 /* ================================
    Brand
@@ -16047,7 +15762,6 @@ html.dark .driver-license-expired {
   font-size: 12px;
 }
 
-
 /* ================================
    Buttons
 ================================ */
@@ -16096,7 +15810,6 @@ html.dark .driver-license-expired {
   transform: translateY(0);
 }
 
-
 /* Print */
 
 .invoice-print-btn {
@@ -16104,14 +15817,12 @@ html.dark .driver-license-expired {
 
   color: #ffffff;
 
-  box-shadow:
-    0 4px 12px rgba(17, 24, 39, 0.18);
+  box-shadow: 0 4px 12px rgba(17, 24, 39, 0.18);
 }
 
 .invoice-print-btn:hover {
   background: #1f2937;
 }
-
 
 /* Download */
 
@@ -16120,14 +15831,12 @@ html.dark .driver-license-expired {
 
   color: #ffffff;
 
-  box-shadow:
-    0 4px 12px rgba(37, 99, 235, 0.22);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.22);
 }
 
 .invoice-download-btn:hover {
   background: #1d4ed8;
 }
-
 
 /* Close */
 
@@ -16144,7 +15853,6 @@ html.dark .driver-license-expired {
 .invoice-close-btn:hover {
   background: #e2e8f0;
 }
-
 
 /* ================================
    Invoice Scroll Area
@@ -16163,7 +15871,6 @@ html.dark .driver-license-expired {
 
   box-sizing: border-box;
 }
-
 
 /* ================================
    A5 Invoice
@@ -16190,14 +15897,12 @@ html.dark .driver-license-expired {
 
   font-family: "Vazirmatn", Arial, sans-serif;
 
-  box-shadow:
-    0 10px 35px rgba(0, 0, 0, 0.14);
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.14);
 
   flex-shrink: 0;
 
   overflow: hidden;
 }
-
 
 /* ================================
    بسمی تعالی
@@ -16221,7 +15926,6 @@ html.dark .driver-license-expired {
   color: #111827;
   direction: rtl;
 }
-
 
 /* ================================
    Watermark
@@ -16253,7 +15957,6 @@ html.dark .driver-license-expired {
   letter-spacing: 0 !important;
   word-spacing: 0 !important;
 }
-
 
 /* ================================
    Invoice Header
@@ -16347,7 +16050,6 @@ html.dark .driver-license-expired {
   color: #1d4ed8;
 }
 
-
 /* ================================
    Info Grid (3 cards)
 ================================ */
@@ -16381,7 +16083,6 @@ html.dark .driver-license-expired {
   line-height: 1.4;
   color: #334155;
 }
-
 
 /* ================================
    Cost Table
@@ -16458,7 +16159,6 @@ html.dark .driver-license-expired {
   border-top: 1px solid #dbeafe;
   text-align: justify;
 }
-
 
 /* ================================
    Route Box
@@ -16542,7 +16242,6 @@ html.dark .driver-license-expired {
   font-weight: 700;
 }
 
-
 /* ================================
    Signatures
 ================================ */
@@ -16578,7 +16277,6 @@ html.dark .driver-license-expired {
   font-weight: 700;
   text-align: center;
 }
-
 
 /* ================================
    Liability Notice
@@ -16619,7 +16317,6 @@ html.dark .driver-license-expired {
 .invoice-legal-notice-item strong {
   font-weight: 800;
 }
-
 
 /* ================================
    Footer row: freight address + notes
@@ -16709,13 +16406,11 @@ html.dark .driver-license-expired {
   color: #475569;
 }
 
-
 /* ================================
    Mobile
 ================================ */
 
 @media (max-width: 800px) {
-
   .invoice-preview-overlay {
     padding: 0;
   }
@@ -16767,9 +16462,7 @@ html.dark .driver-license-expired {
   .invoice-footer-row {
     flex-direction: column;
   }
-
 }
-
 
 /* ================================
    Print
@@ -16781,7 +16474,6 @@ html.dark .driver-license-expired {
 }
 
 @media print {
-
   body * {
     visibility: hidden;
   }
@@ -16850,450 +16542,440 @@ html.dark .driver-license-expired {
    ========================================================= */
 
 .invoice-clickable-row {
-    cursor: pointer;
-    transition:
-        background-color 0.2s ease,
-        transform 0.15s ease;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    transform 0.15s ease;
 }
 
 .invoice-clickable-row:hover {
-    background: rgba(59, 130, 246, 0.06);
+  background: rgba(59, 130, 246, 0.06);
 }
 
 .invoice-preview-button {
-    width: 38px;
-    height: 38px;
-    border: none;
-    border-radius: 10px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    background: rgba(59, 130, 246, 0.1);
-    color: #3b82f6;
-    transition: 0.2s ease;
+  width: 38px;
+  height: 38px;
+  border: none;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+  transition: 0.2s ease;
 }
 
 .invoice-preview-button:hover {
-    background: #3b82f6;
-    color: white;
-    transform: translateY(-1px);
+  background: #3b82f6;
+  color: white;
+  transform: translateY(-1px);
 }
 
 .invoice-actions {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
-
 
 /* =========================================================
    PREVIEW HEADER
    ========================================================= */
 
 .invoice-preview-heading {
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: 20px;
-    margin-bottom: 24px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 24px;
 }
 
 .invoice-preview-heading h1 {
-    margin: 14px 0 6px;
-    font-size: 28px;
-    font-weight: 800;
+  margin: 14px 0 6px;
+  font-size: 28px;
+  font-weight: 800;
 }
 
 .invoice-preview-heading p {
-    margin: 0;
-    color: #64748b;
-    font-size: 14px;
+  margin: 0;
+  color: #64748b;
+  font-size: 14px;
 }
 
 .invoice-back-button {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    border: none;
-    background: transparent;
-    color: #3b82f6;
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    padding: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: none;
+  background: transparent;
+  color: #3b82f6;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
 }
 
 .invoice-back-button:hover {
-    color: #2563eb;
+  color: #2563eb;
 }
 
 .invoice-preview-print-button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    border: none;
-    border-radius: 12px;
-    background: #2563eb;
-    color: white;
-    padding: 12px 18px;
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: none;
+  border-radius: 12px;
+  background: #2563eb;
+  color: white;
+  padding: 12px 18px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s ease;
 }
 
 .invoice-preview-print-button:hover {
-    background: #1d4ed8;
-    transform: translateY(-1px);
+  background: #1d4ed8;
+  transform: translateY(-1px);
 }
-
 
 /* =========================================================
    PREVIEW CARD
    ========================================================= */
 
 .invoice-preview-card {
-    width: 100%;
-    max-width: 1100px;
-    margin: 0 auto 40px;
-    background: white;
-    border: 1px solid #e2e8f0;
-    border-radius: 20px;
-    padding: 32px;
-    box-shadow: 0 10px 35px rgba(15, 23, 42, 0.08);
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto 40px;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 32px;
+  box-shadow: 0 10px 35px rgba(15, 23, 42, 0.08);
 }
-
 
 /* =========================================================
    TOP
    ========================================================= */
 
 .invoice-preview-top {
-    display: grid;
-    grid-template-columns: 100px 1fr 190px;
-    align-items: center;
-    gap: 25px;
-    padding-bottom: 28px;
-    border-bottom: 2px solid #e2e8f0;
+  display: grid;
+  grid-template-columns: 100px 1fr 190px;
+  align-items: center;
+  gap: 25px;
+  padding-bottom: 28px;
+  border-bottom: 2px solid #e2e8f0;
 }
 
 .invoice-preview-logo {
-    width: 76px;
-    height: 76px;
-    border-radius: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #172554;
-    color: white;
-    font-size: 34px;
-    font-weight: 900;
+  width: 76px;
+  height: 76px;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #172554;
+  color: white;
+  font-size: 34px;
+  font-weight: 900;
 }
 
 .invoice-preview-title {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
 }
 
 .invoice-preview-title h2 {
-    margin: 0;
-    font-size: 22px;
-    font-weight: 900;
-    color: #0f172a;
+  margin: 0;
+  font-size: 22px;
+  font-weight: 900;
+  color: #0f172a;
 }
 
 .invoice-preview-title span {
-    color: #64748b;
-    font-size: 13px;
+  color: #64748b;
+  font-size: 13px;
 }
 
 .invoice-preview-title strong {
-    margin-top: 8px;
-    font-size: 18px;
-    color: #2563eb;
+  margin-top: 8px;
+  font-size: 18px;
+  color: #2563eb;
 }
 
 .invoice-preview-number {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 7px;
-    padding: 16px;
-    border-radius: 14px;
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  padding: 16px;
+  border-radius: 14px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
 }
 
 .invoice-preview-number span {
-    color: #64748b;
-    font-size: 12px;
+  color: #64748b;
+  font-size: 12px;
 }
 
 .invoice-preview-number strong {
-    color: #0f172a;
-    font-size: 15px;
+  color: #0f172a;
+  font-size: 15px;
 }
-
 
 /* =========================================================
    SECTIONS
    ========================================================= */
 
 .invoice-preview-section {
-    padding: 26px 0;
-    border-bottom: 1px solid #e2e8f0;
+  padding: 26px 0;
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .invoice-preview-section:last-of-type {
-    border-bottom: none;
+  border-bottom: none;
 }
 
 .invoice-preview-section-title {
-    display: flex;
-    align-items: center;
-    gap: 9px;
-    margin-bottom: 20px;
-    color: #2563eb;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 20px;
+  color: #2563eb;
 }
 
 .invoice-preview-section-title h3 {
-    margin: 0;
-    color: #0f172a;
-    font-size: 17px;
-    font-weight: 800;
+  margin: 0;
+  color: #0f172a;
+  font-size: 17px;
+  font-weight: 800;
 }
 
 .invoice-preview-info-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 14px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
 }
 
 .invoice-preview-info-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 11px;
-    padding: 15px;
-    min-height: 72px;
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 13px;
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  padding: 15px;
+  min-height: 72px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 13px;
 }
 
 .invoice-preview-info-icon {
-    width: 34px;
-    height: 34px;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 9px;
-    background: rgba(37, 99, 235, 0.1);
-    color: #2563eb;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  background: rgba(37, 99, 235, 0.1);
+  color: #2563eb;
 }
 
 .invoice-preview-info-item > div:last-child {
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
 }
 
 .invoice-preview-info-label {
-    color: #64748b;
-    font-size: 11px;
+  color: #64748b;
+  font-size: 11px;
 }
 
 .invoice-preview-info-value {
-    color: #0f172a;
-    font-size: 14px;
-    font-weight: 700;
-    word-break: break-word;
+  color: #0f172a;
+  font-size: 14px;
+  font-weight: 700;
+  word-break: break-word;
 }
-
 
 /* =========================================================
    COSTS
    ========================================================= */
 
 .invoice-preview-cost-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 14px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
 }
 
 .invoice-preview-cost-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 16px;
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 13px;
 }
 
 .invoice-preview-cost-item span {
-    color: #64748b;
-    font-size: 13px;
+  color: #64748b;
+  font-size: 13px;
 }
 
 .invoice-preview-cost-item strong {
-    color: #0f172a;
-    font-size: 14px;
+  color: #0f172a;
+  font-size: 14px;
 }
 
 .invoice-preview-cost-item small,
 .invoice-preview-total small {
-    font-size: 11px;
-    font-weight: 600;
-    margin-right: 3px;
+  font-size: 11px;
+  font-weight: 600;
+  margin-right: 3px;
 }
 
 .invoice-preview-total {
-    margin-top: 18px;
-    padding: 20px;
-    border-radius: 15px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: #eff6ff;
-    border: 1px solid #bfdbfe;
+  margin-top: 18px;
+  padding: 20px;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
 }
 
 .invoice-preview-total span {
-    font-size: 15px;
-    font-weight: 800;
-    color: #1e3a8a;
+  font-size: 15px;
+  font-weight: 800;
+  color: #1e3a8a;
 }
 
 .invoice-preview-total strong {
-    color: #1d4ed8;
-    font-size: 20px;
+  color: #1d4ed8;
+  font-size: 20px;
 }
-
 
 /* =========================================================
    DESCRIPTION
    ========================================================= */
 
 .invoice-preview-description {
-    margin-top: 18px;
-    padding: 17px;
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 13px;
+  margin-top: 18px;
+  padding: 17px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 13px;
 }
 
 .invoice-preview-description span {
-    display: block;
-    margin-bottom: 8px;
-    color: #64748b;
-    font-size: 12px;
-    font-weight: 700;
+  display: block;
+  margin-bottom: 8px;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 700;
 }
 
 .invoice-preview-description p {
-    margin: 0;
-    color: #334155;
-    font-size: 14px;
-    line-height: 1.9;
+  margin: 0;
+  color: #334155;
+  font-size: 14px;
+  line-height: 1.9;
 }
-
 
 /* =========================================================
    QR
    ========================================================= */
 
 .invoice-preview-qr-section {
-    padding: 24px 0;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-top: 1px solid #e2e8f0;
+  padding: 24px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid #e2e8f0;
 }
 
 .invoice-preview-qr-section > span {
-    font-size: 13px;
-    font-weight: 700;
-    color: #64748b;
+  font-size: 13px;
+  font-weight: 700;
+  color: #64748b;
 }
 
 .invoice-preview-qr {
-    width: 90px;
-    height: 90px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 8px;
-    border: 1px solid #cbd5e1;
-    border-radius: 10px;
-    background: white;
-    font-size: 9px;
-    color: #334155;
-    overflow: hidden;
+  width: 90px;
+  height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  background: white;
+  font-size: 9px;
+  color: #334155;
+  overflow: hidden;
 }
-
 
 /* =========================================================
    FOOTER
    ========================================================= */
 
 .invoice-preview-footer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 20px;
-    padding-top: 22px;
-    margin-top: 5px;
-    border-top: 1px dashed #cbd5e1;
-    color: #94a3b8;
-    font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding-top: 22px;
+  margin-top: 5px;
+  border-top: 1px dashed #cbd5e1;
+  color: #94a3b8;
+  font-size: 11px;
 }
-
 
 /* =========================================================
    EMPTY / ERROR
    ========================================================= */
 
 .invoice-preview-empty {
-    min-height: 420px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    text-align: center;
-    color: #64748b;
+  min-height: 420px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  text-align: center;
+  color: #64748b;
 }
 
 .invoice-preview-empty svg {
-    color: #94a3b8;
+  color: #94a3b8;
 }
 
 .invoice-preview-empty h2 {
-    margin: 8px 0 0;
-    color: #0f172a;
-    font-size: 20px;
+  margin: 8px 0 0;
+  color: #0f172a;
+  font-size: 20px;
 }
 
 .invoice-preview-empty p {
-    margin: 0;
-    font-size: 14px;
+  margin: 0;
+  font-size: 14px;
 }
-
 
 /* =========================================================
    DARK MODE
    ========================================================= */
 
 .dark .invoice-preview-card {
-    background: #111827;
-    border-color: #1f2937;
-    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.25);
+  background: #111827;
+  border-color: #1f2937;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.25);
 }
 
 .dark .invoice-preview-title h2,
@@ -17302,7 +16984,7 @@ html.dark .driver-license-expired {
 .dark .invoice-preview-cost-item strong,
 .dark .invoice-preview-number strong,
 .dark .invoice-preview-empty h2 {
-    color: #f8fafc;
+  color: #f8fafc;
 }
 
 .dark .invoice-preview-title span,
@@ -17311,155 +16993,149 @@ html.dark .driver-license-expired {
 .dark .invoice-preview-number span,
 .dark .invoice-preview-description span,
 .dark .invoice-preview-qr-section > span {
-    color: #94a3b8;
+  color: #94a3b8;
 }
 
 .dark .invoice-preview-top,
 .dark .invoice-preview-section {
-    border-color: #273449;
+  border-color: #273449;
 }
 
 .dark .invoice-preview-number,
 .dark .invoice-preview-info-item,
 .dark .invoice-preview-cost-item,
 .dark .invoice-preview-description {
-    background: #172033;
-    border-color: #273449;
+  background: #172033;
+  border-color: #273449;
 }
 
 .dark .invoice-preview-description p {
-    color: #cbd5e1;
+  color: #cbd5e1;
 }
 
 .dark .invoice-preview-total {
-    background: rgba(37, 99, 235, 0.12);
-    border-color: rgba(59, 130, 246, 0.3);
+  background: rgba(37, 99, 235, 0.12);
+  border-color: rgba(59, 130, 246, 0.3);
 }
 
 .dark .invoice-preview-total span {
-    color: #93c5fd;
+  color: #93c5fd;
 }
 
 .dark .invoice-preview-footer {
-    border-color: #273449;
+  border-color: #273449;
 }
 
 .dark .invoice-clickable-row:hover {
-    background: rgba(59, 130, 246, 0.1);
+  background: rgba(59, 130, 246, 0.1);
 }
-
 
 /* =========================================================
    RESPONSIVE
    ========================================================= */
 
 @media (max-width: 1000px) {
+  .invoice-preview-info-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 
-    .invoice-preview-info-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
+  .invoice-preview-cost-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 
-    .invoice-preview-cost-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
+  .invoice-preview-top {
+    grid-template-columns: 80px 1fr;
+  }
 
-    .invoice-preview-top {
-        grid-template-columns: 80px 1fr;
-    }
-
-    .invoice-preview-number {
-        grid-column: 1 / -1;
-        width: 100%;
-    }
+  .invoice-preview-number {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
 }
-
 
 @media (max-width: 700px) {
+  .invoice-preview-heading {
+    align-items: stretch;
+    flex-direction: column;
+  }
 
-    .invoice-preview-heading {
-        align-items: stretch;
-        flex-direction: column;
-    }
+  .invoice-preview-print-button {
+    width: 100%;
+  }
 
-    .invoice-preview-print-button {
-        width: 100%;
-    }
+  .invoice-preview-card {
+    padding: 20px;
+    border-radius: 15px;
+  }
 
-    .invoice-preview-card {
-        padding: 20px;
-        border-radius: 15px;
-    }
+  .invoice-preview-top {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
 
-    .invoice-preview-top {
-        grid-template-columns: 1fr;
-        text-align: center;
-    }
+  .invoice-preview-logo {
+    margin: 0 auto;
+  }
 
-    .invoice-preview-logo {
-        margin: 0 auto;
-    }
+  .invoice-preview-title {
+    align-items: center;
+  }
 
-    .invoice-preview-title {
-        align-items: center;
-    }
+  .invoice-preview-number {
+    grid-column: auto;
+  }
 
-    .invoice-preview-number {
-        grid-column: auto;
-    }
+  .invoice-preview-info-grid,
+  .invoice-preview-cost-grid {
+    grid-template-columns: 1fr;
+  }
 
-    .invoice-preview-info-grid,
-    .invoice-preview-cost-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .invoice-preview-footer {
-        flex-direction: column;
-        align-items: flex-start;
-        line-height: 1.8;
-    }
+  .invoice-preview-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    line-height: 1.8;
+  }
 }
-
 
 /* =========================================================
    PRINT
    ========================================================= */
 
 @media print {
+  body {
+    background: white !important;
+  }
 
-    body {
-        background: white !important;
-    }
+  .main-content {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
 
-    .main-content {
-        padding: 0 !important;
-        margin: 0 !important;
-    }
+  .invoice-preview-heading,
+  .sidebar,
+  .header,
+  nav,
+  aside {
+    display: none !important;
+  }
 
-    .invoice-preview-heading,
-    .sidebar,
-    .header,
-    nav,
-    aside {
-        display: none !important;
-    }
+  .invoice-preview-card {
+    max-width: none;
+    margin: 0;
+    padding: 20px;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+  }
 
-    .invoice-preview-card {
-        max-width: none;
-        margin: 0;
-        padding: 20px;
-        border: none;
-        border-radius: 0;
-        box-shadow: none;
-    }
+  .invoice-preview-section {
+    break-inside: avoid;
+  }
 
-    .invoice-preview-section {
-        break-inside: avoid;
-    }
-
-    .invoice-preview-info-item,
-    .invoice-preview-cost-item {
-        break-inside: avoid;
-    }
+  .invoice-preview-info-item,
+  .invoice-preview-cost-item {
+    break-inside: avoid;
+  }
 }
 
 /* =========================================================
@@ -17467,49 +17143,49 @@ html.dark .driver-license-expired {
 ========================================================= */
 
 .page-heading-with-action {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
 }
 
 .secondary-action-button {
-    min-height: 44px;
-    padding: 0 16px;
+  min-height: 44px;
+  padding: 0 16px;
 
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 
-    border: 1px solid var(--border);
-    border-radius: 10px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
 
-    background: var(--surface);
-    color: var(--text-secondary);
+  background: var(--surface);
+  color: var(--text-secondary);
 
-    font-family: inherit;
-    font-size: 13px;
-    font-weight: 650;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 650;
 
-    text-decoration: none;
+  text-decoration: none;
 
-    transition:
-        background 0.18s ease,
-        border-color 0.18s ease,
-        color 0.18s ease,
-        transform 0.18s ease;
+  transition:
+    background 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease,
+    transform 0.18s ease;
 }
 
 .secondary-action-button:hover {
-    background: var(--primary-soft);
-    border-color: var(--primary);
-    color: var(--primary);
-    transform: translateY(-1px);
+  background: var(--primary-soft);
+  border-color: var(--primary);
+  color: var(--primary);
+  transform: translateY(-1px);
 }
 
 .secondary-action-button svg {
-    flex-shrink: 0;
+  flex-shrink: 0;
 }
 
 /* =========================================================
@@ -17517,67 +17193,67 @@ html.dark .driver-license-expired {
 ========================================================= */
 
 .daily-driver-list-actions {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .daily-driver-reset-button {
-    min-height: 38px;
-    padding: 0 12px;
+  min-height: 38px;
+  padding: 0 12px;
 
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 7px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
 
-    border: 1px solid var(--border);
-    border-radius: 9px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
 
-    background: var(--surface);
-    color: var(--text-secondary);
+  background: var(--surface);
+  color: var(--text-secondary);
 
-    font-family: inherit;
-    font-size: 11px;
-    font-weight: 650;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 650;
 
-    cursor: pointer;
+  cursor: pointer;
 
-    transition:
-        background 0.18s ease,
-        border-color 0.18s ease,
-        color 0.18s ease,
-        transform 0.18s ease;
+  transition:
+    background 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease,
+    transform 0.18s ease;
 }
 
 .daily-driver-reset-button:hover:not(:disabled) {
-    background: rgba(239, 68, 68, 0.08);
-    border-color: #ef4444;
-    color: #ef4444;
-    transform: translateY(-1px);
+  background: rgba(239, 68, 68, 0.08);
+  border-color: #ef4444;
+  color: #ef4444;
+  transform: translateY(-1px);
 }
 
 .daily-driver-reset-button:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .daily-driver-reset-icon {
-    flex-shrink: 0;
+  flex-shrink: 0;
 }
 
 .daily-driver-reset-icon.spinning {
-    animation: daily-driver-reset-spin 0.8s linear infinite;
+  animation: daily-driver-reset-spin 0.8s linear infinite;
 }
 
 @keyframes daily-driver-reset-spin {
-    from {
-        transform: rotate(0deg);
-    }
+  from {
+    transform: rotate(0deg);
+  }
 
-    to {
-        transform: rotate(360deg);
-    }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* =========================================================
@@ -17585,141 +17261,140 @@ html.dark .driver-license-expired {
 ========================================================= */
 
 @media (max-width: 650px) {
-    .page-heading-with-action {
-        align-items: flex-start;
-        flex-direction: column;
-    }
+  .page-heading-with-action {
+    align-items: flex-start;
+    flex-direction: column;
+  }
 
-    .secondary-action-button {
-        width: 100%;
-    }
+  .secondary-action-button {
+    width: 100%;
+  }
 
-    .daily-driver-list-header {
-        align-items: flex-start;
-        flex-direction: column;
-    }
+  .daily-driver-list-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
 
-    .daily-driver-list-actions {
-        width: 100%;
-        justify-content: space-between;
-    }
+  .daily-driver-list-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
 }
 
 @media (max-width: 450px) {
-    .daily-driver-list-actions {
-        align-items: stretch;
-        flex-direction: column;
-    }
+  .daily-driver-list-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
 
-    .daily-driver-reset-button,
-    .daily-driver-count {
-        width: 100%;
-    }
+  .daily-driver-reset-button,
+  .daily-driver-count {
+    width: 100%;
+  }
 }
 
 .daily-driver-list-actions {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .daily-driver-reset-button {
-    min-height: 38px;
-    padding: 0 13px;
+  min-height: 38px;
+  padding: 0 13px;
 
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 7px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
 
-    border: 1px solid var(--border);
-    border-radius: 9px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
 
-    background: var(--surface);
-    color: var(--text-secondary);
+  background: var(--surface);
+  color: var(--text-secondary);
 
-    font-family: inherit;
-    font-size: 11px;
-    font-weight: 650;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 650;
 
-    cursor: pointer;
+  cursor: pointer;
 
-    transition:
-        background 0.18s ease,
-        border-color 0.18s ease,
-        color 0.18s ease;
+  transition:
+    background 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease;
 }
 
 .daily-driver-reset-button:hover:not(:disabled) {
-    background: rgba(239, 68, 68, 0.08);
-    border-color: #ef4444;
-    color: #ef4444;
+  background: rgba(239, 68, 68, 0.08);
+  border-color: #ef4444;
+  color: #ef4444;
 }
 
 .daily-driver-reset-button:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .daily-driver-reset-spinning {
-    animation: daily-driver-reset-spin 0.8s linear infinite;
+  animation: daily-driver-reset-spin 0.8s linear infinite;
 }
 
 @keyframes daily-driver-reset-spin {
-    from {
-        transform: rotate(0deg);
-    }
+  from {
+    transform: rotate(0deg);
+  }
 
-    to {
-        transform: rotate(360deg);
-    }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .secondary-action-button {
-    min-height: 44px;
-    padding: 0 16px;
+  min-height: 44px;
+  padding: 0 16px;
 
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 
-    border: 1px solid var(--border);
-    border-radius: 10px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
 
-    background: var(--surface);
-    color: var(--text-secondary);
+  background: var(--surface);
+  color: var(--text-secondary);
 
-    font-family: inherit;
-    font-size: 13px;
-    font-weight: 650;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 650;
 
-    text-decoration: none;
+  text-decoration: none;
 
-    transition:
-        background 0.18s ease,
-        border-color 0.18s ease,
-        color 0.18s ease;
+  transition:
+    background 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease;
 }
 
 .secondary-action-button:hover {
-    background: var(--primary-soft);
-    border-color: var(--primary);
-    color: var(--primary);
+  background: var(--primary-soft);
+  border-color: var(--primary);
+  color: var(--primary);
 }
 
 @media (max-width: 650px) {
-    .daily-driver-list-header {
-        align-items: flex-start;
-        flex-direction: column;
-    }
+  .daily-driver-list-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
 
-    .daily-driver-list-actions {
-        width: 100%;
-        justify-content: space-between;
-    }
+  .daily-driver-list-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
 }
-
 
 /* =========================================================
    کامیون متحرک کنار کارت‌های آمار
@@ -17741,7 +17416,9 @@ html.dark .driver-license-expired {
 }
 
 @keyframes stats-truck-road-move {
-  to { stroke-dashoffset: -52; }
+  to {
+    stroke-dashoffset: -52;
+  }
 }
 
 .stats-truck-road {
@@ -17749,12 +17426,16 @@ html.dark .driver-license-expired {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .stats-truck-road { animation: none; }
+  .stats-truck-road {
+    animation: none;
+  }
 }
 
 /* روی تبلت و موبایل مخفی می‌شود */
 @media (max-width: 1100px) {
-  .stats-truck { display: none; }
+  .stats-truck {
+    display: none;
+  }
 }
 
 /* =========================================================
@@ -17843,302 +17524,302 @@ html.dark .header-logout-button:hover {
 
 .users-form-panel,
 .users-list-panel {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 18px;
-    box-shadow: var(--shadow);
-    overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
 }
 
 .users-form-panel {
-    margin-bottom: 20px;
+  margin-bottom: 20px;
 }
 
 .users-panel-header {
-    display: flex;
-    align-items: center;
-    gap: 13px;
-    padding: 20px 22px;
-    border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 20px 22px;
+  border-bottom: 1px solid var(--border);
 }
 
 .users-panel-icon {
-    width: 44px;
-    height: 44px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--primary-soft);
-    color: var(--primary);
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary-soft);
+  color: var(--primary);
 }
 
 .users-panel-header h2 {
-    margin: 0;
-    font-size: 16px;
-    font-weight: 750;
-    color: var(--text);
+  margin: 0;
+  font-size: 16px;
+  font-weight: 750;
+  color: var(--text);
 }
 
 .users-panel-header p {
-    margin: 5px 0 0;
-    font-size: 11px;
-    color: var(--text-muted);
+  margin: 5px 0 0;
+  font-size: 11px;
+  color: var(--text-muted);
 }
 
 .users-add-form {
-    display: flex;
-    align-items: flex-end;
-    gap: 14px;
-    padding: 22px;
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+  padding: 22px;
 }
 
 .users-input-group {
-    flex: 1;
-    max-width: 450px;
+  flex: 1;
+  max-width: 450px;
 }
 
 .users-input-group label {
-    display: block;
-    margin-bottom: 8px;
-    color: var(--text-secondary);
-    font-size: 12px;
-    font-weight: 600;
+  display: block;
+  margin-bottom: 8px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
 }
 
 .users-input-wrapper {
-    height: 46px;
-    display: flex;
-    align-items: center;
-    gap: 9px;
-    padding: 0 13px;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    background: var(--background);
-    color: var(--text-muted);
+  height: 46px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 0 13px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--background);
+  color: var(--text-muted);
 }
 
 .users-input-wrapper input {
-    width: 100%;
-    height: 100%;
-    border: 0;
-    outline: 0;
-    background: transparent;
-    color: var(--text);
-    font-family: inherit;
-    font-size: 13px;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 13px;
 }
 
 .users-add-button {
-    height: 46px;
-    padding: 0 18px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    border: 0;
-    border-radius: 10px;
-    background: var(--primary);
-    color: white;
-    font-family: inherit;
-    font-size: 12px;
-    font-weight: 700;
+  height: 46px;
+  padding: 0 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--primary);
+  color: white;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
 }
 
 .users-add-button:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .users-message {
-    margin-bottom: 16px;
-    padding: 13px 16px;
-    border-radius: 10px;
-    font-size: 12px;
-    font-weight: 600;
+  margin-bottom: 16px;
+  padding: 13px 16px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 600;
 }
 
 .users-message-error {
-    background: #fef2f2;
-    border: 1px solid #fecaca;
-    color: #dc2626;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #dc2626;
 }
 
 .users-message-success {
-    background: var(--success-soft);
-    border: 1px solid #bbf7d0;
-    color: var(--success);
+  background: var(--success-soft);
+  border: 1px solid #bbf7d0;
+  color: var(--success);
 }
 
 html.dark .users-message-error {
-    background: #450a0a;
-    border-color: #7f1d1d;
-    color: #f87171;
+  background: #450a0a;
+  border-color: #7f1d1d;
+  color: #f87171;
 }
 
 .users-list-header {
-    padding: 20px 22px;
-    border-bottom: 1px solid var(--border);
+  padding: 20px 22px;
+  border-bottom: 1px solid var(--border);
 }
 
 .users-list-title {
-    display: flex;
-    align-items: center;
-    gap: 9px;
-    color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--text);
 }
 
 .users-list-title h2 {
-    margin: 0;
-    font-size: 16px;
+  margin: 0;
+  font-size: 16px;
 }
 
 .users-list-header p {
-    margin: 6px 0 0;
-    font-size: 11px;
-    color: var(--text-muted);
+  margin: 6px 0 0;
+  font-size: 11px;
+  color: var(--text-muted);
 }
 
 .users-table-wrapper {
-    overflow-x: auto;
+  overflow-x: auto;
 }
 
 .users-table {
-    width: 100%;
-    border-collapse: collapse;
+  width: 100%;
+  border-collapse: collapse;
 }
 
 .users-table th,
 .users-table td {
-    padding: 14px 18px;
-    border-bottom: 1px solid var(--border);
-    text-align: right;
-    white-space: nowrap;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  text-align: right;
+  white-space: nowrap;
 }
 
 .users-table th {
-    background: var(--surface-soft);
-    color: var(--text-muted);
-    font-size: 11px;
-    font-weight: 700;
+  background: var(--surface-soft);
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 700;
 }
 
 .users-table td {
-    color: var(--text-secondary);
-    font-size: 12px;
+  color: var(--text-secondary);
+  font-size: 12px;
 }
 
 .users-name-cell {
-    display: flex;
-    align-items: center;
-    gap: 9px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
 }
 
 .users-name-cell strong {
-    color: var(--text);
-    font-weight: 700;
+  color: var(--text);
+  font-weight: 700;
 }
 
 .users-avatar {
-    width: 34px;
-    height: 34px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 9px;
-    background: var(--primary-soft);
-    color: var(--primary);
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  background: var(--primary-soft);
+  color: var(--primary);
 }
 
 .users-current-badge {
-    padding: 3px 7px;
-    border-radius: 6px;
-    background: var(--success-soft);
-    color: var(--success);
-    font-size: 9px;
-    font-weight: 700;
+  padding: 3px 7px;
+  border-radius: 6px;
+  background: var(--success-soft);
+  color: var(--success);
+  font-size: 9px;
+  font-weight: 700;
 }
 
 .users-role {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    padding: 5px 8px;
-    border-radius: 7px;
-    font-size: 10px;
-    font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 8px;
+  border-radius: 7px;
+  font-size: 10px;
+  font-weight: 700;
 }
 
 .users-role.owner {
-    background: var(--primary-soft);
-    color: var(--primary);
+  background: var(--primary-soft);
+  color: var(--primary);
 }
 
 .users-role.member {
-    background: var(--surface-soft);
-    color: var(--text-secondary);
+  background: var(--surface-soft);
+  color: var(--text-secondary);
 }
 
 .users-active-status {
-    color: var(--success);
-    font-size: 11px;
-    font-weight: 700;
+  color: var(--success);
+  font-size: 11px;
+  font-weight: 700;
 }
 
 .users-delete-button {
-    height: 34px;
-    padding: 0 10px;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    border: 1px solid #fecaca;
-    border-radius: 8px;
-    background: #fef2f2;
-    color: #dc2626;
-    font-family: inherit;
-    font-size: 10px;
-    font-weight: 700;
+  height: 34px;
+  padding: 0 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  background: #fef2f2;
+  color: #dc2626;
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 700;
 }
 
 html.dark .users-delete-button {
-    background: #450a0a;
-    border-color: #7f1d1d;
-    color: #f87171;
+  background: #450a0a;
+  border-color: #7f1d1d;
+  color: #f87171;
 }
 
 .users-protected {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    color: var(--text-muted);
-    font-size: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--text-muted);
+  font-size: 10px;
 }
 
 .users-empty {
-    padding: 50px 20px;
-    text-align: center;
-    color: var(--text-muted);
-    font-size: 12px;
+  padding: 50px 20px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 12px;
 }
 
 @media (max-width: 700px) {
-    .users-add-form {
-        flex-direction: column;
-        align-items: stretch;
-    }
+  .users-add-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
 
-    .users-input-group {
-        max-width: none;
-    }
+  .users-input-group {
+    max-width: none;
+  }
 
-    .users-add-button {
-        width: 100%;
-    }
+  .users-add-button {
+    width: 100%;
+  }
 
-    .users-table th,
-    .users-table td {
-        padding: 12px;
-    }
+  .users-table th,
+  .users-table td {
+    padding: 12px;
+  }
 }
 
 /* =========================================================
@@ -18146,142 +17827,141 @@ html.dark .users-delete-button {
 ========================================================= */
 
 .change-password-panel {
-    max-width: 650px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 18px;
-    box-shadow: var(--shadow);
-    overflow: hidden;
+  max-width: 650px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
 }
 
 .change-password-header {
-    display: flex;
-    align-items: center;
-    gap: 13px;
-    padding: 22px;
-    border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 22px;
+  border-bottom: 1px solid var(--border);
 }
 
 .change-password-icon {
-    width: 46px;
-    height: 46px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 12px;
-    background: var(--primary-soft);
-    color: var(--primary);
+  width: 46px;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: var(--primary-soft);
+  color: var(--primary);
 }
 
 .change-password-header h2 {
-    margin: 0;
-    color: var(--text);
-    font-size: 16px;
-    font-weight: 750;
+  margin: 0;
+  color: var(--text);
+  font-size: 16px;
+  font-weight: 750;
 }
 
 .change-password-header p {
-    margin: 5px 0 0;
-    color: var(--text-muted);
-    font-size: 11px;
+  margin: 5px 0 0;
+  color: var(--text-muted);
+  font-size: 11px;
 }
 
 .change-password-form {
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-    padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 22px;
 }
 
 .change-password-field label {
-    display: block;
-    margin-bottom: 8px;
-    color: var(--text-secondary);
-    font-size: 12px;
-    font-weight: 650;
+  display: block;
+  margin-bottom: 8px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 650;
 }
 
 .change-password-input {
-    height: 48px;
-    display: flex;
-    align-items: center;
-    gap: 9px;
-    padding: 0 13px;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    background: var(--background);
-    color: var(--text-muted);
+  height: 48px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 0 13px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--background);
+  color: var(--text-muted);
 }
 
 .change-password-input:focus-within {
-    border-color: var(--primary);
+  border-color: var(--primary);
 }
 
 .change-password-input input {
-    width: 100%;
-    height: 100%;
-    border: 0;
-    outline: 0;
-    background: transparent;
-    color: var(--text);
-    font-family: inherit;
-    font-size: 13px;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 13px;
 }
 
 .change-password-button {
-    height: 48px;
-    margin-top: 4px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    border: 0;
-    border-radius: 10px;
-    background: var(--primary);
-    color: #fff;
-    font-family: inherit;
-    font-size: 12px;
-    font-weight: 700;
-    cursor: pointer;
+  height: 48px;
+  margin-top: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--primary);
+  color: #fff;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
 }
 
 .change-password-button:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .change-password-message {
-    margin: 18px 22px 0;
-    padding: 13px 15px;
-    border-radius: 10px;
-    font-size: 12px;
-    font-weight: 600;
+  margin: 18px 22px 0;
+  padding: 13px 15px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 600;
 }
 
 .change-password-message.error {
-    background: #fef2f2;
-    border: 1px solid #fecaca;
-    color: #dc2626;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #dc2626;
 }
 
 .change-password-message.success {
-    background: var(--success-soft);
-    border: 1px solid #bbf7d0;
-    color: var(--success);
+  background: var(--success-soft);
+  border: 1px solid #bbf7d0;
+  color: var(--success);
 }
 
 html.dark .change-password-message.error {
-    background: #450a0a;
-    border-color: #7f1d1d;
-    color: #f87171;
+  background: #450a0a;
+  border-color: #7f1d1d;
+  color: #f87171;
 }
 
 @media (max-width: 700px) {
-    .change-password-panel {
-        max-width: none;
-    }
+  .change-password-panel {
+    max-width: none;
+  }
 }
-
 
 /* ================================
    Invoice Preview Overlay
@@ -18306,7 +17986,6 @@ html.dark .change-password-message.error {
   box-sizing: border-box;
 }
 
-
 /* ================================
    Main Wrapper
 ================================ */
@@ -18324,10 +18003,8 @@ html.dark .change-password-message.error {
   display: flex;
   flex-direction: column;
 
-  box-shadow:
-    0 25px 70px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.25);
 }
-
 
 /* ================================
    Toolbar
@@ -18352,7 +18029,6 @@ html.dark .change-password-message.error {
 
   box-sizing: border-box;
 }
-
 
 /* ================================
    Brand
@@ -18407,7 +18083,6 @@ html.dark .change-password-message.error {
   font-size: 12px;
 }
 
-
 /* ================================
    Buttons
 ================================ */
@@ -18456,7 +18131,6 @@ html.dark .change-password-message.error {
   transform: translateY(0);
 }
 
-
 /* Print */
 
 .invoice-print-btn {
@@ -18464,14 +18138,12 @@ html.dark .change-password-message.error {
 
   color: #ffffff;
 
-  box-shadow:
-    0 4px 12px rgba(17, 24, 39, 0.18);
+  box-shadow: 0 4px 12px rgba(17, 24, 39, 0.18);
 }
 
 .invoice-print-btn:hover {
   background: #1f2937;
 }
-
 
 /* Download */
 
@@ -18480,14 +18152,12 @@ html.dark .change-password-message.error {
 
   color: #ffffff;
 
-  box-shadow:
-    0 4px 12px rgba(37, 99, 235, 0.22);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.22);
 }
 
 .invoice-download-btn:hover {
   background: #1d4ed8;
 }
-
 
 /* Close */
 
@@ -18504,7 +18174,6 @@ html.dark .change-password-message.error {
 .invoice-close-btn:hover {
   background: #e2e8f0;
 }
-
 
 /* ================================
    Invoice Scroll Area
@@ -18523,7 +18192,6 @@ html.dark .change-password-message.error {
 
   box-sizing: border-box;
 }
-
 
 /* ================================
    A5 Invoice
@@ -18550,14 +18218,12 @@ html.dark .change-password-message.error {
 
   font-family: "Vazirmatn", Arial, sans-serif;
 
-  box-shadow:
-    0 10px 35px rgba(0, 0, 0, 0.14);
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.14);
 
   flex-shrink: 0;
 
   overflow: hidden;
 }
-
 
 /* ================================
    بسمی تعالی
@@ -18581,7 +18247,6 @@ html.dark .change-password-message.error {
   color: #111827;
   direction: rtl;
 }
-
 
 /* ================================
    Watermark
@@ -18613,7 +18278,6 @@ html.dark .change-password-message.error {
   letter-spacing: 0 !important;
   word-spacing: 0 !important;
 }
-
 
 /* ================================
    Invoice Header
@@ -18707,7 +18371,6 @@ html.dark .change-password-message.error {
   color: #1d4ed8;
 }
 
-
 /* ================================
    Info Grid (3 cards)
 ================================ */
@@ -18742,7 +18405,6 @@ html.dark .change-password-message.error {
   color: #334155;
 }
 
-
 /* ================================
    Cost Table
 ================================ */
@@ -18770,15 +18432,6 @@ html.dark .change-password-message.error {
   gap: 8px;
 }
 
-.invoice-payment-badge {
-  background: rgba(255, 255, 255, 0.18);
-  color: #fff;
-  padding: 2px 8px;
-  border-radius: 999px;
-  font-size: 9.5px;
-  font-weight: 700;
-  white-space: nowrap;
-}
 
 .invoice-cost-table {
   width: 100%;
@@ -18833,7 +18486,6 @@ html.dark .change-password-message.error {
   border-top: 1px solid #dbeafe;
   text-align: justify;
 }
-
 
 /* ================================
    Route Box
@@ -18917,7 +18569,6 @@ html.dark .change-password-message.error {
   font-weight: 700;
 }
 
-
 /* ================================
    Signatures
 ================================ */
@@ -18953,7 +18604,6 @@ html.dark .change-password-message.error {
   font-weight: 700;
   text-align: center;
 }
-
 
 /* ================================
    Liability Notice
@@ -18994,7 +18644,6 @@ html.dark .change-password-message.error {
 .invoice-legal-notice-item strong {
   font-weight: 800;
 }
-
 
 /* ================================
    Footer row: freight address + notes
@@ -19084,13 +18733,11 @@ html.dark .change-password-message.error {
   color: #475569;
 }
 
-
 /* ================================
    Mobile
 ================================ */
 
 @media (max-width: 800px) {
-
   .invoice-preview-overlay {
     padding: 0;
   }
@@ -19142,9 +18789,7 @@ html.dark .change-password-message.error {
   .invoice-footer-row {
     flex-direction: column;
   }
-
 }
-
 
 /* ================================
    Print
@@ -19156,7 +18801,6 @@ html.dark .change-password-message.error {
 }
 
 @media print {
-
   body * {
     visibility: hidden;
   }
@@ -19218,4 +18862,156 @@ html.dark .change-password-message.error {
 
     overflow: visible;
   }
+}
+
+
+.invoice-table-title {
+  background: #2563eb;
+  color: #fff;
+  padding: 6px 10px;
+  font-size: 11px;
+  font-weight: 800;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.invoice-payment-badge {
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 9.5px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* ================================
+   Cost Table Header
+================================ */
+
+.invoice-table-title {
+  background: #2563eb;
+  color: #fff;
+
+  padding: 6px 10px;
+
+  font-size: 11px;
+  font-weight: 800;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 8px;
+
+  min-height: 30px;
+  box-sizing: border-box;
+}
+
+.invoice-table-title-text {
+  display: flex;
+  align-items: center;
+
+  line-height: 1.2;
+
+  white-space: nowrap;
+}
+
+
+/* ================================
+   Payment Status
+================================ */
+
+.invoice-payment-status {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 5px;
+
+  min-height: 21px;
+
+  padding: 2px 6px 2px 7px;
+
+  border-radius: 999px;
+
+  white-space: nowrap;
+
+  box-sizing: border-box;
+
+  direction: rtl;
+
+  background: rgba(255, 255, 255, 0.16);
+
+  border: 1px solid rgba(255, 255, 255, 0.28);
+
+  color: #ffffff;
+
+  font-size: 8.5px;
+
+  line-height: 1;
+}
+
+
+/* عنوان وضعیت */
+
+.invoice-payment-status-label {
+  opacity: 0.82;
+
+  font-weight: 500;
+
+  white-space: nowrap;
+}
+
+
+/* مقدار وضعیت */
+
+.invoice-payment-status-value {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 34px;
+
+  padding: 3px 7px;
+
+  border-radius: 999px;
+
+  background: #ffffff;
+
+  color: #1d4ed8;
+
+  font-size: 8.5px;
+
+  font-weight: 900;
+
+  line-height: 1;
+
+  white-space: nowrap;
+}
+
+
+/* اعتباری */
+
+.invoice-payment-status.credit
+  .invoice-payment-status-value {
+  color: #1d4ed8;
+}
+
+
+/* نقد */
+
+.invoice-payment-status.cash
+  .invoice-payment-status-value {
+  color: #047857;
+}
+
+
+/* وضعیت نامشخص */
+
+.invoice-payment-status.unknown
+  .invoice-payment-status-value {
+  color: #64748b;
 }

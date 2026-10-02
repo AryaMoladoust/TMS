@@ -14,6 +14,7 @@ import {
   KeyRound,
 } from "lucide-react";
 
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const menuItems = [
@@ -83,37 +84,23 @@ export default function Sidebar({
 
   return (
     <>
-      {mobileOpen && (
-        <div
-          className="sidebar-overlay"
-          onClick={onClose}
-        />
-      )}
+      {mobileOpen && <div className="sidebar-overlay" onClick={onClose} />}
 
       <aside
-        className={`sidebar ${sidebarOpen
-            ? "sidebar-open"
-            : "sidebar-closed"
-          } ${mobileOpen
-            ? "sidebar-mobile-open"
-            : ""
-          }`}
+        className={`sidebar ${
+          sidebarOpen ? "sidebar-open" : "sidebar-closed"
+        } ${mobileOpen ? "sidebar-mobile-open" : ""}`}
       >
         {/* Header */}
 
         <div className="sidebar-header">
           <div className="brand">
             <div className="brand-icon">
-              <img
-                src="/icons/favicon.png"
-                alt="لوگوی سرویس حمل‌ونقل"
-              />
+              <img src="/icons/favicon.png" alt="لوگوی سرویس حمل‌ونقل" />
             </div>
 
             <div className="brand-text">
-              <h2>
-                موسسه حمل و نقل کامران
-              </h2>
+              <h2>موسسه حمل و نقل کامران</h2>
 
               <span></span>
             </div>
@@ -123,9 +110,7 @@ export default function Sidebar({
 
           <button
             className="sidebar-close-top"
-            onClick={() =>
-              setSidebarOpen(false)
-            }
+            onClick={() => setSidebarOpen(false)}
             aria-label="بستن منو"
             title="بستن منو"
           >
@@ -146,36 +131,24 @@ export default function Sidebar({
         {/* Navigation */}
 
         <nav className="sidebar-nav">
-          <div className="nav-section-title">
-            منوی اصلی
-          </div>
+          <div className="nav-section-title">منوی اصلی</div>
 
           {menuItems.map((item) => {
             const Icon = item.icon;
 
-            const active = isActive(
-              item.href
-            );
+            const active = isActive(item.href);
 
             return (
-              <a
+              <Link
                 href={item.href}
                 key={item.title}
-                className={`nav-item ${active
-                    ? "nav-item-active"
-                    : ""
-                  }`}
+                className={`nav-item ${active ? "nav-item-active" : ""}`}
                 title={item.title}
               >
-                <Icon
-                  size={21}
-                  strokeWidth={1.8}
-                />
+                <Icon size={21} strokeWidth={1.8} />
 
-                <span>
-                  {item.title}
-                </span>
-              </a>
+                <span>{item.title}</span>
+              </Link>
             );
           })}
         </nav>
@@ -187,13 +160,9 @@ export default function Sidebar({
             <div className="server-status-dot" />
 
             <div>
-              <span>
-                وضعیت سرور
-              </span>
+              <span>وضعیت سرور</span>
 
-              <strong>
-                متصل
-              </strong>
+              <strong>متصل</strong>
             </div>
           </div>
         </div>
