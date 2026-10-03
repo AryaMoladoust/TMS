@@ -1,28 +1,61 @@
 import { NextResponse } from "next/server";
+
 import connectDB from "@/lib/mongodb";
 import { getUserFromSessionToken } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+export async function GET(request) {
     try {
         await connectDB();
 
-        const dailyDrivers =
-            await DailyDriver.find({})
-                .populate("driverId")
-                .sort({
-                    createdAt: 1,
-                })
-                .lean();
+        const token =
+            request.cookies.get("tms_session")?.value;
+
+        if (!token) {
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "احراز هویت لازم است.",
+                },
+                {
+                    status: 401,
+                }
+            );
+        }
+
+        const sessionData =
+            await getUserFromSessionToken(token);
+
+        if (
+            !sessionData ||
+            !sessionData.user
+        ) {
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "نشست کاربر معتبر نیست.",
+                },
+                {
+                    status: 401,
+                }
+            );
+        }
+
+        const user = sessionData.user;
 
         return NextResponse.json({
             success: true,
-            dailyDrivers,
+
+            user: {
+                id: user._id.toString(),
+                username: user.username,
+                role: user.role,
+            },
         });
     } catch (error) {
         console.error(
-            "Get daily drivers error:",
+            "AUTH_ME_ERROR:",
             error
         );
 
@@ -30,8 +63,7 @@ export async function GET() {
             {
                 success: false,
                 message:
-                    "خطا در دریافت ورود روزانه رانندگان",
-                error: error.message,
+                    "خطا در بررسی وضعیت ورود کاربر.",
             },
             {
                 status: 500,

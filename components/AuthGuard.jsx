@@ -11,42 +11,78 @@ export default function AuthGuard() {
         let mounted = true;
 
         async function checkAuth() {
-            if (checkingRef.current) return;
+            if (checkingRef.current) {
+                return;
+            }
 
             checkingRef.current = true;
 
             try {
-                const response = await fetch("/api/auth/me", {
-                    method: "GET",
-                    cache: "no-store",
-                    credentials: "include",
-                });
+                const response = await fetch(
+                    "/api/auth/me",
+                    {
+                        method: "GET",
+                        cache: "no-store",
+                        credentials: "include",
+                    }
+                );
 
-                if (!mounted) return;
-
-                if (response.status === 401) {
-                    window.location.replace("/auth/login");
+                if (!mounted) {
                     return;
                 }
 
+                /*
+                 * Session وجود ندارد یا منقضی شده
+                 */
+                if (response.status === 401) {
+                    window.location.replace(
+                        "/auth/login"
+                    );
+
+                    return;
+                }
+
+                /*
+                 * خطاهای سرور:
+                 * فعلاً کاربر را بیرون نمی‌اندازیم.
+                 */
                 if (!response.ok) {
                     return;
                 }
 
-                const data = await response.json();
+                const data =
+                    await response.json();
 
-                if (!data?.success || !data?.user) {
-                    window.location.replace("/auth/login");
+                /*
+                 * پاسخ معتبر باید شامل
+                 * success و user باشد.
+                 */
+                if (
+                    !data?.success ||
+                    !data?.user
+                ) {
+                    window.location.replace(
+                        "/auth/login"
+                    );
                 }
             } catch (error) {
-                console.error("Auth guard error:", error);
+                console.error(
+                    "Auth guard error:",
+                    error
+                );
             } finally {
                 checkingRef.current = false;
             }
         }
 
+        /*
+         * بررسی اولیه هنگام ورود به Dashboard
+         */
         checkAuth();
 
+        /*
+         * بررسی دوره‌ای Session
+         */
         const interval = setInterval(
             checkAuth,
             CHECK_INTERVAL
