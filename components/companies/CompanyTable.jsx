@@ -18,45 +18,88 @@ export default function CompanyTable({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    async function loadCompanies() {
-      try {
+  // دریافت شرکت‌ها
+  async function loadCompanies({
+    showLoading = false,
+  } = {}) {
+    try {
+      if (showLoading) {
         setLoading(true);
-        setError("");
+      }
 
-        const response = await fetch(
-          "/api/companies",
-          {
-            cache: "no-store",
-          }
-        );
+      setError("");
 
-        const data = await response.json();
-
-        if (!response.ok || !data.success) {
-          throw new Error(
-            data.message ||
-              "خطا در دریافت شرکت‌ها"
-          );
+      const response = await fetch(
+        "/api/companies",
+        {
+          cache: "no-store",
         }
+      );
 
-        setCompanies(data.companies || []);
-      } catch (error) {
-        console.error(
-          "Load companies error:",
-          error
-        );
+      const data = await response.json();
 
-        setError(
-          error.message ||
-            "خطا در دریافت لیست شرکت‌ها"
+      if (!response.ok || !data.success) {
+        throw new Error(
+          data.message ||
+            "خطا در دریافت شرکت‌ها"
         );
-      } finally {
+      }
+
+      setCompanies(data.companies || []);
+    } catch (error) {
+      console.error(
+        "Load companies error:",
+        error
+      );
+
+      setError(
+        error.message ||
+          "خطا در دریافت لیست شرکت‌ها"
+      );
+    } finally {
+      if (showLoading) {
         setLoading(false);
       }
     }
+  }
 
-    loadCompanies();
+  // دریافت اولیه + polling + event sync
+  useEffect(() => {
+    // دریافت اولیه
+    loadCompanies({
+      showLoading: true,
+    });
+
+    // هر ۵ ثانیه اطلاعات جدید را از دیتابیس بگیر
+    const pollingInterval =
+      setInterval(() => {
+        loadCompanies({
+          showLoading: false,
+        });
+      }, 5000);
+
+    // وقتی بخش دیگری از برنامه شرکت را تغییر داد
+    // بلافاصله جدول را به‌روزرسانی کن
+    function handleCompaniesUpdate() {
+      loadCompanies({
+        showLoading: false,
+      });
+    }
+
+    window.addEventListener(
+      "companies-data-updated",
+      handleCompaniesUpdate
+    );
+
+    // cleanup
+    return () => {
+      clearInterval(pollingInterval);
+
+      window.removeEventListener(
+        "companies-data-updated",
+        handleCompaniesUpdate
+      );
+    };
   }, []);
 
   const filteredCompanies = useMemo(() => {
@@ -178,97 +221,97 @@ export default function CompanyTable({
 
             {!loading &&
               !error &&
-              filteredCompanies.map((company) => (
+              filteredCompanies.map(
+                (company) => (
+                  <tr key={company._id}>
 
-                <tr key={company._id}>
+                    <td>
 
-                  <td>
+                      <div className="company-table-name">
 
-                    <div className="company-table-name">
+                        <div className="company-table-icon">
+                          <Building2 size={20} />
+                        </div>
 
-                      <div className="company-table-icon">
-                        <Building2 size={20} />
+                        <div>
+
+                          <strong>
+                            {company.name}
+                          </strong>
+
+                          <span>
+                            {company._id}
+                          </span>
+
+                        </div>
+
                       </div>
 
-                      <div>
+                    </td>
 
-                        <strong>
-                          {company.name}
-                        </strong>
+                    <td>
+
+                      <div className="company-manager">
+
+                        <UserRound size={17} />
 
                         <span>
-                          {company._id}
+                          {company.managerName}
                         </span>
 
                       </div>
 
-                    </div>
+                    </td>
 
-                  </td>
+                    <td>
 
-                  <td>
+                      <div className="company-phone">
 
-                    <div className="company-manager">
+                        <Phone size={16} />
 
-                      <UserRound size={17} />
+                        <span>
+                          {company.phone}
+                        </span>
 
-                      <span>
-                        {company.managerName}
-                      </span>
+                      </div>
 
-                    </div>
+                    </td>
 
-                  </td>
+                    <td>
 
-                  <td>
+                      <strong className="company-load-count">
+                        {toPersianNumber(0)} بار
+                      </strong>
 
-                    <div className="company-phone">
+                    </td>
 
-                      <Phone size={16} />
+                    <td>
 
-                      <span>
-                        {company.phone}
-                      </span>
+                      <div className="company-actions">
 
-                    </div>
+                        <Link
+                          href={`/companies/${company._id}`}
+                          className="company-action-button"
+                          title="مشاهده"
+                        >
+                          <Eye size={17} />
+                        </Link>
 
-                  </td>
+                        <Link
+                          href={`/companies/${company._id}`}
+                          className="company-action-button"
+                          title="ویرایش"
+                        >
+                          <Pencil size={17} />
+                        </Link>
 
-                  <td>
+                      </div>
 
-                    <strong className="company-load-count">
-                      {toPersianNumber(0)} بار
-                    </strong>
+                    </td>
 
-                  </td>
-
-                  <td>
-
-                    <div className="company-actions">
-
-                      <Link
-                        href={`/companies/${company._id}`}
-                        className="company-action-button"
-                        title="مشاهده"
-                      >
-                        <Eye size={17} />
-                      </Link>
-
-                      <Link
-                        href={`/companies/${company._id}`}
-                        className="company-action-button"
-                        title="ویرایش"
-                      >
-                        <Pencil size={17} />
-                      </Link>
-
-                    </div>
-
-                  </td>
-
-                </tr>
-
-              ))}
+                  </tr>
+                )
+              )}
 
           </tbody>
 

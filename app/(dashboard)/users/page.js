@@ -11,6 +11,10 @@ import {
 
 import { useEffect, useState } from "react";
 
+import {
+    useNotification,
+} from "@/components/ui/NotificationProvider";
+
 export default function UsersPage() {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -20,17 +24,26 @@ export default function UsersPage() {
 
     const [currentUser, setCurrentUser] = useState(null);
 
-    const [error, setError] = useState("");
-    const [success, setSuccess] = useState("");
+    const {
+        confirm,
+        showSuccess,
+        showError,
+        showWarning,
+    } = useNotification();
+
+
+    // =========================================
+    // دریافت اطلاعات کاربران
+    // =========================================
 
     useEffect(() => {
         loadData();
     }, []);
 
+
     async function loadData() {
         try {
             setLoading(true);
-            setError("");
 
             const [usersResponse, meResponse] =
                 await Promise.all([
@@ -43,11 +56,13 @@ export default function UsersPage() {
                     }),
                 ]);
 
+
             const usersData =
                 await usersResponse.json();
 
             const meData =
                 await meResponse.json();
+
 
             if (!usersResponse.ok) {
                 throw new Error(
@@ -56,53 +71,73 @@ export default function UsersPage() {
                 );
             }
 
+
             setUsers(
                 Array.isArray(usersData.users)
                     ? usersData.users
                     : []
             );
 
+
             setCurrentUser(
                 meData?.user || null
             );
+
         } catch (error) {
             console.error(error);
 
-            setError(
+            showError(
                 error.message ||
-                    "خطا در دریافت اطلاعات کاربران."
+                    "خطا در دریافت اطلاعات کاربران.",
+                "خطا در دریافت کاربران"
             );
+
         } finally {
             setLoading(false);
         }
     }
 
+
+    // =========================================
+    // افزودن کاربر
+    // =========================================
+
     async function addUser(event) {
         event.preventDefault();
+
 
         const cleanUsername =
             username.trim();
 
+
+        // -----------------------------------------
+        // اعتبارسنجی
+        // -----------------------------------------
+
         if (!cleanUsername) {
-            setError(
-                "نام کاربری را وارد کنید."
+            showWarning(
+                "لطفاً نام کاربری را وارد کنید.",
+                "نام کاربری الزامی است"
             );
+
             return;
         }
 
+
         try {
             setSaving(true);
-            setError("");
-            setSuccess("");
+
 
             const response = await fetch(
                 "/api/users",
                 {
                     method: "POST",
+
                     headers: {
                         "Content-Type":
                             "application/json",
                     },
+
                     body: JSON.stringify({
                         username:
                             cleanUsername,
@@ -110,8 +145,10 @@ export default function UsersPage() {
                 }
             );
 
+
             const data =
                 await response.json();
+
 
             if (!response.ok) {
                 throw new Error(
@@ -120,37 +157,75 @@ export default function UsersPage() {
                 );
             }
 
+
+            // -----------------------------------------
+            // پاک کردن فرم
+            // -----------------------------------------
+
             setUsername("");
 
-            setSuccess(
-                `کاربر «${cleanUsername}» با موفقیت ساخته شد. رمز اولیه: 1234`
+
+            // -----------------------------------------
+            // پیام موفقیت
+            // -----------------------------------------
+
+            showSuccess(
+                `کاربر «${cleanUsername}» با موفقیت ساخته شد. رمز اولیه: 1234`,
+                "ساخت کاربر موفق"
             );
 
+
+            // -----------------------------------------
+            // بروزرسانی لیست
+            // -----------------------------------------
+
             await loadData();
+
         } catch (error) {
             console.error(error);
 
-            setError(
+            showError(
                 error.message ||
-                    "خطا در ساخت کاربر."
+                    "خطا در ساخت کاربر.",
+                "خطا در ساخت کاربر"
             );
+
         } finally {
             setSaving(false);
         }
     }
 
+
+    // =========================================
+    // حذف کاربر
+    // =========================================
+
     async function deleteUser(id, name) {
-        if (
-            !window.confirm(
-                `آیا از حذف کاربر «${name}» مطمئن هستید؟`
-            )
-        ) {
+
+        // -----------------------------------------
+        // تأیید حذف با Notification مرکزی
+        // -----------------------------------------
+
+        const confirmed = await confirm({
+            title: "حذف کاربر",
+
+            message:
+                `آیا از حذف کاربر «${name}» مطمئن هستید؟ این عملیات قابل بازگشت نیست.`,
+
+            confirmText: "حذف کاربر",
+
+            cancelText: "انصراف",
+
+            danger: true,
+        });
+
+
+        if (!confirmed) {
             return;
         }
 
+
         try {
-            setError("");
-            setSuccess("");
 
             const response = await fetch(
                 `/api/users?id=${id}`,
@@ -159,8 +234,10 @@ export default function UsersPage() {
                 }
             );
 
+
             const data =
                 await response.json();
+
 
             if (!response.ok) {
                 throw new Error(
@@ -169,6 +246,11 @@ export default function UsersPage() {
                 );
             }
 
+
+            // -----------------------------------------
+            // حذف فوری از لیست
+            // -----------------------------------------
+
             setUsers((previous) =>
                 previous.filter(
                     (user) =>
@@ -176,18 +258,27 @@ export default function UsersPage() {
                 )
             );
 
-            setSuccess(
-                "کاربر با موفقیت حذف شد."
+
+            // -----------------------------------------
+            // پیام موفقیت
+            // -----------------------------------------
+
+            showSuccess(
+                `کاربر «${name}» با موفقیت حذف شد.`,
+                "حذف کاربر"
             );
+
         } catch (error) {
             console.error(error);
 
-            setError(
+            showError(
                 error.message ||
-                    "خطا در حذف کاربر."
+                    "خطا در حذف کاربر.",
+                "خطا در حذف کاربر"
             );
         }
     }
+
 
     return (
         <main className="main-content">
@@ -293,25 +384,6 @@ export default function UsersPage() {
                 </form>
 
             </section>
-
-
-            {/* MESSAGES */}
-
-            {error && (
-                <div
-                    className="users-message users-message-error"
-                >
-                    {error}
-                </div>
-            )}
-
-            {success && (
-                <div
-                    className="users-message users-message-success"
-                >
-                    {success}
-                </div>
-            )}
 
 
             {/* USERS */}

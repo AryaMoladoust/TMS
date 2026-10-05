@@ -12,6 +12,8 @@ import {
 import DriverSearch from "@/components/drivers/DriverSearch";
 import DriverTable from "@/components/drivers/DriverTable";
 
+import { useNotification } from "@/components/ui/NotificationProvider";
+
 /* =========================================================
    تبدیل اعداد فارسی و عربی به انگلیسی
 ========================================================= */
@@ -144,7 +146,9 @@ function getLicenseExpiryNumber(
 
 export default function DriversPage() {
   const [drivers, setDrivers] = useState([]);
-  const [loading, setLoading] = useState(true);
+
+  const [loading, setLoading] =
+    useState(true);
 
   const [filters, setFilters] = useState({
     search: "",
@@ -152,40 +156,129 @@ export default function DriversPage() {
     licenseStatus: "",
   });
 
-  useEffect(() => {
-    async function loadDrivers() {
-      try {
-        const response = await fetch(
-          "/api/drivers",
-          {
-            cache: "no-store",
-          }
-        );
+  const { showError } =
+    useNotification();
 
-        const data =
-          await response.json();
+  /* =======================================================
+     دریافت رانندگان از API
+  ======================================================= */
 
-        if (response.ok) {
-          setDrivers(
-            data.drivers || []
-          );
+  async function loadDrivers({
+    showLoading = false,
+    showNotificationOnError = false,
+  } = {}) {
+    try {
+      if (showLoading) {
+        setLoading(true);
+      }
+
+      const response = await fetch(
+        "/api/drivers",
+        {
+          cache: "no-store",
         }
-      } catch (error) {
-        console.error(
-          "خطا در دریافت رانندگان:",
-          error
+      );
+
+      const data =
+        await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data?.message ||
+            data?.error ||
+            "خطا در دریافت رانندگان"
         );
-      } finally {
+      }
+
+      setDrivers(
+        data.drivers || []
+      );
+    } catch (error) {
+      console.error(
+        "خطا در دریافت رانندگان:",
+        error
+      );
+
+      /*
+        در Polling هر ۵ ثانیه خطا نمایش نده،
+        چون در صورت قطع موقت سرور کاربر
+        مدام Toast دریافت می‌کند.
+      */
+
+      if (showNotificationOnError) {
+        showError(
+          error.message ||
+            "خطا در دریافت لیست رانندگان",
+          "خطا در دریافت رانندگان"
+        );
+      }
+    } finally {
+      if (showLoading) {
         setLoading(false);
       }
     }
+  }
 
-    loadDrivers();
-  }, []);
+  /* =======================================================
+     دریافت اولیه + Polling + Event Sync
+  ======================================================= */
+
+  useEffect(() => {
+    /*
+      دریافت اولیه
+    */
+    loadDrivers({
+      showLoading: true,
+      showNotificationOnError: true,
+    });
+
+    /*
+      Polling هر ۵ ثانیه
+    */
+    const pollingInterval =
+      setInterval(() => {
+        loadDrivers({
+          showLoading: false,
+          showNotificationOnError: false,
+        });
+      }, 5000);
+
+    /*
+      Sync فوری
+
+      هر جا در برنامه راننده اضافه،
+      ویرایش یا حذف شد، این Event
+      dispatch می‌شود.
+    */
+    function handleDriversUpdate() {
+      loadDrivers({
+        showLoading: false,
+        showNotificationOnError: false,
+      });
+    }
+
+    window.addEventListener(
+      "drivers-data-updated",
+      handleDriversUpdate
+    );
+
+    /*
+      پاکسازی
+    */
+    return () => {
+      clearInterval(
+        pollingInterval
+      );
+
+      window.removeEventListener(
+        "drivers-data-updated",
+        handleDriversUpdate
+      );
+    };
+  }, [showError]);
 
   /* =======================================================
      رانندگان معتبر
-
      فعلاً منطق قبلی دست نخورده
   ======================================================= */
 
@@ -236,6 +329,7 @@ export default function DriversPage() {
             );
 
           /* بدون تاریخ انقضا → آخر */
+
           if (
             aExpiry === null &&
             bExpiry === null
@@ -258,15 +352,17 @@ export default function DriversPage() {
             bExpiry - todayNumber;
 
           /*
-             هر دو منقضی هستند:
-             نزدیک‌ترین انقضا به امروز اول باشد.
+            هر دو منقضی هستند:
 
-             مثال:
-             -1 روز
-             -5 روز
+            نزدیک‌ترین انقضا به امروز اول باشد.
 
-             اول -1 می‌آید.
+            مثال:
+            -1 روز
+            -5 روز
+
+            اول -1 می‌آید.
           */
+
           if (
             aDays < 0 &&
             bDays < 0
@@ -277,8 +373,9 @@ export default function DriversPage() {
           }
 
           /*
-             منقضی‌ها همیشه قبل از معتبرها
+            منقضی‌ها همیشه قبل از معتبرها
           */
+
           if (
             aDays < 0 &&
             bDays >= 0
@@ -294,23 +391,33 @@ export default function DriversPage() {
           }
 
           /*
-             هر دو معتبر:
-             نزدیک‌ترین تاریخ انقضا اول
+            هر دو معتبر:
+
+            نزدیک‌ترین تاریخ انقضا اول
           */
+
           return aDays - bDays;
         }
       );
     }, [drivers]);
 
+  /* =======================================================
+     UI
+  ======================================================= */
+
   return (
     <main className="main-content">
+
       {/* =========================
           Header
       ========================= */}
 
       <div className="page-heading page-heading-with-action">
+
         <div>
-          <h1>رانندگان</h1>
+          <h1>
+            رانندگان
+          </h1>
 
           <p>
             مدیریت، جستجو و مشاهده اطلاعات رانندگان
@@ -327,6 +434,7 @@ export default function DriversPage() {
             افزودن راننده
           </span>
         </Link>
+
       </div>
 
       {/* =========================
@@ -334,7 +442,9 @@ export default function DriversPage() {
       ========================= */}
 
       <section className="driver-stats-grid">
+
         <div className="driver-stat-card">
+
           <div className="driver-stat-icon driver-stat-blue">
             <Users size={22} />
           </div>
@@ -348,9 +458,11 @@ export default function DriversPage() {
               {drivers.length}
             </strong>
           </div>
+
         </div>
 
         <div className="driver-stat-card">
+
           <div className="driver-stat-icon driver-stat-green">
             <UserCheck size={22} />
           </div>
@@ -364,7 +476,9 @@ export default function DriversPage() {
               {availableDrivers.length}
             </strong>
           </div>
+
         </div>
+
       </section>
 
       {/* =========================
@@ -390,6 +504,7 @@ export default function DriversPage() {
           filters={filters}
         />
       )}
+
     </main>
   );
 }

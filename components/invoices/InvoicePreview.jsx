@@ -32,6 +32,17 @@ const paymentTypeLabels = {
   نقد: "نقد",
 };
 
+/* =========================================================
+   اطلاعات ثابت باربری صادرکننده فاکتور
+========================================================= */
+
+const transportCompany = {
+  name: "موسسه حمل و نقل کامران",
+  manager: "کامران صمدیان",
+  mobile: "09111328288",
+  phone: "33883484 - 33882084",
+};
+
 function getPaymentTypeLabel(value) {
   return paymentTypeLabels[value] || value || "—";
 }
@@ -73,8 +84,8 @@ export default function InvoicePreview({ invoice, onClose }) {
     ? `https://www.google.com/maps/dir/?api=1&destination=${invoice.destinationLat},${invoice.destinationLng}&travelmode=driving`
     : invoice.destination && invoice.destination !== "—"
       ? `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
-          invoice.destination
-        )}&travelmode=driving`
+        invoice.destination
+      )}&travelmode=driving`
       : "";
 
   // =========================================================
@@ -125,8 +136,8 @@ export default function InvoicePreview({ invoice, onClose }) {
       if (!response.ok) {
         throw new Error(
           data.message ||
-            data.error ||
-            "حذف فاکتور انجام نشد."
+          data.error ||
+          "حذف فاکتور انجام نشد."
         );
       }
 
@@ -146,7 +157,7 @@ export default function InvoicePreview({ invoice, onClose }) {
 
       showError(
         error.message ||
-          "خطا در حذف فاکتور",
+        "خطا در حذف فاکتور",
         "خطا در حذف"
       );
     }
@@ -430,7 +441,6 @@ export default function InvoicePreview({ invoice, onClose }) {
             <div className="invoice-header-modern">
 
               <div className="invoice-company">
-
                 <div className="invoice-logo">
                   <img
                     src="/icons/icon-192.png"
@@ -439,28 +449,25 @@ export default function InvoicePreview({ invoice, onClose }) {
                 </div>
 
                 <div>
-
                   <h3>
-                    {invoice.companyName}
+                    {transportCompany.name}
                   </h3>
 
                   <p>
                     مدیر مسئول:{" "}
-                    {invoice.companyManager}
+                    {transportCompany.manager}
                   </p>
 
                   <p className="invoice-company-phone">
                     همراه:{" "}
-                    {invoice.companyMobile}
+                    {transportCompany.mobile}
                   </p>
 
                   <p className="invoice-company-phone">
                     ثابت:{" "}
-                    {invoice.companyPhone}
+                    {transportCompany.phone}
                   </p>
-
                 </div>
-
               </div>
 
               <div className="invoice-title-side">
