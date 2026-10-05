@@ -17,9 +17,18 @@ import {
     X,
 } from "lucide-react";
 
+import { useNotification } from "@/components/ui/NotificationProvider";
+
 export default function CompanyDetailsPage() {
     const params = useParams();
     const router = useRouter();
+
+    const {
+        showSuccess,
+        showError,
+        showWarning,
+        confirm,
+    } = useNotification();
 
     const [company, setCompany] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -37,14 +46,10 @@ export default function CompanyDetailsPage() {
         description: "",
     });
 
-    const [error, setError] = useState("");
-    const [success, setSuccess] = useState("");
-
     useEffect(() => {
         async function loadCompany() {
             try {
                 setLoading(true);
-                setError("");
 
                 const response = await fetch(
                     `/api/companies/${params.id}`
@@ -79,9 +84,10 @@ export default function CompanyDetailsPage() {
                     error
                 );
 
-                setError(
+                showError(
                     error.message ||
-                        "خطا در دریافت اطلاعات شرکت."
+                        "خطا در دریافت اطلاعات شرکت.",
+                    "خطا در دریافت شرکت"
                 );
             } finally {
                 setLoading(false);
@@ -91,7 +97,7 @@ export default function CompanyDetailsPage() {
         if (params.id) {
             loadCompany();
         }
-    }, [params.id]);
+    }, [params.id, showError]);
 
     function handleChange(event) {
         const { name, value } = event.target;
@@ -105,10 +111,32 @@ export default function CompanyDetailsPage() {
     async function handleSave(event) {
         event.preventDefault();
 
+        if (!form.name.trim()) {
+            showWarning(
+                "لطفاً نام شرکت را وارد کنید.",
+                "اطلاعات ناقص"
+            );
+            return;
+        }
+
+        if (!form.managerName.trim()) {
+            showWarning(
+                "لطفاً نام مسئول شرکت را وارد کنید.",
+                "اطلاعات ناقص"
+            );
+            return;
+        }
+
+        if (!form.phone.trim()) {
+            showWarning(
+                "لطفاً شماره تماس شرکت را وارد کنید.",
+                "اطلاعات ناقص"
+            );
+            return;
+        }
+
         try {
             setSaving(true);
-            setError("");
-            setSuccess("");
 
             const response = await fetch(
                 `/api/companies/${params.id}`,
@@ -147,8 +175,10 @@ export default function CompanyDetailsPage() {
             });
 
             setEditing(false);
-            setSuccess(
-                "اطلاعات شرکت با موفقیت ذخیره شد."
+
+            showSuccess(
+                "اطلاعات شرکت با موفقیت ذخیره شد.",
+                "ویرایش شرکت موفق"
             );
         } catch (error) {
             console.error(
@@ -156,9 +186,10 @@ export default function CompanyDetailsPage() {
                 error
             );
 
-            setError(
+            showError(
                 error.message ||
-                    "خطا در ویرایش شرکت."
+                    "خطا در ویرایش شرکت.",
+                "خطا در ویرایش شرکت"
             );
         } finally {
             setSaving(false);
@@ -166,9 +197,14 @@ export default function CompanyDetailsPage() {
     }
 
     async function handleDelete() {
-        const confirmed = window.confirm(
-            "آیا از حذف این شرکت مطمئن هستید؟"
-        );
+        const confirmed = await confirm({
+            title: "حذف شرکت",
+            message:
+                "آیا از حذف این شرکت مطمئن هستید؟ این عملیات قابل بازگشت نیست.",
+            confirmText: "حذف شرکت",
+            cancelText: "انصراف",
+            danger: true,
+        });
 
         if (!confirmed) {
             return;
@@ -176,7 +212,6 @@ export default function CompanyDetailsPage() {
 
         try {
             setDeleting(true);
-            setError("");
 
             const response = await fetch(
                 `/api/companies/${params.id}`,
@@ -194,19 +229,50 @@ export default function CompanyDetailsPage() {
                 );
             }
 
-            router.push("/companies");
+            showSuccess(
+                "شرکت با موفقیت حذف شد.",
+                "حذف شرکت موفق"
+            );
+
+            setTimeout(() => {
+                router.push("/companies");
+            }, 700);
         } catch (error) {
             console.error(
                 "Delete company error:",
                 error
             );
 
-            setError(
+            showError(
                 error.message ||
-                    "خطا در حذف شرکت."
+                    "خطا در حذف شرکت.",
+                "خطا در حذف شرکت"
             );
         } finally {
             setDeleting(false);
+        }
+    }
+
+    function handleStartEditing() {
+        setEditing(true);
+    }
+
+    function handleCancelEditing() {
+        setEditing(false);
+
+        if (company) {
+            setForm({
+                name: company.name || "",
+                managerName:
+                    company.managerName || "",
+                phone: company.phone || "",
+                landline:
+                    company.landline || "",
+                address:
+                    company.address || "",
+                description:
+                    company.description || "",
+            });
         }
     }
 
@@ -227,7 +293,7 @@ export default function CompanyDetailsPage() {
         );
     }
 
-    if (error && !company) {
+    if (!company) {
         return (
             <main className="main-content">
                 <div className="page-heading">
@@ -237,8 +303,13 @@ export default function CompanyDetailsPage() {
                             بازگشت به شرکت‌ها
                         </Link>
                     </div>
+
                     <h1>شرکت پیدا نشد</h1>
-                    <p>{error}</p>
+
+                    <p>
+                        اطلاعات شرکت موردنظر قابل دریافت
+                        نیست.
+                    </p>
                 </div>
             </main>
         );
@@ -246,11 +317,8 @@ export default function CompanyDetailsPage() {
 
     return (
         <main className="main-content">
-
             <div className="page-heading page-heading-with-action">
-
                 <div>
-
                     <div className="page-back-link">
                         <Link href="/companies">
                             <ArrowRight size={17} />
@@ -267,7 +335,6 @@ export default function CompanyDetailsPage() {
                     <p>
                         مشاهده و مدیریت اطلاعات شرکت
                     </p>
-
                 </div>
 
                 <div
@@ -277,20 +344,18 @@ export default function CompanyDetailsPage() {
                         alignItems: "center",
                     }}
                 >
-
                     {!editing && (
                         <>
                             <button
                                 type="button"
                                 className="primary-action-button"
-                                onClick={() => {
-                                    setEditing(true);
-                                    setSuccess("");
-                                    setError("");
-                                }}
+                                onClick={handleStartEditing}
                             >
                                 <Pencil size={18} />
-                                <span>ویرایش</span>
+
+                                <span>
+                                    ویرایش
+                                </span>
                             </button>
 
                             <button
@@ -309,50 +374,29 @@ export default function CompanyDetailsPage() {
                             </button>
                         </>
                     )}
-
                 </div>
-
             </div>
 
-            {error && (
-                <div className="company-form-error">
-                    {error}
-                </div>
-            )}
-
-            {success && (
-                <div className="company-form-success">
-                    {success}
-                </div>
-            )}
-
             <section className="company-form-panel">
-
                 <div className="company-form-header">
-
                     <div className="company-form-header-icon">
                         <Building2 size={24} />
                     </div>
 
                     <div>
-                        <h2>
-                            {company.name}
-                        </h2>
+                        <h2>{company.name}</h2>
 
                         <p>
                             شناسه شرکت: {company._id}
                         </p>
                     </div>
-
                 </div>
 
                 {editing ? (
-
                     <form
                         className="company-form"
                         onSubmit={handleSave}
                     >
-
                         <div className="company-form-group">
                             <label htmlFor="name">
                                 نام شرکت
@@ -474,18 +518,19 @@ export default function CompanyDetailsPage() {
                         </div>
 
                         <div className="company-form-actions">
-
                             <button
                                 type="button"
                                 className="company-cancel-button"
-                                onClick={() => {
-                                    setEditing(false);
-                                    setError("");
-                                    setSuccess("");
-                                }}
+                                onClick={
+                                    handleCancelEditing
+                                }
+                                disabled={saving}
                             >
                                 <X size={18} />
-                                انصراف
+
+                                <span>
+                                    انصراف
+                                </span>
                             </button>
 
                             <button
@@ -501,22 +546,21 @@ export default function CompanyDetailsPage() {
                                         : "ذخیره تغییرات"}
                                 </span>
                             </button>
-
                         </div>
-
                     </form>
-
                 ) : (
-
                     <div className="company-details-grid">
-
                         <div className="company-detail-item">
                             <span>نام شرکت</span>
-                            <strong>{company.name}</strong>
+
+                            <strong>
+                                {company.name}
+                            </strong>
                         </div>
 
                         <div className="company-detail-item">
                             <span>نام مسئول</span>
+
                             <strong>
                                 {company.managerName}
                             </strong>
@@ -524,6 +568,7 @@ export default function CompanyDetailsPage() {
 
                         <div className="company-detail-item">
                             <span>شماره تماس</span>
+
                             <strong>
                                 {company.phone}
                             </strong>
@@ -531,32 +576,33 @@ export default function CompanyDetailsPage() {
 
                         <div className="company-detail-item">
                             <span>تلفن ثابت</span>
+
                             <strong>
-                                {company.landline || "ثبت نشده"}
+                                {company.landline ||
+                                    "ثبت نشده"}
                             </strong>
                         </div>
 
                         <div className="company-detail-item company-detail-full">
                             <span>آدرس</span>
+
                             <strong>
-                                {company.address || "ثبت نشده"}
+                                {company.address ||
+                                    "ثبت نشده"}
                             </strong>
                         </div>
 
                         <div className="company-detail-item company-detail-full">
                             <span>توضیحات</span>
+
                             <strong>
                                 {company.description ||
                                     "توضیحی ثبت نشده است"}
                             </strong>
                         </div>
-
                     </div>
-
                 )}
-
             </section>
-
         </main>
     );
 }

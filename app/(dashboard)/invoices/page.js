@@ -14,14 +14,16 @@ import { useEffect, useMemo, useState } from "react";
 
 import PersianDatePicker from "@/components/drivers/PersianDatePicker";
 import InvoicePreview from "@/components/invoices/InvoicePreview";
+import { useNotification } from "@/components/ui/NotificationProvider";
 
-
-/* =========================================================
-   HELPERS
-========================================================= */
+/* =========================
+   Persian Digits
+========================= */
 
 function toPersianDigits(value) {
-    if (value === null || value === undefined) return "";
+    if (value === null || value === undefined) {
+        return "";
+    }
 
     return String(value).replace(
         /\d/g,
@@ -29,6 +31,9 @@ function toPersianDigits(value) {
     );
 }
 
+/* =========================
+   Format Amount
+========================= */
 
 function formatAmount(value) {
     const number = Number(value) || 0;
@@ -38,91 +43,140 @@ function formatAmount(value) {
     );
 }
 
-
-/* =========================================================
-   NORMALIZE LIST INVOICE
-========================================================= */
+/* =========================
+   Normalize Invoice
+========================= */
 
 function normalizeInvoice(invoice) {
+    const mongoId = invoice?._id
+        ? String(invoice._id)
+        : "";
+
     const driver =
-        invoice.driverName ||
-        invoice.dailyDriverId?.name ||
-        invoice.driverId?.name ||
+        invoice?.driverName ||
+        invoice?.dailyDriverId?.name ||
+        invoice?.driverId?.name ||
         "—";
 
     const company =
-        invoice.companyName ||
-        invoice.companyId?.name ||
+        invoice?.companyName ||
+        invoice?.companyId?.name ||
+        "—";
+
+    /*
+     * ثبت‌کننده واقعی فاکتور
+     *
+     * اول createdByUserName را از خود Invoice می‌گیریم.
+     *
+     * اگر createdByUserName وجود نداشت ولی
+     * createdByUserId populate شده بود،
+     * username را از آن می‌گیریم.
+     */
+    const createdByUserName =
+        invoice?.createdByUserName ||
+        invoice?.createdByUserId?.username ||
+        invoice?.createdByUserId?.name ||
         "—";
 
     return {
         id:
-            invoice.invoiceNumber ||
-            invoice.invoiceId ||
-            invoice._id ||
+            invoice?.invoiceNumber ||
+            invoice?.invoiceId ||
+            mongoId ||
             "",
 
-        mongoId:
-            invoice._id || "",
+        mongoId,
 
         date:
-            invoice.date || "—",
+            invoice?.date || "—",
 
         driver,
 
         company,
 
         origin:
-            invoice.origin || "—",
+            invoice?.origin || "—",
 
         destination:
-            invoice.destination || "—",
+            invoice?.destination || "—",
 
         amount:
-            formatAmount(invoice.cost),
+            formatAmount(invoice?.cost),
 
-        raw: invoice,
+        /*
+         * ثبت‌کننده فاکتور
+         */
+        createdByUserName,
+
+        /*
+         * کل اطلاعات اصلی فاکتور
+         */
+        raw: {
+            ...invoice,
+            _id: mongoId,
+        },
     };
 }
 
-
-/* =========================================================
-   PREVIEW ADAPTER
-========================================================= */
+/* =========================
+   Make Preview Invoice
+========================= */
 
 function makePreviewInvoice(invoice) {
-    if (!invoice) return null;
+    if (!invoice) {
+        return null;
+    }
 
+    /*
+     * MongoDB ID
+     */
+    const invoiceMongoId =
+        invoice?._id
+            ? String(invoice._id)
+            : "";
+
+    /*
+     * Company
+     */
     const companyData =
-        invoice.companyId &&
+        invoice?.companyId &&
             typeof invoice.companyId === "object"
             ? invoice.companyId
             : {};
 
+    /*
+     * Driver
+     */
     const driverData =
-        invoice.driverId &&
+        invoice?.driverId &&
             typeof invoice.driverId === "object"
             ? invoice.driverId
             : {};
 
+    /*
+     * Costs
+     */
     const mainCost =
-        Number(invoice.cost) || 0;
+        Number(invoice?.cost) || 0;
 
     const insurance =
-        Number(invoice.insuranceCost) || 0;
+        Number(invoice?.insuranceCost) || 0;
 
     const workerCost =
-        Number(invoice.workerCost) || 0;
+        Number(invoice?.workerCost) || 0;
 
     const scaleCost =
-        Number(invoice.scaleCost) || 0;
+        Number(invoice?.scaleCost) || 0;
 
     const stopCost =
-        Number(invoice.stopCost) || 0;
+        Number(invoice?.stopCost) || 0;
 
     const commissionCost =
-        Number(invoice.commissionCost) || 0;
+        Number(invoice?.commissionCost) || 0;
 
+    /*
+     * Total
+     */
     const total =
         mainCost +
         insurance +
@@ -131,109 +185,135 @@ function makePreviewInvoice(invoice) {
         stopCost +
         commissionCost;
 
+    /*
+     * Creator
+     */
+    const createdByUserName =
+        invoice?.createdByUserName ||
+        invoice?.createdByUserId?.username ||
+        invoice?.createdByUserId?.name ||
+        "—";
+
+    const createdByUserId =
+        invoice?.createdByUserId?._id
+            ? String(invoice.createdByUserId._id)
+            : invoice?.createdByUserId
+                ? String(invoice.createdByUserId)
+                : "";
 
     return {
-        /* =========================
-           COMPANY
-        ========================= */
+        /*
+         * MongoDB ID
+         */
+        _id: invoiceMongoId,
 
+        mongoId: invoiceMongoId,
+
+        /*
+         * ثبت‌کننده فاکتور
+         */
+        createdByUserName,
+
+        createdByUserId,
+
+        /*
+         * Company
+         */
         companyName:
-            companyData.name ||
-            invoice.companyName ||
+            companyData?.name ||
+            invoice?.companyName ||
             "—",
 
         companyManager:
-            companyData.manager ||
-            companyData.managerName ||
+            companyData?.manager ||
+            companyData?.managerName ||
             "",
 
         companyMobile:
-            companyData.mobile ||
-            companyData.mobileNumber ||
+            companyData?.mobile ||
+            companyData?.mobileNumber ||
             "",
 
         companyPhone:
-            companyData.phone ||
-            companyData.phoneNumber ||
+            companyData?.phone ||
+            companyData?.phoneNumber ||
             "",
 
-
-        /* =========================
-           INVOICE
-        ========================= */
-
+        /*
+         * Invoice
+         */
         number:
-            invoice.invoiceNumber ||
-            invoice.invoiceId ||
+            invoice?.invoiceNumber ||
+            invoice?.invoiceId ||
             "—",
 
         date:
-            invoice.date || "—",
+            invoice?.date || "—",
 
         startTime:
-            invoice.startTime || "—",
+            invoice?.startTime || "—",
 
         paymentType:
-            invoice.costType ||
-            invoice.paymentType ||
+            invoice?.costType ||
+            invoice?.paymentType ||
             "—",
 
-        /* =========================
-           DRIVER
-        ========================= */
-
+        /*
+         * Driver
+         */
         driver:
-            invoice.driverName ||
-            driverData.name ||
-            invoice.dailyDriverId?.name ||
+            invoice?.driverName ||
+            driverData?.name ||
+            invoice?.dailyDriverId?.name ||
             "—",
 
         vehicle:
-            invoice.vehicleType ||
-            driverData.vehicleType ||
+            invoice?.vehicleType ||
+            driverData?.vehicleType ||
             "—",
 
         plate:
-            invoice.vehiclePlate ||
-            driverData.plate ||
+            invoice?.vehiclePlate ||
+            driverData?.plate ||
             "—",
 
-
-        /* =========================
-           LOAD SNAPSHOT
-        ========================= */
-
+        /*
+         * Client
+         */
         clientCompanyName:
-            invoice.companyName ||
-            companyData.name ||
+            invoice?.companyName ||
+            companyData?.name ||
             "—",
 
+        /*
+         * Load
+         */
         cargoType:
-            invoice.loadType ||
+            invoice?.loadType ||
             "—",
 
         origin:
-            invoice.origin ||
+            invoice?.origin ||
             "—",
 
         destination:
-            invoice.destination ||
+            invoice?.destination ||
             "—",
 
         distance:
-            invoice.distance
-                ? `${toPersianDigits(invoice.distance)} کیلومتر`
+            invoice?.distance
+                ? `${toPersianDigits(
+                    invoice.distance
+                )} کیلومتر`
                 : "—",
 
         loadAddress:
-            invoice.address ||
+            invoice?.address ||
             "—",
 
-
-        /* =========================
-           COST
-        ========================= */
-
+        /*
+         * Costs
+         */
         cost:
             formatAmount(mainCost),
 
@@ -249,70 +329,97 @@ function makePreviewInvoice(invoice) {
         stopCost:
             formatAmount(stopCost),
 
+        commissionCost:
+            formatAmount(commissionCost),
+
         total:
             formatAmount(total),
 
         totalInWords:
-            invoice.totalInWords ||
+            invoice?.totalInWords ||
             "—",
 
-
-        /* =========================
-           OTHER
-        ========================= */
-
+        /*
+         * Other
+         */
         receiverName:
-            invoice.receiverName ||
+            invoice?.receiverName ||
             "—",
 
         description:
-            invoice.description ||
+            invoice?.description ||
             "",
     };
 }
 
-
-/* =========================================================
-   PAGE
-========================================================= */
+/* =========================
+   Page
+========================= */
 
 export default function InvoicesPage() {
+    /* =========================
+       Notification System
+    ========================= */
 
-    const [search, setSearch] = useState("");
+    const {
+        showSuccess,
+        showError,
+        showWarning,
+        showInfo,
+    } = useNotification();
 
-    const [company, setCompany] = useState("");
+    const [search, setSearch] =
+        useState("");
 
-    const [driver, setDriver] = useState("");
+    const [company, setCompany] =
+        useState("");
 
-    const [date, setDate] = useState("");
+    const [driver, setDriver] =
+        useState("");
 
-    const [invoices, setInvoices] = useState([]);
+    const [date, setDate] =
+        useState("");
 
-    const [loading, setLoading] = useState(true);
+    const [invoices, setInvoices] =
+        useState([]);
 
-    const [error, setError] = useState("");
+    const [loading, setLoading] =
+        useState(true);
+
+    const [error, setError] =
+        useState("");
 
     const [selectedInvoice, setSelectedInvoice] =
         useState(null);
 
-
-    /* =======================================================
-       FETCH INVOICES
-    ======================================================= */
+    /* =========================
+       Fetch Invoices + Polling
+    ========================= */
 
     useEffect(() => {
-
         let cancelled = false;
 
+        /*
+         * مشخص می‌کند که این اولین دریافت
+         * اطلاعات است یا Polling.
+         */
+        let firstLoad = true;
 
-        async function fetchInvoices() {
-
+        async function fetchInvoices({
+            showLoading = false,
+            showNotificationOnError = false,
+        } = {}) {
             try {
-
-                setLoading(true);
-
-                setError("");
-
+                /*
+                 * فقط در بارگذاری اولیه
+                 * Loading اصلی صفحه نمایش داده می‌شود.
+                 *
+                 * در Polling نمی‌گذاریم جدول
+                 * هر ۵ ثانیه چشمک بزند.
+                 */
+                if (showLoading) {
+                    setLoading(true);
+                }
 
                 const response = await fetch(
                     "/api/invoices",
@@ -321,157 +428,279 @@ export default function InvoicesPage() {
                     }
                 );
 
+                const result =
+                    await response.json();
 
                 if (!response.ok) {
-
                     throw new Error(
+                        result?.message ||
+                        result?.error ||
                         "دریافت فاکتورها ناموفق بود."
                     );
                 }
 
-
-                const result =
-                    await response.json();
-
-
+                /*
+                 * API ممکن است مستقیماً آرایه
+                 * یا object شامل invoices برگرداند.
+                 */
                 const invoiceList =
                     Array.isArray(result)
                         ? result
-                        : result.invoices || [];
+                        : result?.invoices || [];
 
-
-                if (!cancelled) {
-
-                    setInvoices(
-                        invoiceList.map(
-                            normalizeInvoice
-                        )
-                    );
+                if (cancelled) {
+                    return;
                 }
 
-            } catch (error) {
+                const normalizedInvoices =
+                    invoiceList.map(
+                        normalizeInvoice
+                    );
 
+                /*
+                 * اطلاعات جدید
+                 */
+                setInvoices(
+                    normalizedInvoices
+                );
+
+                /*
+                 * خطای قبلی را پاک می‌کنیم.
+                 */
+                setError("");
+
+                /*
+                 * فقط اولین بار Loading را
+                 * تمام می‌کنیم.
+                 */
+                if (firstLoad) {
+                    firstLoad = false;
+                    setLoading(false);
+                }
+            } catch (error) {
                 console.error(
                     "Fetch invoices error:",
                     error
                 );
 
+                if (cancelled) {
+                    return;
+                }
 
-                if (!cancelled) {
+                /*
+                 * اگر اولین دریافت باشد،
+                 * خطا را به کاربر اطلاع می‌دهیم.
+                 */
+                if (
+                    firstLoad &&
+                    showNotificationOnError
+                ) {
+                    showError(
+                        error?.message ||
+                        "خطا در دریافت فاکتورها.",
+                        "خطا در دریافت فاکتورها"
+                    );
+                }
 
+                /*
+                 * در اولین دریافت اگر API خراب باشد،
+                 * صفحه خطا نمایش داده می‌شود.
+                 */
+                if (firstLoad) {
                     setError(
-                        error.message ||
+                        error?.message ||
                         "خطا در دریافت فاکتورها."
                     );
 
                     setInvoices([]);
-                }
 
-            } finally {
-
-                if (!cancelled) {
+                    firstLoad = false;
 
                     setLoading(false);
                 }
+
+                /*
+                 * اگر خطا مربوط به Polling باشد،
+                 * اطلاعات قبلی دست‌نخورده باقی می‌ماند.
+                 *
+                 * بنابراین در Polling:
+                 *
+                 * ❌ setInvoices([])
+                 * ❌ setLoading(true)
+                 *
+                 * انجام نمی‌دهیم.
+                 */
             }
         }
 
+        /*
+         * =========================
+         * Initial Fetch
+         * =========================
+         */
 
-        fetchInvoices();
+        fetchInvoices({
+            showLoading: true,
+            showNotificationOnError: true,
+        });
 
+        /*
+         * =========================
+         * Polling
+         * =========================
+         *
+         * هر ۵ ثانیه Server بررسی می‌شود.
+         */
+        const pollingInterval =
+            setInterval(() => {
+                fetchInvoices({
+                    showLoading: false,
+                    showNotificationOnError: false,
+                });
+            }, 5000);
 
+        /*
+         * =========================
+         * Instant Sync Event
+         * =========================
+         *
+         * اگر در همین مرورگر:
+         *
+         * ثبت فاکتور
+         * ویرایش فاکتور
+         * حذف فاکتور
+         *
+         * اتفاق افتاد، منتظر Polling
+         * نمی‌مانیم.
+         */
+        function handleInvoiceUpdate() {
+            fetchInvoices({
+                showLoading: false,
+                showNotificationOnError: false,
+            });
+        }
+
+        window.addEventListener(
+            "invoice-data-updated",
+            handleInvoiceUpdate
+        );
+
+        /*
+         * =========================
+         * Cleanup
+         * =========================
+         */
         return () => {
-
             cancelled = true;
+
+            clearInterval(
+                pollingInterval
+            );
+
+            window.removeEventListener(
+                "invoice-data-updated",
+                handleInvoiceUpdate
+            );
         };
+    }, [showError]);
 
-    }, []);
+    /* =========================
+       Companies
+    ========================= */
 
+    const companies =
+        useMemo(() => {
+            return [
+                ...new Set(
+                    invoices
+                        .map(
+                            (invoice) =>
+                                invoice.company
+                        )
+                        .filter(Boolean)
+                ),
+            ];
+        }, [invoices]);
 
-    /* =======================================================
-       FILTER OPTIONS
-    ======================================================= */
+    /* =========================
+       Drivers
+    ========================= */
 
-    const companies = useMemo(() => {
+    const drivers =
+        useMemo(() => {
+            return [
+                ...new Set(
+                    invoices
+                        .map(
+                            (invoice) =>
+                                invoice.driver
+                        )
+                        .filter(Boolean)
+                ),
+            ];
+        }, [invoices]);
 
-        return [
-            ...new Set(
-                invoices
-                    .map(
-                        (invoice) =>
-                            invoice.company
-                    )
-                    .filter(Boolean)
-            ),
-        ];
-
-    }, [invoices]);
-
-
-    const drivers = useMemo(() => {
-
-        return [
-            ...new Set(
-                invoices
-                    .map(
-                        (invoice) =>
-                            invoice.driver
-                    )
-                    .filter(Boolean)
-            ),
-        ];
-
-    }, [invoices]);
-
-
-    /* =======================================================
-       FILTER
-    ======================================================= */
+    /* =========================
+       Filter
+    ========================= */
 
     const filteredInvoices =
         useMemo(() => {
-
             const searchValue =
                 search
                     .trim()
                     .toLowerCase();
 
+            const selectedDate =
+                date &&
+                    typeof date.format ===
+                    "function"
+                    ? date.format(
+                        "YYYY/MM/DD"
+                    )
+                    : date;
 
             return invoices.filter(
                 (invoice) => {
-
                     const matchesSearch =
                         !searchValue ||
                         String(invoice.id)
                             .toLowerCase()
-                            .includes(searchValue) ||
+                            .includes(
+                                searchValue
+                            ) ||
                         String(invoice.driver)
                             .toLowerCase()
-                            .includes(searchValue) ||
+                            .includes(
+                                searchValue
+                            ) ||
                         String(invoice.company)
                             .toLowerCase()
-                            .includes(searchValue);
-
+                            .includes(
+                                searchValue
+                            ) ||
+                        String(
+                            invoice.createdByUserName
+                        )
+                            .toLowerCase()
+                            .includes(
+                                searchValue
+                            );
 
                     const matchesCompany =
                         !company ||
-                        invoice.company === company;
-
+                        invoice.company ===
+                        company;
 
                     const matchesDriver =
                         !driver ||
-                        invoice.driver === driver;
-
-
-                    const selectedDate =
-                        date && typeof date.format === "function"
-                            ? date.format("YYYY/MM/DD")
-                            : date;
+                        invoice.driver ===
+                        driver;
 
                     const matchesDate =
                         !selectedDate ||
-                        invoice.date === selectedDate;
-
+                        invoice.date ===
+                        selectedDate;
 
                     return (
                         matchesSearch &&
@@ -481,7 +710,6 @@ export default function InvoicesPage() {
                     );
                 }
             );
-
         }, [
             invoices,
             search,
@@ -490,22 +718,16 @@ export default function InvoicesPage() {
             date,
         ]);
 
-
-    /* =======================================================
-       CLEAR FILTERS
-    ======================================================= */
+    /* =========================
+       Clear Filters
+    ========================= */
 
     function clearFilters() {
-
         setSearch("");
-
         setCompany("");
-
         setDriver("");
-
         setDate("");
     }
-
 
     const hasFilters =
         search ||
@@ -513,46 +735,74 @@ export default function InvoicesPage() {
         driver ||
         date;
 
-
-    /* =======================================================
-       OPEN PREVIEW
-    ======================================================= */
+    /* =========================
+       Open Preview
+    ========================= */
 
     function openPreview(invoice) {
+        console.log(
+            "LIST INVOICE:",
+            invoice
+        );
+
+        console.log(
+            "LIST MONGO ID:",
+            invoice?.mongoId
+        );
+
+        console.log(
+            "LIST CREATOR:",
+            invoice?.createdByUserName
+        );
+
+        console.log(
+            "RAW INVOICE:",
+            invoice?.raw
+        );
 
         const previewInvoice =
             makePreviewInvoice(
-                invoice.raw
+                invoice?.raw
             );
 
+        console.log(
+            "PREVIEW INVOICE:",
+            previewInvoice
+        );
+
+        console.log(
+            "PREVIEW MONGO ID:",
+            previewInvoice?._id
+        );
+
+        console.log(
+            "PREVIEW CREATOR:",
+            previewInvoice?.createdByUserName
+        );
 
         setSelectedInvoice(
             previewInvoice
         );
     }
 
-
-    /* =======================================================
-       CLOSE PREVIEW
-    ======================================================= */
+    /* =========================
+       Close Preview
+    ========================= */
 
     function closePreview() {
-
         setSelectedInvoice(null);
     }
 
-
-    /* =======================================================
-       RENDER
-    ======================================================= */
+    /* =========================
+       JSX
+    ========================= */
 
     return (
-
         <main className="main-content">
 
-            {/* =================================================
-                PAGE HEADER
-            ================================================= */}
+            {/* =========================
+                Page Header
+            ========================= */}
 
             <div className="page-heading invoice-page-heading">
 
@@ -568,26 +818,37 @@ export default function InvoicesPage() {
 
                 </div>
 
-
-                <a
-                    href="/invoices/add"
-                    className="invoice-add-button"
+                <div
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "8px",
+                        flexWrap: "wrap",
+                    }}
                 >
 
-                    <Plus size={20} />
+                    {/* ثبت فاکتور جدید */}
 
-                    <span>
-                        ثبت فاکتور جدید
-                    </span>
+                    <a
+                        href="/invoices/add"
+                        className="invoice-add-button"
+                    >
 
-                </a>
+                        <Plus size={20} />
+
+                        <span>
+                            ثبت فاکتور جدید
+                        </span>
+
+                    </a>
+
+                </div>
 
             </div>
 
-
-            {/* =================================================
-                FILTERS
-            ================================================= */}
+            {/* =========================
+                Filters
+            ========================= */}
 
             <section className="invoice-filter-card">
 
@@ -611,13 +872,14 @@ export default function InvoicesPage() {
 
                     </div>
 
-
                     {hasFilters && (
 
                         <button
                             type="button"
                             className="invoice-clear-filter"
-                            onClick={clearFilters}
+                            onClick={
+                                clearFilters
+                            }
                         >
 
                             <X size={16} />
@@ -630,10 +892,11 @@ export default function InvoicesPage() {
 
                 </div>
 
-
                 <div className="invoice-filter-grid">
 
-                    {/* SEARCH */}
+                    {/* =========================
+                        Search
+                    ========================= */}
 
                     <div className="invoice-filter-field invoice-search-field">
 
@@ -653,15 +916,16 @@ export default function InvoicesPage() {
                                         event.target.value
                                     )
                                 }
-                                placeholder="شماره فاکتور، راننده یا شرکت..."
+                                placeholder="شماره فاکتور، راننده، شرکت یا ثبت‌کننده..."
                             />
 
                         </div>
 
                     </div>
 
-
-                    {/* COMPANY */}
+                    {/* =========================
+                        Company
+                    ========================= */}
 
                     <div className="invoice-filter-field">
 
@@ -699,14 +963,17 @@ export default function InvoicesPage() {
 
                             </select>
 
-                            <ChevronDown size={17} />
+                            <ChevronDown
+                                size={17}
+                            />
 
                         </div>
 
                     </div>
 
-
-                    {/* DRIVER */}
+                    {/* =========================
+                        Driver
+                    ========================= */}
 
                     <div className="invoice-filter-field">
 
@@ -744,13 +1011,17 @@ export default function InvoicesPage() {
 
                             </select>
 
-                            <ChevronDown size={17} />
+                            <ChevronDown
+                                size={17}
+                            />
 
                         </div>
 
                     </div>
 
-                    {/* DATE */}
+                    {/* =========================
+                        Date
+                    ========================= */}
 
                     <div className="invoice-filter-field">
 
@@ -760,12 +1031,16 @@ export default function InvoicesPage() {
 
                         <div className="invoice-input-with-icon invoice-date-filter-wrapper">
 
-                            <CalendarDays size={17} />
+                            <CalendarDays
+                                size={17}
+                            />
 
                             <PersianDatePicker
                                 value={date}
                                 onChange={(value) =>
-                                    setDate(value || "")
+                                    setDate(
+                                        value || ""
+                                    )
                                 }
                                 placeholder="تاریخ فاکتور را انتخاب کنید"
                             />
@@ -778,10 +1053,9 @@ export default function InvoicesPage() {
 
             </section>
 
-
-            {/* =================================================
-                INVOICE LIST
-            ================================================= */}
+            {/* =========================
+                Invoice List
+            ========================= */}
 
             <section className="invoice-list-card">
 
@@ -801,12 +1075,17 @@ export default function InvoicesPage() {
 
                 </div>
 
+                {/* =========================
+                    Loading
+                ========================= */}
 
                 {loading ? (
 
                     <div className="invoice-empty">
 
-                        <FileText size={42} />
+                        <FileText
+                            size={42}
+                        />
 
                         <h3>
                             در حال دریافت فاکتورها...
@@ -816,9 +1095,15 @@ export default function InvoicesPage() {
 
                 ) : error ? (
 
+                    /* =========================
+                       Error
+                    ========================= */
+
                     <div className="invoice-empty">
 
-                        <FileText size={42} />
+                        <FileText
+                            size={42}
+                        />
 
                         <h3>
                             خطا در دریافت اطلاعات
@@ -831,6 +1116,10 @@ export default function InvoicesPage() {
                     </div>
 
                 ) : filteredInvoices.length > 0 ? (
+
+                    /* =========================
+                       Table
+                    ========================= */
 
                     <div className="invoice-table-wrapper">
 
@@ -857,6 +1146,10 @@ export default function InvoicesPage() {
                                     </th>
 
                                     <th>
+                                        ثبت‌کننده
+                                    </th>
+
+                                    <th>
                                         مسیر
                                     </th>
 
@@ -872,7 +1165,6 @@ export default function InvoicesPage() {
 
                             </thead>
 
-
                             <tbody>
 
                                 {filteredInvoices.map(
@@ -885,44 +1177,78 @@ export default function InvoicesPage() {
                                             }
                                         >
 
+                                            {/* شماره فاکتور */}
+
                                             <td>
 
                                                 <strong className="invoice-number">
 
-                                                    {invoice.id}
+                                                    {
+                                                        invoice.id
+                                                    }
 
                                                 </strong>
 
                                             </td>
 
+                                            {/* تاریخ */}
 
                                             <td>
-                                                {invoice.date}
+
+                                                {
+                                                    invoice.date
+                                                }
+
                                             </td>
 
+                                            {/* راننده */}
 
                                             <td>
 
                                                 <span className="invoice-driver">
 
-                                                    {invoice.driver}
+                                                    {
+                                                        invoice.driver
+                                                    }
 
                                                 </span>
 
                                             </td>
 
+                                            {/* شرکت */}
 
                                             <td>
-                                                {invoice.company}
+
+                                                {
+                                                    invoice.company
+                                                }
+
                                             </td>
 
+                                            {/* ثبت‌کننده */}
+
+                                            <td>
+
+                                                <span className="invoice-creator-list">
+
+                                                    {
+                                                        invoice.createdByUserName
+                                                    }
+
+                                                </span>
+
+                                            </td>
+
+                                            {/* مسیر */}
 
                                             <td>
 
                                                 <div className="invoice-route">
 
                                                     <span>
-                                                        {invoice.origin}
+                                                        {
+                                                            invoice.origin
+                                                        }
                                                     </span>
 
                                                     <span className="invoice-route-arrow">
@@ -930,28 +1256,35 @@ export default function InvoicesPage() {
                                                     </span>
 
                                                     <span>
-                                                        {invoice.destination}
+                                                        {
+                                                            invoice.destination
+                                                        }
                                                     </span>
 
                                                 </div>
 
                                             </td>
 
+                                            {/* مبلغ */}
 
                                             <td>
 
                                                 <strong className="invoice-amount">
 
-                                                    {invoice.amount}
+                                                    {
+                                                        invoice.amount
+                                                    }
 
                                                     <small>
-                                                        {" "}تومان
+                                                        {" "}
+                                                        تومان
                                                     </small>
 
                                                 </strong>
 
                                             </td>
 
+                                            {/* عملیات */}
 
                                             <td>
 
@@ -969,7 +1302,9 @@ export default function InvoicesPage() {
                                                         }
                                                     >
 
-                                                        <Eye size={18} />
+                                                        <Eye
+                                                            size={18}
+                                                        />
 
                                                     </button>
 
@@ -990,9 +1325,15 @@ export default function InvoicesPage() {
 
                 ) : (
 
+                    /* =========================
+                       Empty
+                    ========================= */
+
                     <div className="invoice-empty">
 
-                        <FileText size={42} />
+                        <FileText
+                            size={42}
+                        />
 
                         <h3>
                             فاکتوری پیدا نشد
@@ -1008,16 +1349,19 @@ export default function InvoicesPage() {
 
             </section>
 
-
-            {/* =================================================
-                PREVIEW OVERLAY
-            ================================================= */}
+            {/* =========================
+                Preview
+            ========================= */}
 
             {selectedInvoice && (
 
                 <InvoicePreview
-                    invoice={selectedInvoice}
-                    onClose={closePreview}
+                    invoice={
+                        selectedInvoice
+                    }
+                    onClose={
+                        closePreview
+                    }
                 />
 
             )}

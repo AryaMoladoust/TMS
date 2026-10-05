@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import PersianDatePicker from "@/components/drivers/PersianDatePicker";
+import { useNotification } from "@/components/ui/NotificationProvider";
 
 import {
     ArrowRight,
@@ -16,15 +17,23 @@ import {
     CalendarDays,
     Save,
     LoaderCircle,
+    Pencil,
 } from "lucide-react";
 
 export default function EditDriverPage() {
     const params = useParams();
     const router = useRouter();
 
+    const {
+        showSuccess,
+        showError,
+        showWarning,
+    } = useNotification();
+
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
-    const [error, setError] = useState("");
+
+    const [driver, setDriver] = useState(null);
 
     const [formData, setFormData] = useState({
         name: "",
@@ -52,29 +61,51 @@ export default function EditDriverPage() {
 
                 if (!response.ok) {
                     throw new Error(
-                        data.message || "خطا در دریافت اطلاعات راننده"
+                        data.message ||
+                            "خطا در دریافت اطلاعات راننده"
                     );
                 }
 
-                const driver = data.driver;
+                const loadedDriver = data.driver;
+
+                setDriver(loadedDriver);
 
                 setFormData({
-                    name: driver.name || "",
-                    nationalId: driver.nationalId || "",
-                    phone: driver.phone || "",
-                    landline: driver.landline || "",
-                    address: driver.address || "",
-                    vehicleType: driver.vehicleType || "",
-                    vehiclePlate: driver.vehiclePlate || "",
-                    licenseNumber: driver.licenseNumber || "",
-                    status: driver.status || "available",
+                    name: loadedDriver.name || "",
+                    nationalId:
+                        loadedDriver.nationalId || "",
+                    phone: loadedDriver.phone || "",
+                    landline:
+                        loadedDriver.landline || "",
+                    address:
+                        loadedDriver.address || "",
+                    vehicleType:
+                        loadedDriver.vehicleType || "",
+                    vehiclePlate:
+                        loadedDriver.vehiclePlate || "",
+                    licenseNumber:
+                        loadedDriver.licenseNumber || "",
+                    status:
+                        loadedDriver.status ||
+                        "available",
                 });
 
-                if (driver.licenseExpiry) {
-                    setLicenseExpiry(driver.licenseExpiry);
+                if (loadedDriver.licenseExpiry) {
+                    setLicenseExpiry(
+                        loadedDriver.licenseExpiry
+                    );
                 }
             } catch (error) {
-                setError(error.message);
+                console.error(
+                    "Load driver error:",
+                    error
+                );
+
+                showError(
+                    error.message ||
+                        "خطا در دریافت اطلاعات راننده",
+                    "خطا در دریافت راننده"
+                );
             } finally {
                 setLoading(false);
             }
@@ -83,7 +114,7 @@ export default function EditDriverPage() {
         if (params.id) {
             loadDriver();
         }
-    }, [params.id]);
+    }, [params.id, showError]);
 
     function handleChange(event) {
         const { id, value } = event.target;
@@ -97,24 +128,30 @@ export default function EditDriverPage() {
     async function handleSubmit(event) {
         event.preventDefault();
 
-        setError("");
-
         if (
-            !formData.name ||
-            !formData.nationalId ||
-            !formData.phone ||
+            !formData.name.trim() ||
+            !formData.nationalId.trim() ||
+            !formData.phone.trim() ||
             !formData.vehicleType ||
-            !formData.vehiclePlate ||
-            !formData.licenseNumber
+            !formData.vehiclePlate.trim() ||
+            !formData.licenseNumber.trim()
         ) {
-            setError(
-                "لطفاً تمام فیلدهای الزامی را تکمیل کنید."
+            showWarning(
+                "لطفاً تمام فیلدهای الزامی را تکمیل کنید.",
+                "اطلاعات ناقص"
             );
             return;
         }
 
-        if (!/^\d{10}$/.test(formData.nationalId)) {
-            setError("کد ملی باید دقیقاً ۱۰ رقم باشد.");
+        if (
+            !/^\d{10}$/.test(
+                formData.nationalId.trim()
+            )
+        ) {
+            showWarning(
+                "کد ملی باید دقیقاً ۱۰ رقم باشد.",
+                "کد ملی نامعتبر"
+            );
             return;
         }
 
@@ -126,14 +163,30 @@ export default function EditDriverPage() {
                 {
                     method: "PUT",
                     headers: {
-                        "Content-Type": "application/json",
+                        "Content-Type":
+                            "application/json",
                     },
                     body: JSON.stringify({
                         ...formData,
+                        name: formData.name.trim(),
+                        nationalId:
+                            formData.nationalId.trim(),
+                        phone: formData.phone.trim(),
+                        landline:
+                            formData.landline.trim(),
+                        address:
+                            formData.address.trim(),
+                        vehiclePlate:
+                            formData.vehiclePlate.trim(),
+                        licenseNumber:
+                            formData.licenseNumber.trim(),
                         licenseExpiry:
-                            typeof licenseExpiry === "object" &&
-                                licenseExpiry?.format
-                                ? licenseExpiry.format("YYYY/MM/DD")
+                            typeof licenseExpiry ===
+                                "object" &&
+                            licenseExpiry?.format
+                                ? licenseExpiry.format(
+                                      "YYYY/MM/DD"
+                                  )
                                 : licenseExpiry || "",
                     }),
                 }
@@ -143,14 +196,33 @@ export default function EditDriverPage() {
 
             if (!response.ok) {
                 throw new Error(
-                    data.message || "خطا در ویرایش راننده"
+                    data.message ||
+                        "خطا در ویرایش راننده"
                 );
             }
 
-            router.push(`/drivers/${params.id}`);
-            router.refresh();
+            showSuccess(
+                "اطلاعات راننده با موفقیت ویرایش شد.",
+                "ویرایش راننده موفق"
+            );
+
+            setTimeout(() => {
+                router.push(
+                    `/drivers/${params.id}`
+                );
+                router.refresh();
+            }, 700);
         } catch (error) {
-            setError(error.message);
+            console.error(
+                "Update driver error:",
+                error
+            );
+
+            showError(
+                error.message ||
+                    "خطا در ویرایش راننده",
+                "خطا در ویرایش راننده"
+            );
         } finally {
             setSaving(false);
         }
@@ -164,6 +236,7 @@ export default function EditDriverPage() {
                         size={28}
                         className="loading-spinner"
                     />
+
                     <span>
                         در حال دریافت اطلاعات راننده...
                     </span>
@@ -172,11 +245,14 @@ export default function EditDriverPage() {
         );
     }
 
-    if (error && !formData.name) {
+    if (!driver) {
         return (
             <main className="main-content">
                 <div className="driver-error">
-                    <p>{error}</p>
+                    <p>
+                        اطلاعات راننده قابل دریافت
+                        نیست.
+                    </p>
 
                     <Link
                         href="/drivers"
@@ -194,7 +270,9 @@ export default function EditDriverPage() {
             <div className="page-heading">
                 <div>
                     <div className="page-back-link">
-                        <Link href={`/drivers/${params.id}`}>
+                        <Link
+                            href={`/drivers/${params.id}`}
+                        >
                             <ArrowRight size={17} />
                             بازگشت به پرونده راننده
                         </Link>
@@ -203,7 +281,8 @@ export default function EditDriverPage() {
                     <h1>ویرایش راننده</h1>
 
                     <p>
-                        اطلاعات {formData.name} را ویرایش کنید
+                        اطلاعات {formData.name} را
+                        ویرایش کنید
                     </p>
                 </div>
             </div>
@@ -211,13 +290,17 @@ export default function EditDriverPage() {
             <section className="driver-form-panel">
                 <div className="driver-form-header">
                     <div className="driver-form-header-icon">
-                        <PencilIcon />
+                        <Pencil size={20} />
                     </div>
 
                     <div>
-                        <h2>ویرایش اطلاعات راننده</h2>
+                        <h2>
+                            ویرایش اطلاعات راننده
+                        </h2>
+
                         <p>
-                            اطلاعات شخصی، خودرو و گواهینامه
+                            اطلاعات شخصی، خودرو و
+                            گواهینامه
                         </p>
                     </div>
                 </div>
@@ -228,12 +311,15 @@ export default function EditDriverPage() {
                 >
                     <div className="driver-form-section-title">
                         <UserRound size={19} />
-                        <span>اطلاعات شخصی</span>
+                        <span>
+                            اطلاعات شخصی
+                        </span>
                     </div>
 
                     <div className="driver-form-group">
                         <label htmlFor="name">
-                            نام و نام خانوادگی <span>*</span>
+                            نام و نام خانوادگی{" "}
+                            <span>*</span>
                         </label>
 
                         <div className="driver-input-wrapper">
@@ -243,7 +329,9 @@ export default function EditDriverPage() {
                                 id="name"
                                 type="text"
                                 value={formData.name}
-                                onChange={handleChange}
+                                onChange={
+                                    handleChange
+                                }
                             />
                         </div>
                     </div>
@@ -261,15 +349,20 @@ export default function EditDriverPage() {
                                 type="text"
                                 inputMode="numeric"
                                 maxLength={10}
-                                value={formData.nationalId}
-                                onChange={handleChange}
+                                value={
+                                    formData.nationalId
+                                }
+                                onChange={
+                                    handleChange
+                                }
                             />
                         </div>
                     </div>
 
                     <div className="driver-form-group">
                         <label htmlFor="phone">
-                            شماره موبایل <span>*</span>
+                            شماره موبایل{" "}
+                            <span>*</span>
                         </label>
 
                         <div className="driver-input-wrapper">
@@ -278,8 +371,12 @@ export default function EditDriverPage() {
                             <input
                                 id="phone"
                                 type="tel"
-                                value={formData.phone}
-                                onChange={handleChange}
+                                value={
+                                    formData.phone
+                                }
+                                onChange={
+                                    handleChange
+                                }
                             />
                         </div>
                     </div>
@@ -295,8 +392,12 @@ export default function EditDriverPage() {
                             <input
                                 id="landline"
                                 type="tel"
-                                value={formData.landline}
-                                onChange={handleChange}
+                                value={
+                                    formData.landline
+                                }
+                                onChange={
+                                    handleChange
+                                }
                             />
                         </div>
                     </div>
@@ -312,20 +413,28 @@ export default function EditDriverPage() {
                             <textarea
                                 id="address"
                                 rows={4}
-                                value={formData.address}
-                                onChange={handleChange}
+                                value={
+                                    formData.address
+                                }
+                                onChange={
+                                    handleChange
+                                }
                             />
                         </div>
                     </div>
 
                     <div className="driver-form-section-title driver-form-full">
                         <Truck size={19} />
-                        <span>اطلاعات خودرو</span>
+
+                        <span>
+                            اطلاعات خودرو
+                        </span>
                     </div>
 
                     <div className="driver-form-group">
                         <label htmlFor="vehicleType">
-                            نوع خودرو <span>*</span>
+                            نوع خودرو{" "}
+                            <span>*</span>
                         </label>
 
                         <div className="driver-input-wrapper">
@@ -333,21 +442,30 @@ export default function EditDriverPage() {
 
                             <select
                                 id="vehicleType"
-                                value={formData.vehicleType}
-                                onChange={handleChange}
+                                value={
+                                    formData.vehicleType
+                                }
+                                onChange={
+                                    handleChange
+                                }
                             >
                                 <option value="">
-                                    نوع خودرو را انتخاب کنید
+                                    نوع خودرو را انتخاب
+                                    کنید
                                 </option>
+
                                 <option value="truck">
                                     کامیون
                                 </option>
+
                                 <option value="trailer">
                                     تریلی
                                 </option>
+
                                 <option value="pickup">
                                     نیسان
                                 </option>
+
                                 <option value="van">
                                     وانت
                                 </option>
@@ -357,7 +475,8 @@ export default function EditDriverPage() {
 
                     <div className="driver-form-group">
                         <label htmlFor="vehiclePlate">
-                            شماره پلاک <span>*</span>
+                            شماره پلاک{" "}
+                            <span>*</span>
                         </label>
 
                         <div className="driver-input-wrapper">
@@ -366,20 +485,28 @@ export default function EditDriverPage() {
                             <input
                                 id="vehiclePlate"
                                 type="text"
-                                value={formData.vehiclePlate}
-                                onChange={handleChange}
+                                value={
+                                    formData.vehiclePlate
+                                }
+                                onChange={
+                                    handleChange
+                                }
                             />
                         </div>
                     </div>
 
                     <div className="driver-form-section-title driver-form-full">
                         <CreditCard size={19} />
-                        <span>اطلاعات گواهینامه</span>
+
+                        <span>
+                            اطلاعات گواهینامه
+                        </span>
                     </div>
 
                     <div className="driver-form-group">
                         <label htmlFor="licenseNumber">
-                            شماره گواهینامه <span>*</span>
+                            شماره گواهینامه{" "}
+                            <span>*</span>
                         </label>
 
                         <div className="driver-input-wrapper">
@@ -388,23 +515,32 @@ export default function EditDriverPage() {
                             <input
                                 id="licenseNumber"
                                 type="text"
-                                value={formData.licenseNumber}
-                                onChange={handleChange}
+                                value={
+                                    formData.licenseNumber
+                                }
+                                onChange={
+                                    handleChange
+                                }
                             />
                         </div>
                     </div>
 
                     <div className="driver-form-group">
                         <label>
-                            تاریخ اعتبار گواهینامه
+                            تاریخ اعتبار
+                            گواهینامه
                         </label>
 
                         <div className="driver-input-wrapper driver-date-wrapper">
                             <CalendarDays size={18} />
 
                             <PersianDatePicker
-                                value={licenseExpiry}
-                                onChange={setLicenseExpiry}
+                                value={
+                                    licenseExpiry
+                                }
+                                onChange={
+                                    setLicenseExpiry
+                                }
                                 placeholder="تاریخ اعتبار را انتخاب کنید"
                             />
                         </div>
@@ -420,8 +556,12 @@ export default function EditDriverPage() {
 
                             <select
                                 id="status"
-                                value={formData.status}
-                                onChange={handleChange}
+                                value={
+                                    formData.status
+                                }
+                                onChange={
+                                    handleChange
+                                }
                             >
                                 <option value="available">
                                     آماده
@@ -437,12 +577,6 @@ export default function EditDriverPage() {
                             </select>
                         </div>
                     </div>
-
-                    {error && (
-                        <div className="driver-form-error driver-form-full">
-                            {error}
-                        </div>
-                    )}
 
                     <div className="driver-form-actions driver-form-full">
                         <Link
@@ -477,14 +611,4 @@ export default function EditDriverPage() {
             </section>
         </main>
     );
-}
-
-function PencilIcon() {
-    return (
-        <PencilIconInner />
-    );
-}
-
-function PencilIconInner() {
-    return <span style={{ fontSize: "20px" }}>✎</span>;
 }

@@ -12227,7 +12227,8 @@ body {
 }
 
 /* ================================
-   Invoice Scroll Area
+   
+Scroll Area
 ================================ */
 
 .invoice-preview-scroll {
@@ -19014,4 +19015,963 @@ html.dark .change-password-message.error {
 .invoice-payment-status.unknown
   .invoice-payment-status-value {
   color: #64748b;
+}
+.invoice-delete-btn {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    height: 40px;
+    min-width: 120px;
+    padding: 0 14px;
+
+    border: 1px solid #fecaca;
+    border-radius: 10px;
+
+    background: #fff1f2;
+    color: #dc2626;
+
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    visibility: visible !important;
+    opacity: 1 !important;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.invoice-delete-btn:hover {
+    background: #fee2e2;
+    border-color: #fca5a5;
+    transform: translateY(-1px);
+}
+
+
+
+.invoice-creator-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 8px 0 10px;
+    padding: 7px 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: #f8fafc;
+    direction: rtl;
+    font-size: 10px;
+}
+
+.invoice-creator-label {
+    font-weight: 700;
+    color: #64748b;
+}
+
+.invoice-creator-value {
+    font-weight: 800;
+    color: #111827;
+}
+/* =========================================
+   Invoice List Table
+========================================= */
+
+.invoice-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    border-radius: 0 0 14px 14px;
+}
+
+.invoice-table {
+    width: 100%;
+    min-width: 1100px;
+    border-collapse: collapse;
+    table-layout: fixed;
+    direction: rtl;
+}
+
+/* =========================
+   Table Header
+========================= */
+
+.invoice-table th {
+    height: 46px;
+    padding: 0 12px;
+    background: var(--surface-soft);
+    border-bottom: 1px solid var(--border);
+    color: var(--text-secondary);
+    font-size: 10px;
+    font-weight: 700;
+    text-align: center;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+/* =========================
+   Table Body
+========================= */
+
+.invoice-table td {
+    height: 66px;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-secondary);
+    font-size: 10px;
+    text-align: center;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.invoice-table tbody tr {
+    transition: background 0.15s ease;
+}
+
+.invoice-table tbody tr:hover {
+    background: var(--surface-soft);
+}
+
+.invoice-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+/* =========================================
+   Column Widths
+========================================= */
+
+/* شماره فاکتور */
+.invoice-table th:nth-child(1),
+.invoice-table td:nth-child(1) {
+    width: 170px;
+}
+
+/* تاریخ */
+.invoice-table th:nth-child(2),
+.invoice-table td:nth-child(2) {
+    width: 90px;
+}
+
+/* راننده */
+.invoice-table th:nth-child(3),
+.invoice-table td:nth-child(3) {
+    width: 145px;
+}
+
+/* شرکت */
+.invoice-table th:nth-child(4),
+.invoice-table td:nth-child(4) {
+    width: 135px;
+}
+
+/* ثبت‌کننده */
+.invoice-table th:nth-child(5),
+.invoice-table td:nth-child(5) {
+    width: 120px;
+    min-width: 120px;
+}
+
+/* مسیر */
+.invoice-table th:nth-child(6),
+.invoice-table td:nth-child(6) {
+    width: 180px;
+}
+
+/* مبلغ */
+.invoice-table th:nth-child(7),
+.invoice-table td:nth-child(7) {
+    width: 120px;
+}
+
+/* عملیات */
+.invoice-table th:nth-child(8),
+.invoice-table td:nth-child(8) {
+    width: 90px;
+}
+
+/* =========================================
+   Invoice Number
+========================================= */
+
+.invoice-number {
+    color: #2563eb;
+    font-size: 10px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+/* =========================================
+   Driver
+========================================= */
+
+.invoice-driver {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+/* =========================================
+   Creator
+========================================= */
+
+.invoice-creator-list {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 90px;
+    padding: 5px 10px;
+    border-radius: 8px;
+    background: rgba(37, 99, 235, 0.08);
+    color: #2563eb;
+    font-size: 10px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+/* اگر ثبت‌کننده وجود نداشت */
+.invoice-creator-list:empty::after {
+    content: "—";
+    color: var(--text-secondary);
+}
+
+/* =========================================
+   Route
+========================================= */
+
+.invoice-route {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-width: 150px;
+}
+
+.invoice-route span {
+    white-space: nowrap;
+}
+
+.invoice-route-arrow {
+    color: #2563eb;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+/* =========================================
+   Amount
+========================================= */
+
+.invoice-amount {
+    color: var(--text-primary);
+    font-size: 10px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.invoice-amount small {
+    color: var(--text-secondary);
+    font-size: 8px;
+    font-weight: 600;
+}
+
+/* =========================================
+   Actions
+========================================= */
+
+.invoice-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.invoice-print-button {
+    width: 42px;
+    height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease,
+        color 0.15s ease,
+        transform 0.15s ease;
+}
+
+.invoice-print-button:hover {
+    background: var(--surface-soft);
+    border-color: #2563eb;
+    color: #2563eb;
+    transform: translateY(-1px);
+}
+
+/* =========================================
+   Mobile
+========================================= */
+
+@media (max-width: 800px) {
+
+    .invoice-table-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .invoice-table {
+        min-width: 1100px;
+    }
+
+    .invoice-table th,
+    .invoice-table td {
+        font-size: 9px;
+    }
+
+    .invoice-creator-list {
+        font-size: 9px;
+        padding: 4px 8px;
+    }
+}
+/* =========================================
+   TMS Global Notifications
+========================================= */
+
+/* =========================================================
+   TMS NOTIFICATION SYSTEM
+   ========================================================= */
+
+/* -----------------------------
+   Notification Container
+----------------------------- */
+
+.tms-toast-container {
+    position: fixed;
+    top: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+
+    z-index: 99999;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    gap: 14px;
+
+    width: min(520px, calc(100vw - 40px));
+
+    direction: rtl;
+
+    pointer-events: none;
+}
+
+
+/* -----------------------------
+   Main Notification
+----------------------------- */
+
+.tms-toast {
+    width: 100%;
+    min-height: 105px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 18px;
+
+    padding: 20px 22px;
+
+    border: 1px solid var(--border);
+
+    border-radius: 20px;
+
+    background: var(--surface);
+
+    box-shadow:
+        0 30px 80px rgba(15, 23, 42, 0.24),
+        0 8px 25px rgba(15, 23, 42, 0.12);
+
+    animation: tms-toast-in 0.3s ease both;
+
+    pointer-events: auto;
+
+    overflow: hidden;
+
+    box-sizing: border-box;
+}
+
+
+/* -----------------------------
+   Notification Icon
+----------------------------- */
+
+.tms-toast-icon {
+    flex: 0 0 58px;
+
+    width: 58px;
+    height: 58px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 16px;
+
+    box-sizing: border-box;
+}
+
+
+/* -----------------------------
+   Notification Content
+----------------------------- */
+
+.tms-toast-content {
+    flex: 1;
+
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 5px;
+
+    text-align: right;
+}
+
+
+.tms-toast-title {
+    font-size: 16px;
+
+    font-weight: 900;
+
+    line-height: 1.6;
+
+    color: var(--text);
+
+    margin: 0;
+}
+
+
+.tms-toast-message {
+    font-size: 13px;
+
+    font-weight: 600;
+
+    line-height: 1.9;
+
+    color: var(--muted);
+
+    margin: 0;
+
+    word-break: break-word;
+}
+
+
+/* -----------------------------
+   Close Button
+----------------------------- */
+
+.tms-toast-close {
+    flex: 0 0 auto;
+
+    width: 38px;
+    height: 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: none;
+
+    border-radius: 10px;
+
+    background: transparent;
+
+    color: var(--muted);
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+.tms-toast-close:hover {
+    background: var(--surface-2);
+
+    color: var(--text);
+
+    transform: scale(1.05);
+}
+
+
+/* =========================================================
+   SUCCESS
+   ========================================================= */
+
+.tms-toast-success {
+    border-color: rgba(34, 197, 94, 0.25);
+}
+
+
+.tms-toast-success .tms-toast-icon {
+    background: rgba(34, 197, 94, 0.12);
+
+    color: #16a34a;
+}
+
+
+/* =========================================================
+   ERROR
+   ========================================================= */
+
+.tms-toast-error {
+    border-color: rgba(239, 68, 68, 0.25);
+}
+
+
+.tms-toast-error .tms-toast-icon {
+    background: rgba(239, 68, 68, 0.12);
+
+    color: #dc2626;
+}
+
+
+/* =========================================================
+   WARNING
+   ========================================================= */
+
+.tms-toast-warning {
+    border-color: rgba(245, 158, 11, 0.28);
+}
+
+
+.tms-toast-warning .tms-toast-icon {
+    background: rgba(245, 158, 11, 0.14);
+
+    color: #d97706;
+}
+
+
+/* =========================================================
+   INFO
+   ========================================================= */
+
+.tms-toast-info {
+    border-color: rgba(37, 99, 235, 0.25);
+}
+
+
+.tms-toast-info .tms-toast-icon {
+    background: rgba(37, 99, 235, 0.12);
+
+    color: #2563eb;
+}
+
+
+/* =========================================================
+   Notification Animation
+   ========================================================= */
+
+@keyframes tms-toast-in {
+    from {
+        opacity: 0;
+
+        transform:
+            translateY(-25px)
+            scale(0.94);
+    }
+
+    to {
+        opacity: 1;
+
+        transform:
+            translateY(0)
+            scale(1);
+    }
+}
+
+
+/* =========================================================
+   CONFIRM MODAL
+   ========================================================= */
+
+.tms-confirm-overlay {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 100000;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 20px;
+
+    background: rgba(15, 23, 42, 0.48);
+
+    backdrop-filter: blur(5px);
+
+    -webkit-backdrop-filter: blur(5px);
+
+    direction: rtl;
+}
+
+
+/* -----------------------------
+   Confirm Box
+----------------------------- */
+
+.tms-confirm-modal {
+    width: min(460px, 100%);
+
+    background: var(--surface);
+
+    border: 1px solid var(--border);
+
+    border-radius: 22px;
+
+    padding: 28px;
+
+    box-shadow:
+        0 40px 100px rgba(15, 23, 42, 0.3),
+        0 10px 30px rgba(15, 23, 42, 0.12);
+
+    animation: tms-confirm-in 0.25s ease both;
+
+    box-sizing: border-box;
+}
+
+
+/* -----------------------------
+   Confirm Icon
+----------------------------- */
+
+.tms-confirm-icon {
+    width: 62px;
+    height: 62px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    margin: 0 auto 18px;
+
+    border-radius: 18px;
+
+    background: rgba(245, 158, 11, 0.13);
+
+    color: #d97706;
+}
+
+
+.tms-confirm-icon.danger {
+    background: rgba(239, 68, 68, 0.12);
+
+    color: #dc2626;
+}
+
+
+/* -----------------------------
+   Confirm Content
+----------------------------- */
+
+.tms-confirm-content {
+    text-align: center;
+}
+
+
+.tms-confirm-content h3 {
+    margin: 0 0 10px;
+
+    font-size: 18px;
+
+    font-weight: 900;
+
+    line-height: 1.7;
+
+    color: var(--text);
+}
+
+
+.tms-confirm-content p {
+    margin: 0;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    line-height: 2;
+
+    color: var(--muted);
+}
+
+
+/* -----------------------------
+   Confirm Actions
+----------------------------- */
+
+.tms-confirm-actions {
+    display: flex;
+
+    gap: 12px;
+
+    margin-top: 25px;
+}
+
+
+.tms-confirm-actions button {
+    flex: 1;
+
+    height: 48px;
+
+    border-radius: 12px;
+
+    font-family: inherit;
+
+    font-size: 13px;
+
+    font-weight: 800;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+
+    box-sizing: border-box;
+}
+
+
+/* -----------------------------
+   Cancel
+----------------------------- */
+
+.tms-confirm-cancel {
+    border: 1px solid var(--border);
+
+    background: var(--surface-2);
+
+    color: var(--text);
+}
+
+
+.tms-confirm-cancel:hover {
+    background: var(--border);
+
+    transform: translateY(-1px);
+}
+
+
+/* -----------------------------
+   Confirm
+----------------------------- */
+
+.tms-confirm-submit {
+    border: 1px solid #2563eb;
+
+    background: #2563eb;
+
+    color: #ffffff;
+
+    box-shadow:
+        0 8px 20px rgba(37, 99, 235, 0.2);
+}
+
+
+.tms-confirm-submit:hover {
+    background: #1d4ed8;
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 10px 24px rgba(37, 99, 235, 0.28);
+}
+
+
+/* -----------------------------
+   Danger Confirm
+----------------------------- */
+
+.tms-confirm-submit.danger {
+    border-color: #dc2626;
+
+    background: #dc2626;
+
+    box-shadow:
+        0 8px 20px rgba(220, 38, 38, 0.2);
+}
+
+
+.tms-confirm-submit.danger:hover {
+    background: #b91c1c;
+
+    box-shadow:
+        0 10px 24px rgba(220, 38, 38, 0.28);
+}
+
+
+/* =========================================================
+   Confirm Animation
+   ========================================================= */
+
+@keyframes tms-confirm-in {
+    from {
+        opacity: 0;
+
+        transform:
+            translateY(15px)
+            scale(0.96);
+    }
+
+    to {
+        opacity: 1;
+
+        transform:
+            translateY(0)
+            scale(1);
+    }
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+    .tms-toast-container {
+        width: calc(100vw - 28px);
+
+        top: 12px;
+
+        left: 50%;
+
+        transform: translateX(-50%);
+    }
+
+
+    .tms-toast {
+        min-height: 95px;
+
+        padding: 17px 16px;
+
+        gap: 13px;
+
+        border-radius: 17px;
+    }
+
+
+    .tms-toast-icon {
+        flex: 0 0 50px;
+
+        width: 50px;
+        height: 50px;
+
+        border-radius: 14px;
+    }
+
+
+    .tms-toast-icon svg {
+        width: 25px;
+        height: 25px;
+    }
+
+
+    .tms-toast-title {
+        font-size: 14px;
+    }
+
+
+    .tms-toast-message {
+        font-size: 12px;
+
+        line-height: 1.8;
+    }
+
+
+    .tms-toast-close {
+        width: 34px;
+        height: 34px;
+    }
+
+
+    .tms-confirm-modal {
+        padding: 22px;
+
+        border-radius: 19px;
+    }
+
+
+    .tms-confirm-icon {
+        width: 56px;
+        height: 56px;
+
+        margin-bottom: 15px;
+    }
+
+
+    .tms-confirm-content h3 {
+        font-size: 16px;
+    }
+
+
+    .tms-confirm-content p {
+        font-size: 13px;
+    }
+
+
+    .tms-confirm-actions {
+        gap: 9px;
+
+        margin-top: 21px;
+    }
+
+
+    .tms-confirm-actions button {
+        height: 45px;
+
+        font-size: 12px;
+    }
+}
+
+
+/* =========================================================
+   DARK MODE
+   ========================================================= */
+
+.dark .tms-toast {
+    box-shadow:
+        0 30px 80px rgba(0, 0, 0, 0.45),
+        0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+
+.dark .tms-confirm-overlay {
+    background: rgba(0, 0, 0, 0.58);
+}
+
+
+.dark .tms-confirm-modal {
+    box-shadow:
+        0 40px 100px rgba(0, 0, 0, 0.55),
+        0 10px 30px rgba(0, 0, 0, 0.35);
 }

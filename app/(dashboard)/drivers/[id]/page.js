@@ -17,31 +17,50 @@ import {
     LoaderCircle,
 } from "lucide-react";
 
+import { useNotification } from "@/components/ui/NotificationProvider";
+
 export default function DriverDetailsPage() {
     const params = useParams();
     const router = useRouter();
 
+    const {
+        showSuccess,
+        showError,
+        confirm,
+    } = useNotification();
+
     const [driver, setDriver] = useState(null);
     const [loading, setLoading] = useState(true);
     const [deleting, setDeleting] = useState(false);
-    const [error, setError] = useState("");
 
     useEffect(() => {
         async function loadDriver() {
             try {
-                const response = await fetch(`/api/drivers/${params.id}`);
+                const response = await fetch(
+                    `/api/drivers/${params.id}`
+                );
 
                 const data = await response.json();
 
                 if (!response.ok) {
                     throw new Error(
-                        data.message || "خطا در دریافت اطلاعات راننده"
+                        data.message ||
+                            "خطا در دریافت اطلاعات راننده"
                     );
                 }
 
                 setDriver(data.driver);
             } catch (error) {
-                setError(error.message);
+                console.error(
+                    "Load driver error:",
+                    error
+                );
+
+                showError(
+                    error.message ||
+                        "خطا در دریافت اطلاعات راننده",
+                    "خطا در دریافت راننده"
+                );
             } finally {
                 setLoading(false);
             }
@@ -50,12 +69,18 @@ export default function DriverDetailsPage() {
         if (params.id) {
             loadDriver();
         }
-    }, [params.id]);
+    }, [params.id, showError]);
 
     async function handleDelete() {
-        const confirmed = window.confirm(
-            `آیا از حذف راننده «${driver?.name}» مطمئن هستید؟`
-        );
+        const confirmed = await confirm({
+            title: "حذف راننده",
+            message: `آیا از حذف راننده «${
+                driver?.name || ""
+            }» مطمئن هستید؟ این عملیات قابل بازگشت نیست.`,
+            confirmText: "حذف راننده",
+            cancelText: "انصراف",
+            danger: true,
+        });
 
         if (!confirmed) {
             return;
@@ -75,14 +100,34 @@ export default function DriverDetailsPage() {
 
             if (!response.ok) {
                 throw new Error(
-                    data.message || "خطا در حذف راننده"
+                    data.message ||
+                        "خطا در حذف راننده"
                 );
             }
 
-            router.push("/drivers");
-            router.refresh();
+            showSuccess(
+                `راننده «${
+                    driver?.name || ""
+                }» با موفقیت حذف شد.`,
+                "حذف راننده موفق"
+            );
+
+            setTimeout(() => {
+                router.push("/drivers");
+                router.refresh();
+            }, 700);
         } catch (error) {
-            setError(error.message);
+            console.error(
+                "Delete driver error:",
+                error
+            );
+
+            showError(
+                error.message ||
+                    "خطا در حذف راننده",
+                "خطا در حذف راننده"
+            );
+
             setDeleting(false);
         }
     }
@@ -112,18 +157,27 @@ export default function DriverDetailsPage() {
         return (
             <main className="main-content">
                 <div className="driver-loading">
-                    <LoaderCircle size={28} className="loading-spinner" />
-                    <span>در حال دریافت اطلاعات راننده...</span>
+                    <LoaderCircle
+                        size={28}
+                        className="loading-spinner"
+                    />
+
+                    <span>
+                        در حال دریافت اطلاعات راننده...
+                    </span>
                 </div>
             </main>
         );
     }
 
-    if (error || !driver) {
+    if (!driver) {
         return (
             <main className="main-content">
                 <div className="driver-error">
-                    <p>{error || "راننده پیدا نشد"}</p>
+                    <p>
+                        اطلاعات راننده قابل دریافت
+                        نیست.
+                    </p>
 
                     <Link
                         href="/drivers"
@@ -178,7 +232,9 @@ export default function DriverDetailsPage() {
                             <Trash2 size={18} />
                         )}
 
-                        حذف راننده
+                        {deleting
+                            ? "در حال حذف..."
+                            : "حذف راننده"}
                     </button>
                 </div>
             </div>
@@ -193,7 +249,10 @@ export default function DriverDetailsPage() {
                         <h2>{driver.name}</h2>
 
                         <span>
-                            وضعیت: {getStatus(driver.status)}
+                            وضعیت:{" "}
+                            {getStatus(
+                                driver.status
+                            )}
                         </span>
                     </div>
                 </div>
@@ -201,72 +260,107 @@ export default function DriverDetailsPage() {
                 <div className="driver-detail-grid">
                     <div className="driver-detail-card">
                         <UserRound size={20} />
+
                         <div>
                             <span>کد ملی</span>
-                            <strong>{driver.nationalId}</strong>
+
+                            <strong>
+                                {driver.nationalId}
+                            </strong>
                         </div>
                     </div>
 
                     <div className="driver-detail-card">
                         <Phone size={20} />
+
                         <div>
-                            <span>شماره موبایل</span>
-                            <strong>{driver.phone}</strong>
+                            <span>
+                                شماره موبایل
+                            </span>
+
+                            <strong>
+                                {driver.phone}
+                            </strong>
                         </div>
                     </div>
 
                     <div className="driver-detail-card">
                         <Phone size={20} />
+
                         <div>
                             <span>تلفن ثابت</span>
+
                             <strong>
-                                {driver.landline || "ثبت نشده"}
+                                {driver.landline ||
+                                    "ثبت نشده"}
                             </strong>
                         </div>
                     </div>
 
                     <div className="driver-detail-card">
                         <Truck size={20} />
+
                         <div>
                             <span>نوع خودرو</span>
+
                             <strong>
-                                {getVehicleType(driver.vehicleType)}
+                                {getVehicleType(
+                                    driver.vehicleType
+                                )}
                             </strong>
                         </div>
                     </div>
 
                     <div className="driver-detail-card">
                         <Truck size={20} />
+
                         <div>
                             <span>شماره پلاک</span>
-                            <strong>{driver.vehiclePlate}</strong>
+
+                            <strong>
+                                {driver.vehiclePlate}
+                            </strong>
                         </div>
                     </div>
 
                     <div className="driver-detail-card">
                         <CreditCard size={20} />
+
                         <div>
-                            <span>شماره گواهینامه</span>
-                            <strong>{driver.licenseNumber}</strong>
+                            <span>
+                                شماره گواهینامه
+                            </span>
+
+                            <strong>
+                                {driver.licenseNumber}
+                            </strong>
                         </div>
                     </div>
 
                     <div className="driver-detail-card">
                         <CalendarDays size={20} />
+
                         <div>
-                            <span>اعتبار گواهینامه</span>
+                            <span>
+                                اعتبار گواهینامه
+                            </span>
+
                             <strong>
-                                {driver.licenseExpiry || "ثبت نشده"}
+                                {driver.licenseExpiry ||
+                                    "ثبت نشده"}
                             </strong>
                         </div>
                     </div>
 
                     <div className="driver-detail-card">
                         <MapPin size={20} />
+
                         <div>
                             <span>آدرس</span>
+
                             <strong>
-                                {driver.address || "ثبت نشده"}
+                                {driver.address ||
+                                    "ثبت نشده"}
                             </strong>
                         </div>
                     </div>

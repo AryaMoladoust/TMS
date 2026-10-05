@@ -246,7 +246,7 @@ export default function Header({
 
       alert(
         error.message ||
-          "خطا در خروج از حساب"
+        "خطا در خروج از حساب"
       );
 
       setLoggingOut(false);
@@ -389,17 +389,9 @@ export default function Header({
 
         </div>
 
-        {/* وضعیت سرور */}
 
-        <div className="connection-status">
 
-          <Wifi size={18} />
 
-          <span>
-            سرور متصل
-          </span>
-
-        </div>
 
         {/* تم */}
 

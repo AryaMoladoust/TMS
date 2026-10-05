@@ -41,13 +41,11 @@ async function generateInvoiceNumber() {
     let nextNumber = 1;
 
     if (lastInvoice?.invoiceNumber) {
-        const lastPart =
-            lastInvoice.invoiceNumber
-                .split("-")
-                .pop();
+        const lastPart = lastInvoice.invoiceNumber
+            .split("-")
+            .pop();
 
-        const lastNumber =
-            Number(lastPart);
+        const lastNumber = Number(lastPart);
 
         if (!Number.isNaN(lastNumber)) {
             nextNumber = lastNumber + 1;
@@ -56,6 +54,10 @@ async function generateInvoiceNumber() {
 
     return `${prefix}${String(nextNumber).padStart(4, "0")}`;
 }
+
+// ======================================================
+// GET - دریافت تمام فاکتورها
+// ======================================================
 
 export async function GET() {
     try {
@@ -72,15 +74,11 @@ export async function GET() {
 
         return NextResponse.json(invoices);
     } catch (error) {
-        console.error(
-            "Get invoices error:",
-            error
-        );
+        console.error("Get invoices error:", error);
 
         return NextResponse.json(
             {
-                message:
-                    "خطا در دریافت فاکتورها",
+                message: "خطا در دریافت فاکتورها",
                 error: error.message,
             },
             { status: 500 }
@@ -88,12 +86,79 @@ export async function GET() {
     }
 }
 
+// ======================================================
+// DELETE - حذف فاکتور
+// ======================================================
+
+export async function DELETE(request) {
+    try {
+        await connectDB();
+
+        const { searchParams } = new URL(request.url);
+        const id = searchParams.get("id");
+
+        if (!id) {
+            return NextResponse.json(
+                {
+                    message: "شناسه فاکتور ارسال نشده است.",
+                },
+                {
+                    status: 400,
+                }
+            );
+        }
+
+        const invoice = await Invoice.findById(id);
+
+        if (!invoice) {
+            return NextResponse.json(
+                {
+                    message: "فاکتور پیدا نشد.",
+                },
+                {
+                    status: 404,
+                }
+            );
+        }
+
+        await Invoice.findByIdAndDelete(id);
+
+        // اطلاع به کلاینت‌های دیگر که دیتابیس تغییر کرده
+        await touchSyncState();
+
+        return NextResponse.json(
+            {
+                message: "فاکتور با موفقیت حذف شد.",
+                deletedId: id,
+            },
+            {
+                status: 200,
+            }
+        );
+    } catch (error) {
+        console.error("Delete invoice error:", error);
+
+        return NextResponse.json(
+            {
+                message: "حذف فاکتور با خطا مواجه شد.",
+                error: error.message,
+            },
+            {
+                status: 500,
+            }
+        );
+    }
+}
+
+// ======================================================
+// POST - ثبت فاکتور جدید
+// ======================================================
+
 export async function POST(request) {
     try {
         await connectDB();
 
-        const body =
-            await request.json();
+        const body = await request.json();
 
         // ==========================================
         // کاربر ثبت‌کننده فاکتور
@@ -365,17 +430,13 @@ export async function POST(request) {
             ) {
                 finalDriverId = null;
 
-                finalDriverNationalId =
-                    "";
+                finalDriverNationalId = "";
 
-                finalDriverLicenseNumber =
-                    "";
+                finalDriverLicenseNumber = "";
 
-                finalVehicleId =
-                    "";
+                finalVehicleId = "";
 
-                finalVehiclePlate =
-                    "";
+                finalVehiclePlate = "";
             }
         }
 
@@ -475,7 +536,6 @@ export async function POST(request) {
 
         const invoice =
             await Invoice.create({
-
                 invoiceNumber,
 
                 // ==================================
@@ -662,7 +722,6 @@ export async function POST(request) {
                     );
 
                 if (!deletedDailyDriver) {
-
                     // حذف فاکتور
                     await Invoice.findByIdAndDelete(
                         invoice._id
@@ -690,7 +749,6 @@ export async function POST(request) {
                     "Daily driver removed after invoice:",
                     finalDailyDriverId.toString()
                 );
-
             } catch (dailyDriverError) {
                 console.error(
                     "Delete daily driver after invoice error:",
@@ -754,7 +812,6 @@ export async function POST(request) {
                 status: 201,
             }
         );
-
     } catch (error) {
         console.error(
             "Create invoice error:",

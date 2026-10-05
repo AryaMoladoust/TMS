@@ -18,6 +18,8 @@ import {
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 
+import { useNotification } from "@/components/ui/NotificationProvider";
+
 function toPersianDigits(value) {
     if (value === null || value === undefined) {
         return "";
@@ -43,13 +45,11 @@ function InfoItem({
 }) {
     return (
         <div className="invoice-preview-info-item">
-
             <div className="invoice-preview-info-icon">
                 <Icon size={18} />
             </div>
 
             <div>
-
                 <span className="invoice-preview-info-label">
                     {label}
                 </span>
@@ -57,9 +57,7 @@ function InfoItem({
                 <strong className="invoice-preview-info-value">
                     {value || "-"}
                 </strong>
-
             </div>
-
         </div>
     );
 }
@@ -68,15 +66,15 @@ export default function InvoicePreviewPage() {
     const params = useParams();
     const router = useRouter();
 
+    const { showError } = useNotification();
+
     const [invoice, setInvoice] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState("");
 
     useEffect(() => {
         async function fetchInvoice() {
             try {
                 setLoading(true);
-                setError("");
 
                 const id = params?.id;
 
@@ -98,24 +96,23 @@ export default function InvoicePreviewPage() {
                 if (!response.ok) {
                     throw new Error(
                         result.message ||
-                        "خطا در دریافت فاکتور"
+                            "خطا در دریافت فاکتور"
                     );
                 }
 
                 const invoiceData =
-                    result.invoice ||
-                    result;
+                    result.invoice || result;
 
                 setInvoice(invoiceData);
-
             } catch (error) {
                 console.error(
                     "Fetch invoice error:",
                     error
                 );
 
-                setError(
+                showError(
                     error.message ||
+                        "خطا در دریافت فاکتور",
                     "خطا در دریافت فاکتور"
                 );
             } finally {
@@ -124,14 +121,12 @@ export default function InvoicePreviewPage() {
         }
 
         fetchInvoice();
-    }, [params]);
+    }, [params, showError]);
 
     if (loading) {
         return (
             <main className="main-content">
-
                 <div className="invoice-preview-empty">
-
                     <FileText size={48} />
 
                     <h2>
@@ -139,21 +134,18 @@ export default function InvoicePreviewPage() {
                     </h2>
 
                     <p>
-                        اطلاعات فاکتور در حال دریافت است.
+                        اطلاعات فاکتور در حال دریافت
+                        است.
                     </p>
-
                 </div>
-
             </main>
         );
     }
 
-    if (error || !invoice) {
+    if (!invoice) {
         return (
             <main className="main-content">
-
                 <div className="invoice-preview-empty">
-
                     <FileText size={48} />
 
                     <h2>
@@ -161,7 +153,8 @@ export default function InvoicePreviewPage() {
                     </h2>
 
                     <p>
-                        {error || "اطلاعات این فاکتور در دسترس نیست."}
+                        اطلاعات این فاکتور در دسترس
+                        نیست.
                     </p>
 
                     <button
@@ -175,22 +168,17 @@ export default function InvoicePreviewPage() {
 
                         بازگشت به فاکتورها
                     </button>
-
                 </div>
-
             </main>
         );
     }
 
     return (
         <main className="main-content">
-
             {/* هدر */}
 
             <div className="invoice-preview-heading">
-
                 <div>
-
                     <button
                         type="button"
                         className="invoice-back-button"
@@ -208,9 +196,9 @@ export default function InvoicePreviewPage() {
                     </h1>
 
                     <p>
-                        مشاهده کامل اطلاعات فاکتور و بار ثبت‌شده
+                        مشاهده کامل اطلاعات فاکتور و
+                        بار ثبت‌شده
                     </p>
-
                 </div>
 
                 <button
@@ -224,28 +212,21 @@ export default function InvoicePreviewPage() {
 
                     چاپ فاکتور
                 </button>
-
             </div>
-
 
             {/* خود فاکتور */}
 
             <section className="invoice-preview-card">
-
                 {/* سربرگ فاکتور */}
 
                 <div className="invoice-preview-top">
-
                     <div>
-
                         <div className="invoice-preview-logo">
                             T
                         </div>
-
                     </div>
 
                     <div className="invoice-preview-title">
-
                         <h2>
                             موسسه حمل و نقل کامران
                         </h2>
@@ -257,11 +238,9 @@ export default function InvoicePreviewPage() {
                         <strong>
                             فاکتور حمل بار
                         </strong>
-
                     </div>
 
                     <div className="invoice-preview-number">
-
                         <span>
                             شماره فاکتور
                         </span>
@@ -269,38 +248,31 @@ export default function InvoicePreviewPage() {
                         <strong>
                             {toPersianDigits(
                                 invoice.invoiceNumber ||
-                                invoice.invoiceId ||
-                                invoice._id
+                                    invoice.invoiceId ||
+                                    invoice._id
                             )}
                         </strong>
-
                     </div>
-
                 </div>
-
 
                 {/* اطلاعات پایه */}
 
                 <div className="invoice-preview-section">
-
                     <div className="invoice-preview-section-title">
-
                         <FileText size={20} />
 
                         <h3>
                             اطلاعات فاکتور
                         </h3>
-
                     </div>
 
                     <div className="invoice-preview-info-grid">
-
                         <InfoItem
                             icon={Hash}
                             label="شماره فاکتور"
                             value={toPersianDigits(
                                 invoice.invoiceNumber ||
-                                invoice.invoiceId
+                                    invoice.invoiceId
                             )}
                         />
 
@@ -315,7 +287,9 @@ export default function InvoicePreviewPage() {
                         <InfoItem
                             icon={CalendarDays}
                             label="ساعت شروع"
-                            value={invoice.startTime}
+                            value={
+                                invoice.startTime
+                            }
                         />
 
                         <InfoItem
@@ -326,38 +300,35 @@ export default function InvoicePreviewPage() {
                                 invoice.companyId?.name
                             }
                         />
-
                     </div>
-
                 </div>
-
 
                 {/* راننده */}
 
                 <div className="invoice-preview-section">
-
                     <div className="invoice-preview-section-title">
-
                         <User size={20} />
 
                         <h3>
                             اطلاعات راننده
                         </h3>
-
                     </div>
 
                     <div className="invoice-preview-info-grid">
-
                         <InfoItem
                             icon={User}
                             label="نام راننده"
-                            value={invoice.driverName}
+                            value={
+                                invoice.driverName
+                            }
                         />
 
                         <InfoItem
                             icon={Phone}
                             label="شماره تماس"
-                            value={invoice.driverPhone}
+                            value={
+                                invoice.driverPhone
+                            }
                         />
 
                         <InfoItem
@@ -375,83 +346,79 @@ export default function InvoicePreviewPage() {
                                 invoice.driverLicenseNumber
                             )}
                         />
-
                     </div>
-
                 </div>
-
 
                 {/* خودرو */}
 
                 <div className="invoice-preview-section">
-
                     <div className="invoice-preview-section-title">
-
                         <Car size={20} />
 
                         <h3>
                             اطلاعات خودرو
                         </h3>
-
                     </div>
 
                     <div className="invoice-preview-info-grid">
-
                         <InfoItem
                             icon={Car}
                             label="نوع خودرو"
-                            value={invoice.vehicleType}
+                            value={
+                                invoice.vehicleType
+                            }
                         />
 
                         <InfoItem
                             icon={Hash}
                             label="شماره پلاک"
-                            value={invoice.vehiclePlate}
+                            value={
+                                invoice.vehiclePlate
+                            }
                         />
 
                         <InfoItem
                             icon={Hash}
                             label="شناسه خودرو"
-                            value={invoice.vehicleId}
+                            value={
+                                invoice.vehicleId
+                            }
                         />
 
                         <InfoItem
                             icon={User}
                             label="نوع راننده"
                             value={
-                                invoice.driverType === "guest"
+                                invoice.driverType ===
+                                "guest"
                                     ? "مهمان"
-                                    : invoice.driverType === "main"
-                                        ? "راننده اصلی"
-                                        : "دستی"
+                                    : invoice.driverType ===
+                                      "main"
+                                    ? "راننده اصلی"
+                                    : "دستی"
                             }
                         />
-
                     </div>
-
                 </div>
-
 
                 {/* اطلاعات بار */}
 
                 <div className="invoice-preview-section invoice-preview-load-section">
-
                     <div className="invoice-preview-section-title">
-
                         <Package size={20} />
 
                         <h3>
                             اطلاعات بار
                         </h3>
-
                     </div>
 
                     <div className="invoice-preview-info-grid">
-
                         <InfoItem
                             icon={Package}
                             label="نوع بار"
-                            value={invoice.loadType}
+                            value={
+                                invoice.loadType
+                            }
                         />
 
                         <InfoItem
@@ -466,19 +433,25 @@ export default function InvoicePreviewPage() {
                         <InfoItem
                             icon={MapPin}
                             label="مبدا"
-                            value={invoice.origin}
+                            value={
+                                invoice.origin
+                            }
                         />
 
                         <InfoItem
                             icon={MapPin}
                             label="مقصد"
-                            value={invoice.destination}
+                            value={
+                                invoice.destination
+                            }
                         />
 
                         <InfoItem
                             icon={MapPin}
                             label="آدرس بار"
-                            value={invoice.address}
+                            value={
+                                invoice.address
+                            }
                         />
 
                         <InfoItem
@@ -486,34 +459,28 @@ export default function InvoicePreviewPage() {
                             label="مسافت"
                             value={
                                 invoice.distance
-                                    ? `${toPersianDigits(invoice.distance)} کیلومتر`
+                                    ? `${toPersianDigits(
+                                          invoice.distance
+                                      )} کیلومتر`
                                     : "-"
                             }
                         />
-
                     </div>
-
                 </div>
-
 
                 {/* هزینه ها */}
 
                 <div className="invoice-preview-section">
-
                     <div className="invoice-preview-section-title">
-
                         <Banknote size={20} />
 
                         <h3>
                             اطلاعات مالی
                         </h3>
-
                     </div>
 
                     <div className="invoice-preview-cost-grid">
-
                         <div className="invoice-preview-cost-item">
-
                             <span>
                                 هزینه حمل
                             </span>
@@ -524,26 +491,24 @@ export default function InvoicePreviewPage() {
                                 )}
 
                                 <small>
-                                    {" "}تومان
+                                    {" "}
+                                    تومان
                                 </small>
                             </strong>
-
                         </div>
 
                         <div className="invoice-preview-cost-item">
-
                             <span>
                                 نوع پرداخت
                             </span>
 
                             <strong>
-                                {invoice.costType || "-"}
+                                {invoice.costType ||
+                                    "-"}
                             </strong>
-
                         </div>
 
                         <div className="invoice-preview-cost-item">
-
                             <span>
                                 هزینه بیمه
                             </span>
@@ -554,14 +519,13 @@ export default function InvoicePreviewPage() {
                                 )}
 
                                 <small>
-                                    {" "}تومان
+                                    {" "}
+                                    تومان
                                 </small>
                             </strong>
-
                         </div>
 
                         <div className="invoice-preview-cost-item">
-
                             <span>
                                 هزینه کارگر
                             </span>
@@ -572,14 +536,13 @@ export default function InvoicePreviewPage() {
                                 )}
 
                                 <small>
-                                    {" "}تومان
+                                    {" "}
+                                    تومان
                                 </small>
                             </strong>
-
                         </div>
 
                         <div className="invoice-preview-cost-item">
-
                             <span>
                                 هزینه باسکول
                             </span>
@@ -590,14 +553,13 @@ export default function InvoicePreviewPage() {
                                 )}
 
                                 <small>
-                                    {" "}تومان
+                                    {" "}
+                                    تومان
                                 </small>
                             </strong>
-
                         </div>
 
                         <div className="invoice-preview-cost-item">
-
                             <span>
                                 هزینه توقف
                             </span>
@@ -608,14 +570,13 @@ export default function InvoicePreviewPage() {
                                 )}
 
                                 <small>
-                                    {" "}تومان
+                                    {" "}
+                                    تومان
                                 </small>
                             </strong>
-
                         </div>
 
                         <div className="invoice-preview-cost-item">
-
                             <span>
                                 کمیسیون
                             </span>
@@ -626,16 +587,14 @@ export default function InvoicePreviewPage() {
                                 )}
 
                                 <small>
-                                    {" "}تومان
+                                    {" "}
+                                    تومان
                                 </small>
                             </strong>
-
                         </div>
-
                     </div>
 
                     <div className="invoice-preview-total">
-
                         <span>
                             مبلغ کل حمل
                         </span>
@@ -646,61 +605,53 @@ export default function InvoicePreviewPage() {
                             )}
 
                             <small>
-                                {" "}تومان
+                                {" "}
+                                تومان
                             </small>
                         </strong>
-
                     </div>
-
                 </div>
-
 
                 {/* گیرنده */}
 
                 <div className="invoice-preview-section">
-
                     <div className="invoice-preview-section-title">
-
                         <User size={20} />
 
                         <h3>
                             اطلاعات تکمیلی
                         </h3>
-
                     </div>
 
                     <div className="invoice-preview-info-grid">
-
                         <InfoItem
                             icon={User}
                             label="نام گیرنده"
-                            value={invoice.receiverName}
+                            value={
+                                invoice.receiverName
+                            }
                         />
-
                     </div>
 
                     {invoice.description && (
                         <div className="invoice-preview-description">
-
                             <span>
                                 توضیحات
                             </span>
 
                             <p>
-                                {invoice.description}
+                                {
+                                    invoice.description
+                                }
                             </p>
-
                         </div>
                     )}
-
                 </div>
-
 
                 {/* QR */}
 
                 {invoice.qrCode && (
                     <div className="invoice-preview-qr-section">
-
                         <span>
                             QR Code
                         </span>
@@ -708,27 +659,22 @@ export default function InvoicePreviewPage() {
                         <div className="invoice-preview-qr">
                             {invoice.qrCode}
                         </div>
-
                     </div>
                 )}
-
 
                 {/* پایین فاکتور */}
 
                 <div className="invoice-preview-footer">
-
                     <span>
-                        این فاکتور توسط سیستم مدیریت حمل‌ونقل ثبت شده است.
+                        این فاکتور توسط سیستم مدیریت
+                        حمل‌ونقل ثبت شده است.
                     </span>
 
                     <span>
                         {invoice.invoiceNumber}
                     </span>
-
                 </div>
-
             </section>
-
         </main>
     );
 }

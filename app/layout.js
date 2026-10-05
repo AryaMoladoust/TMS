@@ -1,5 +1,7 @@
 import "./globals.css";
 
+import NotificationProvider from "@/components/ui/NotificationProvider";
+
 export const metadata = {
   title: "سرویس حمل‌ونقل باربری",
   description: "سیستم مدیریت حمل‌ونقل باربری",
@@ -30,7 +32,11 @@ export default function RootLayout({ children }) {
         />
       </head>
 
-      <body>{children}</body>
+      <body>
+        <NotificationProvider>
+          {children}
+        </NotificationProvider>
+      </body>
     </html>
   );
 }

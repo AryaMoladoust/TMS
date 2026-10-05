@@ -2,8 +2,10 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+
 import PersianDatePicker from "@/components/drivers/PersianDatePicker";
 import InvoicePreview from "@/components/invoices/InvoicePreview";
+import { useNotification } from "@/components/ui/NotificationProvider";
 
 import {
     ArrowRight,
@@ -206,6 +208,16 @@ function createPreviewInvoiceNumber() {
 
 export default function AddInvoicePage() {
     /* =======================================================
+       NOTIFICATION SYSTEM
+    ======================================================= */
+
+    const {
+        showSuccess,
+        showError,
+        showWarning,
+    } = useNotification();
+
+    /* =======================================================
        GENERAL STATE
     ======================================================= */
 
@@ -263,7 +275,8 @@ export default function AddInvoicePage() {
     ======================================================= */
 
     const [invoiceDate, setInvoiceDate] = useState(null);
-    const [previewInvoiceNumber, setPreviewInvoiceNumber] = useState("");
+    const [previewInvoiceNumber, setPreviewInvoiceNumber] =
+        useState("");
 
     const [invoiceData, setInvoiceData] = useState({
         startTime: "",
@@ -287,11 +300,13 @@ export default function AddInvoicePage() {
             try {
                 setDataLoading(true);
 
-                const [driversResponse, loadsResponse] =
-                    await Promise.all([
-                        fetch("/api/daily-drivers"),
-                        fetch("/api/loads"),
-                    ]);
+                const [
+                    driversResponse,
+                    loadsResponse,
+                ] = await Promise.all([
+                    fetch("/api/daily-drivers"),
+                    fetch("/api/loads"),
+                ]);
 
                 if (!driversResponse.ok) {
                     throw new Error(
@@ -331,8 +346,9 @@ export default function AddInvoicePage() {
                     error
                 );
 
-                alert(
-                    "دریافت اطلاعات رانندگان یا بارها با خطا مواجه شد."
+                showError(
+                    "دریافت اطلاعات رانندگان یا بارها با خطا مواجه شد.",
+                    "خطا در دریافت اطلاعات"
                 );
             } finally {
                 setDataLoading(false);
@@ -340,7 +356,7 @@ export default function AddInvoicePage() {
         }
 
         loadDataFromDatabase();
-    }, []);
+    }, [showError]);
 
     /* =======================================================
        DRIVER SEARCH
@@ -376,21 +392,18 @@ export default function AddInvoicePage() {
                 ? ""
                 : realDriver?.licenseNumber || "",
 
-            vehicleType:
-                getVehicleTypeLabel(
-                    driver.vehicleType ||
-                        realDriver?.vehicleType ||
-                        ""
-                ),
+            vehicleType: getVehicleTypeLabel(
+                driver.vehicleType ||
+                    realDriver?.vehicleType ||
+                    ""
+            ),
 
             plate: isGuest
                 ? ""
                 : realDriver?.vehiclePlate || "",
         });
 
-        setDriverSearch(
-            driver.name || ""
-        );
+        setDriverSearch(driver.name || "");
 
         setDriverSearchOpen(false);
     }
@@ -428,8 +441,8 @@ export default function AddInvoicePage() {
             load.provinceStatus === "outside"
                 ? "خارج استان"
                 : load.provinceStatus === "inside"
-                    ? "داخل استان"
-                    : load.status || "";
+                ? "داخل استان"
+                : load.status || "";
 
         setLoadData({
             loadId: load._id || "",
@@ -439,12 +452,6 @@ export default function AddInvoicePage() {
             origin: load.origin || "",
             destination: load.destination || "",
 
-            /*
-             * مختصات مقصد (طول/عرض جغرافیایی) که هنگام
-             * ثبت بار در دیتابیس ذخیره شده، اینجا هم
-             * کپی می‌شود تا در QR کد فاکتور برای
-             * مسیریابی واقعی استفاده شود.
-             */
             destinationLat:
                 load.destinationLat ?? null,
 
@@ -456,10 +463,7 @@ export default function AddInvoicePage() {
             status: provinceStatus,
         });
 
-        setLoadSearch(
-            load.title || ""
-        );
-
+        setLoadSearch(load.title || "");
         setLoadSearchOpen(false);
     }
 
@@ -563,104 +567,71 @@ export default function AddInvoicePage() {
             companyAddress: companyData.address,
 
             number:
-                previewInvoiceNumber ||
-                "—",
+                previewInvoiceNumber || "—",
 
-            date:
-                invoiceDate
-                    ? invoiceDate.format(
-                        "YYYY/MM/DD"
-                    )
-                    : "—",
+            date: invoiceDate
+                ? invoiceDate.format("YYYY/MM/DD")
+                : "—",
 
             startTime:
-                invoiceData.startTime ||
-                "—",
+                invoiceData.startTime || "—",
 
             driver:
-                driverData.name ||
-                "—",
+                driverData.name || "—",
 
             vehicle:
-                driverData.vehicleType ||
-                "—",
+                driverData.vehicleType || "—",
 
             plate:
-                driverData.plate ||
-                "—",
+                driverData.plate || "—",
 
             clientCompanyName:
-                loadData.companyName ||
-                "—",
+                loadData.companyName || "—",
 
             cargoType:
-                loadData.barType ||
-                "—",
+                loadData.barType || "—",
 
             origin:
-                loadData.origin ||
-                "—",
+                loadData.origin || "—",
 
             destination:
-                loadData.destination ||
-                "—",
+                loadData.destination || "—",
 
-            /*
-             * برای ساخت لینک مسیریابی واقعی در QR کد.
-             */
             destinationLat:
                 loadData.destinationLat,
 
             destinationLng:
                 loadData.destinationLng,
 
-            distance:
-                loadData.distance
-                    ? `${loadData.distance} کیلومتر`
-                    : "—",
+            distance: loadData.distance
+                ? `${loadData.distance} کیلومتر`
+                : "—",
 
             loadAddress:
-                loadData.address ||
-                "—",
+                loadData.address || "—",
 
             loadStatus:
-                loadData.status ||
-                "—",
+                loadData.status || "—",
 
-            cost:
-                mainCost.toLocaleString(
-                    "fa-IR"
-                ),
+            cost: mainCost.toLocaleString("fa-IR"),
 
             insurance:
-                insurance.toLocaleString(
-                    "fa-IR"
-                ),
+                insurance.toLocaleString("fa-IR"),
 
             workerCost:
-                workerCost.toLocaleString(
-                    "fa-IR"
-                ),
+                workerCost.toLocaleString("fa-IR"),
 
             scaleCost:
-                scaleCost.toLocaleString(
-                    "fa-IR"
-                ),
+                scaleCost.toLocaleString("fa-IR"),
 
             stopCost:
-                stopCost.toLocaleString(
-                    "fa-IR"
-                ),
+                stopCost.toLocaleString("fa-IR"),
 
             commissionCost:
-                commissionCost.toLocaleString(
-                    "fa-IR"
-                ),
+                commissionCost.toLocaleString("fa-IR"),
 
             total:
-                totalAmount.toLocaleString(
-                    "fa-IR"
-                ),
+                totalAmount.toLocaleString("fa-IR"),
 
             totalInWords:
                 `${numberToPersianWords(
@@ -668,12 +639,10 @@ export default function AddInvoicePage() {
                 )} تومان`,
 
             receiverName:
-                invoiceData.receiverName ||
-                "—",
+                invoiceData.receiverName || "—",
 
             description:
-                invoiceData.description ||
-                "",
+                invoiceData.description || "",
         };
     }
 
@@ -689,26 +658,40 @@ export default function AddInvoicePage() {
             createPreviewInvoiceNumber();
 
         if (!previewInvoiceNumber) {
-            setPreviewInvoiceNumber(invoiceNumber);
+            setPreviewInvoiceNumber(
+                invoiceNumber
+            );
         }
 
         if (!invoiceDate) {
-            alert("تاریخ فاکتور را انتخاب کنید.");
+            showWarning(
+                "لطفاً تاریخ فاکتور را انتخاب کنید.",
+                "تاریخ فاکتور"
+            );
             return;
         }
 
         if (!driverData.name.trim()) {
-            alert("نام راننده را وارد کنید.");
+            showWarning(
+                "لطفاً راننده را انتخاب یا نام راننده را وارد کنید.",
+                "اطلاعات راننده"
+            );
             return;
         }
 
         if (!driverData.vehicleType.trim()) {
-            alert("نوع خودرو را انتخاب کنید.");
+            showWarning(
+                "لطفاً نوع خودرو را انتخاب کنید.",
+                "نوع خودرو"
+            );
             return;
         }
 
         if (!invoiceData.cost) {
-            alert("هزینه اصلی را وارد کنید.");
+            showWarning(
+                "لطفاً هزینه اصلی فاکتور را وارد کنید.",
+                "هزینه اصلی"
+            );
             return;
         }
 
@@ -719,12 +702,9 @@ export default function AddInvoicePage() {
                 selectedDriver?.type === "guest";
 
             const driverType =
-                isGuest
-                    ? "guest"
-                    : "main";
+                isGuest ? "guest" : "main";
 
             /*
-             * مهم:
              * اگر بار از دیتابیس انتخاب شده باشد،
              * loadData.loadId همان MongoDB _id واقعی بار است.
              */
@@ -770,8 +750,7 @@ export default function AddInvoicePage() {
                     driverData.plate.trim(),
 
                 /*
-                 * مهم‌ترین بخش:
-                 * شناسه واقعی MongoDB بار ارسال می‌شود.
+                 * شناسه واقعی MongoDB بار
                  */
                 loadId:
                     selectedLoadId,
@@ -808,7 +787,8 @@ export default function AddInvoicePage() {
                     ) || 0,
 
                 costType:
-                    invoiceData.costType === "credit"
+                    invoiceData.costType ===
+                    "credit"
                         ? "اعتباری"
                         : "نقد",
 
@@ -874,8 +854,9 @@ export default function AddInvoicePage() {
                 );
             }
 
-            alert(
-                "فاکتور با موفقیت ثبت شد و بار از لیست بارها حذف شد."
+            showSuccess(
+                "فاکتور با موفقیت ثبت شد و بار از لیست بارها حذف شد.",
+                "ثبت فاکتور موفق"
             );
 
             window.location.href =
@@ -886,9 +867,10 @@ export default function AddInvoicePage() {
                 error
             );
 
-            alert(
+            showError(
                 error.message ||
-                "ثبت فاکتور با خطا مواجه شد."
+                "ثبت فاکتور با خطا مواجه شد.",
+                "خطا در ثبت فاکتور"
             );
         } finally {
             setSaving(false);
@@ -969,8 +951,10 @@ export default function AddInvoicePage() {
                             padding: "14px 18px",
                             margin: "0 0 10px",
                             borderRadius: "12px",
-                            background: "var(--surface-soft)",
-                            color: "var(--text-secondary)",
+                            background:
+                                "var(--surface-soft)",
+                            color:
+                                "var(--text-secondary)",
                             textAlign: "center",
                         }}
                     >
@@ -1130,7 +1114,9 @@ export default function AddInvoicePage() {
                             <UserRound size={18} />
 
                             <input
-                                value={driverData.name}
+                                value={
+                                    driverData.name
+                                }
                                 onChange={(event) =>
                                     editDriverField(
                                         "name",
@@ -1138,7 +1124,9 @@ export default function AddInvoicePage() {
                                     )
                                 }
                                 placeholder="نام و نام خانوادگی"
-                                disabled={!!selectedDriver}
+                                disabled={
+                                    !!selectedDriver
+                                }
                             />
 
                         </div>
@@ -1159,7 +1147,9 @@ export default function AddInvoicePage() {
                             <CreditCard size={18} />
 
                             <input
-                                value={driverData.nationalId}
+                                value={
+                                    driverData.nationalId
+                                }
                                 onChange={(event) =>
                                     editDriverField(
                                         "nationalId",
@@ -1167,7 +1157,9 @@ export default function AddInvoicePage() {
                                     )
                                 }
                                 placeholder="کد ملی"
-                                disabled={!!selectedDriver}
+                                disabled={
+                                    !!selectedDriver
+                                }
                             />
 
                         </div>
@@ -1188,7 +1180,9 @@ export default function AddInvoicePage() {
                             <CreditCard size={18} />
 
                             <input
-                                value={driverData.licenseNumber}
+                                value={
+                                    driverData.licenseNumber
+                                }
                                 onChange={(event) =>
                                     editDriverField(
                                         "licenseNumber",
@@ -1196,7 +1190,9 @@ export default function AddInvoicePage() {
                                     )
                                 }
                                 placeholder="شماره گواهینامه"
-                                disabled={!!selectedDriver}
+                                disabled={
+                                    !!selectedDriver
+                                }
                             />
 
                         </div>
@@ -1217,14 +1213,18 @@ export default function AddInvoicePage() {
                             <Truck size={18} />
 
                             <select
-                                value={driverData.vehicleType}
+                                value={
+                                    driverData.vehicleType
+                                }
                                 onChange={(event) =>
                                     editDriverField(
                                         "vehicleType",
                                         event.target.value
                                     )
                                 }
-                                disabled={!!selectedDriver}
+                                disabled={
+                                    !!selectedDriver
+                                }
                             >
 
                                 <option value="">
@@ -1277,7 +1277,9 @@ export default function AddInvoicePage() {
                                     )
                                 }
                                 placeholder="مثلاً ۱۲ ایران ۳۴۵ ب۶۷"
-                                disabled={!!selectedDriver}
+                                disabled={
+                                    !!selectedDriver
+                                }
                             />
 
                         </div>
@@ -1313,7 +1315,9 @@ export default function AddInvoicePage() {
                             <CalendarDays size={18} />
 
                             <PersianDatePicker
-                                value={invoiceDate}
+                                value={
+                                    invoiceDate
+                                }
                                 onChange={
                                     setInvoiceDate
                                 }
@@ -1388,8 +1392,12 @@ export default function AddInvoicePage() {
 
                                     <input
                                         type="text"
-                                        value={loadSearch}
-                                        onChange={(event) => {
+                                        value={
+                                            loadSearch
+                                        }
+                                        onChange={(
+                                            event
+                                        ) => {
 
                                             setLoadSearch(
                                                 event.target.value
@@ -1433,7 +1441,9 @@ export default function AddInvoicePage() {
                                                     return (
                                                         <button
                                                             type="button"
-                                                            key={load._id}
+                                                            key={
+                                                                load._id
+                                                            }
                                                             className="invoice-search-option"
                                                             onClick={() =>
                                                                 selectLoad(
@@ -1453,15 +1463,23 @@ export default function AddInvoicePage() {
                                                             <div>
 
                                                                 <strong>
-                                                                    {load.title}
+                                                                    {
+                                                                        load.title
+                                                                    }
                                                                 </strong>
 
                                                                 <span>
-                                                                    {companyName}
+                                                                    {
+                                                                        companyName
+                                                                    }
                                                                     {" - "}
-                                                                    {load.origin}
+                                                                    {
+                                                                        load.origin
+                                                                    }
                                                                     {" تا "}
-                                                                    {load.destination}
+                                                                    {
+                                                                        load.destination
+                                                                    }
                                                                 </span>
 
                                                             </div>
@@ -1481,44 +1499,9 @@ export default function AddInvoicePage() {
 
                                         )}
 
-
-                                        <button
-                                            type="button"
-                                            className="invoice-manual-button"
-                                            onClick={
-                                                enableManualLoad
-                                            }
-                                        >
-                                            + ورود دستی اطلاعات بار
-                                        </button>
-
                                     </div>
 
                                 )}
-
-                            </div>
-
-                        )}
-
-
-                        {manualLoad && (
-
-                            <div className="invoice-manual-mode">
-
-                                <div className="invoice-manual-mode-header">
-
-                                    <span>
-                                        ورود دستی اطلاعات بار
-                                    </span>
-
-                                    <button
-                                        type="button"
-                                        onClick={clearLoad}
-                                    >
-                                        انتخاب بار موجود
-                                    </button>
-
-                                </div>
 
                             </div>
 
@@ -1540,7 +1523,9 @@ export default function AddInvoicePage() {
                             <Package size={18} />
 
                             <input
-                                value={loadData.title}
+                                value={
+                                    loadData.title
+                                }
                                 onChange={(event) =>
                                     editLoadField(
                                         "title",
@@ -1548,7 +1533,9 @@ export default function AddInvoicePage() {
                                     )
                                 }
                                 placeholder="عنوان بار"
-                                disabled={!!selectedLoad}
+                                disabled={
+                                    !!selectedLoad
+                                }
                             />
 
                         </div>
@@ -1569,14 +1556,18 @@ export default function AddInvoicePage() {
                             <Package size={18} />
 
                             <select
-                                value={loadData.barType}
+                                value={
+                                    loadData.barType
+                                }
                                 onChange={(event) =>
                                     editLoadField(
                                         "barType",
                                         event.target.value
                                     )
                                 }
-                                disabled={!!selectedLoad}
+                                disabled={
+                                    !!selectedLoad
+                                }
                             >
 
                                 <option value="">
@@ -1623,14 +1614,18 @@ export default function AddInvoicePage() {
                             <Route size={18} />
 
                             <select
-                                value={loadData.status}
+                                value={
+                                    loadData.status
+                                }
                                 onChange={(event) =>
                                     editLoadField(
                                         "status",
                                         event.target.value
                                     )
                                 }
-                                disabled={!!selectedLoad}
+                                disabled={
+                                    !!selectedLoad
+                                }
                             >
 
                                 <option value="">
@@ -1675,7 +1670,9 @@ export default function AddInvoicePage() {
                                     )
                                 }
                                 placeholder="نام شرکت"
-                                disabled={!!selectedLoad}
+                                disabled={
+                                    !!selectedLoad
+                                }
                             />
 
                         </div>
@@ -1706,7 +1703,9 @@ export default function AddInvoicePage() {
                                     )
                                 }
                                 placeholder="مبدأ"
-                                disabled={!!selectedLoad}
+                                disabled={
+                                    !!selectedLoad
+                                }
                             />
 
                         </div>
@@ -1737,7 +1736,9 @@ export default function AddInvoicePage() {
                                     )
                                 }
                                 placeholder="مقصد"
-                                disabled={!!selectedLoad}
+                                disabled={
+                                    !!selectedLoad
+                                }
                             />
 
                         </div>
@@ -1768,7 +1769,9 @@ export default function AddInvoicePage() {
                                     )
                                 }
                                 placeholder="مثلاً ۳۲۵"
-                                disabled={!!selectedLoad}
+                                disabled={
+                                    !!selectedLoad
+                                }
                             />
 
                             <span className="invoice-input-unit">
@@ -1803,7 +1806,9 @@ export default function AddInvoicePage() {
                                     )
                                 }
                                 placeholder="آدرس محل بارگیری..."
-                                disabled={!!selectedLoad}
+                                disabled={
+                                    !!selectedLoad
+                                }
                             />
 
                         </div>
@@ -2063,7 +2068,8 @@ export default function AddInvoicePage() {
                                 type="number"
                                 min="0"
                                 value={
-                                    invoiceData.commissionCost ?? ""
+                                    invoiceData.commissionCost ??
+                                    ""
                                 }
                                 onChange={(event) =>
                                     editInvoiceField(

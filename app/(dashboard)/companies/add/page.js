@@ -13,8 +13,22 @@ import {
     Save,
 } from "lucide-react";
 
+import { useNotification } from "@/components/ui/NotificationProvider";
 
 export default function AddCompanyPage() {
+    /* =========================================================
+       NOTIFICATION SYSTEM
+    ========================================================= */
+
+    const {
+        showSuccess,
+        showError,
+        showWarning,
+    } = useNotification();
+
+    /* =========================================================
+       FORM STATE
+    ========================================================= */
 
     const [formData, setFormData] = useState({
         name: "",
@@ -25,20 +39,13 @@ export default function AddCompanyPage() {
         description: "",
     });
 
+    const [saving, setSaving] = useState(false);
 
-    const [saving, setSaving] =
-        useState(false);
-
-    const [error, setError] =
-        useState("");
-
-
-    // ==========================================
-    // تغییر فیلدها
-    // ==========================================
+    /* =========================================================
+       CHANGE FIELDS
+    ========================================================= */
 
     function handleChange(event) {
-
         const {
             name,
             value,
@@ -50,44 +57,36 @@ export default function AddCompanyPage() {
         }));
     }
 
-
-    // ==========================================
-    // ثبت شرکت
-    // ==========================================
+    /* =========================================================
+       SUBMIT COMPANY
+    ========================================================= */
 
     async function handleSubmit(event) {
-
         event.preventDefault();
 
-        setError("");
-
-
-        // ======================================
-        // بررسی فیلدهای اجباری
-        // ======================================
+        /* ======================================
+           REQUIRED FIELDS
+        ====================================== */
 
         if (
             !formData.name.trim() ||
             !formData.managerName.trim() ||
             !formData.phone.trim()
         ) {
-
-            setError(
-                "لطفاً نام شرکت، نام مسئول و شماره تماس را وارد کنید."
+            showWarning(
+                "لطفاً نام شرکت، نام مسئول و شماره تماس را وارد کنید.",
+                "اطلاعات ناقص"
             );
 
             return;
         }
 
+        /* ======================================
+           SEND TO API
+        ====================================== */
 
         try {
-
             setSaving(true);
-
-
-            // ==================================
-            // ارسال به API
-            // ==================================
 
             const response = await fetch(
                 "/api/companies",
@@ -105,56 +104,64 @@ export default function AddCompanyPage() {
                 }
             );
 
-
             const data =
                 await response.json();
 
-
-            // ==================================
-            // خطای API
-            // ==================================
+            /* ==================================
+               API ERROR
+            ================================== */
 
             if (!response.ok) {
-
                 throw new Error(
                     data.message ||
+                    data.error ||
                     "خطا در ثبت شرکت"
                 );
             }
 
+            /* ==================================
+               SUCCESS
+            ================================== */
 
-            // ==================================
-            // ثبت موفق
-            // ==================================
+            showSuccess(
+                "شرکت با موفقیت ثبت شد.",
+                "ثبت شرکت موفق"
+            );
 
-            window.location.href =
-                "/companies";
+            /*
+             * کمی تأخیر می‌دهیم تا کاربر
+             * پیام موفقیت را ببیند.
+             */
+            setTimeout(() => {
+                window.location.href =
+                    "/companies";
+            }, 700);
 
         } catch (error) {
-
             console.error(
                 "خطا در ثبت شرکت:",
                 error
             );
 
-            setError(
+            showError(
                 error.message ||
-                "ثبت شرکت با خطا مواجه شد."
+                "ثبت شرکت با خطا مواجه شد.",
+                "خطا در ثبت شرکت"
             );
-
         } finally {
-
             setSaving(false);
-
         }
     }
 
+    /* =========================================================
+       RENDER
+    ========================================================= */
 
     return (
         <main className="main-content">
 
             {/* =================================
-                Page Header
+                PAGE HEADER
             ================================== */}
 
             <div className="page-heading page-heading-with-action">
@@ -173,11 +180,9 @@ export default function AddCompanyPage() {
 
                     </div>
 
-
                     <h1>
                         افزودن شرکت
                     </h1>
-
 
                     <p>
                         اطلاعات شرکت جدید را وارد کنید
@@ -189,11 +194,14 @@ export default function AddCompanyPage() {
 
 
             {/* =================================
-                Form
+                FORM
             ================================== */}
 
             <section className="company-form-panel">
 
+                {/* =================================
+                    FORM HEADER
+                ================================== */}
 
                 <div className="company-form-header">
 
@@ -203,13 +211,11 @@ export default function AddCompanyPage() {
 
                     </div>
 
-
                     <div>
 
                         <h2>
                             اطلاعات شرکت
                         </h2>
-
 
                         <p>
                             اطلاعات اصلی شرکت را وارد کنید
@@ -220,29 +226,13 @@ export default function AddCompanyPage() {
                 </div>
 
 
-                {/* =================================
-                    Error
-                ================================== */}
-
-                {error && (
-
-                    <div className="company-form-error">
-
-                        {error}
-
-                    </div>
-
-                )}
-
-
                 <form
                     className="company-form"
                     onSubmit={handleSubmit}
                 >
 
-
                     {/* =================================
-                        Company Name
+                        COMPANY NAME
                     ================================== */}
 
                     <div className="company-form-group">
@@ -257,11 +247,9 @@ export default function AddCompanyPage() {
 
                         </label>
 
-
                         <div className="company-input-wrapper">
 
                             <Building2 size={18} />
-
 
                             <input
                                 id="companyName"
@@ -283,7 +271,7 @@ export default function AddCompanyPage() {
 
 
                     {/* =================================
-                        Manager
+                        MANAGER
                     ================================== */}
 
                     <div className="company-form-group">
@@ -298,11 +286,9 @@ export default function AddCompanyPage() {
 
                         </label>
 
-
                         <div className="company-input-wrapper">
 
                             <UserRound size={18} />
-
 
                             <input
                                 id="managerName"
@@ -324,7 +310,7 @@ export default function AddCompanyPage() {
 
 
                     {/* =================================
-                        Phone
+                        PHONE
                     ================================== */}
 
                     <div className="company-form-group">
@@ -339,11 +325,9 @@ export default function AddCompanyPage() {
 
                         </label>
 
-
                         <div className="company-input-wrapper">
 
                             <Phone size={18} />
-
 
                             <input
                                 id="companyPhone"
@@ -365,7 +349,7 @@ export default function AddCompanyPage() {
 
 
                     {/* =================================
-                        Landline
+                        LANDLINE
                     ================================== */}
 
                     <div className="company-form-group">
@@ -376,11 +360,9 @@ export default function AddCompanyPage() {
 
                         </label>
 
-
                         <div className="company-input-wrapper">
 
                             <Phone size={18} />
-
 
                             <input
                                 id="companyLandline"
@@ -401,7 +383,7 @@ export default function AddCompanyPage() {
 
 
                     {/* =================================
-                        Address
+                        ADDRESS
                     ================================== */}
 
                     <div className="company-form-group company-form-full">
@@ -412,11 +394,9 @@ export default function AddCompanyPage() {
 
                         </label>
 
-
                         <div className="company-input-wrapper company-textarea-wrapper">
 
                             <MapPin size={18} />
-
 
                             <textarea
                                 id="companyAddress"
@@ -437,7 +417,7 @@ export default function AddCompanyPage() {
 
 
                     {/* =================================
-                        Description
+                        DESCRIPTION
                     ================================== */}
 
                     <div className="company-form-group company-form-full">
@@ -448,11 +428,9 @@ export default function AddCompanyPage() {
 
                         </label>
 
-
                         <div className="company-input-wrapper company-textarea-wrapper">
 
                             <FileText size={18} />
-
 
                             <textarea
                                 id="companyDescription"
@@ -473,22 +451,7 @@ export default function AddCompanyPage() {
 
 
                     {/* =================================
-                        Error
-                    ================================== */}
-
-                    {error && (
-
-                        <div
-                            className="company-form-error company-form-full"
-                        >
-                            {error}
-                        </div>
-
-                    )}
-
-
-                    {/* =================================
-                        Actions
+                        ACTIONS
                     ================================== */}
 
                     <div className="company-form-actions">
@@ -500,7 +463,6 @@ export default function AddCompanyPage() {
                             انصراف
                         </Link>
 
-
                         <button
                             type="submit"
                             className="primary-action-button"
@@ -508,7 +470,6 @@ export default function AddCompanyPage() {
                         >
 
                             <Save size={19} />
-
 
                             <span>
 

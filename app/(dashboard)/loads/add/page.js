@@ -24,6 +24,8 @@ import {
     getCities,
 } from "@code-plate/iran-cities";
 
+import { useNotification } from "@/components/ui/NotificationProvider";
+
 
 // ===============================
 // Map Picker
@@ -64,6 +66,16 @@ const ORIGIN_LOCATION = {
 export default function AddLoadPage() {
 
     const router = useRouter();
+
+    // ===============================
+    // Notification
+    // ===============================
+
+    const {
+        showSuccess,
+        showError,
+        showWarning,
+    } = useNotification();
 
 
     // ===============================
@@ -115,7 +127,6 @@ export default function AddLoadPage() {
 
     const [calculatedDistance, setCalculatedDistance] =
         useState("");
-
 
     const [distanceLoading, setDistanceLoading] =
         useState(false);
@@ -180,8 +191,9 @@ export default function AddLoadPage() {
 
                 setCompanies([]);
 
-                alert(
-                    "خطا در دریافت لیست شرکت‌ها"
+                showError(
+                    "خطا در دریافت لیست شرکت‌ها.",
+                    "خطا در دریافت شرکت‌ها"
                 );
 
             } finally {
@@ -193,7 +205,7 @@ export default function AddLoadPage() {
 
         fetchCompanies();
 
-    }, []);
+    }, [showError]);
 
 
     // ===============================
@@ -378,8 +390,9 @@ export default function AddLoadPage() {
 
         if (!companySelect.value) {
 
-            alert(
-                "لطفاً شرکت را انتخاب کنید."
+            showWarning(
+                "لطفاً شرکت را انتخاب کنید.",
+                "انتخاب شرکت"
             );
 
             return;
@@ -392,8 +405,9 @@ export default function AddLoadPage() {
 
         if (!destinationProvince) {
 
-            alert(
-                "لطفاً استان مقصد را انتخاب کنید."
+            showWarning(
+                "لطفاً استان مقصد را انتخاب کنید.",
+                "انتخاب استان مقصد"
             );
 
             return;
@@ -402,8 +416,9 @@ export default function AddLoadPage() {
 
         if (!destinationCity) {
 
-            alert(
-                "لطفاً شهر مقصد را انتخاب کنید."
+            showWarning(
+                "لطفاً شهر مقصد را انتخاب کنید.",
+                "انتخاب شهر مقصد"
             );
 
             return;
@@ -553,9 +568,10 @@ export default function AddLoadPage() {
                     result
                 );
 
-                alert(
+                showError(
                     result.message ||
                     result.error ||
+                    "خطا در ثبت بار",
                     "خطا در ثبت بار"
                 );
 
@@ -573,8 +589,9 @@ export default function AddLoadPage() {
             );
 
 
-            alert(
-                `بار با موفقیت ثبت شد.\nشناسه بار: ${result.loadId}`
+            showSuccess(
+                `بار با موفقیت ثبت شد. شناسه بار: ${result.loadId}`,
+                "ثبت بار موفق"
             );
 
 
@@ -592,8 +609,9 @@ export default function AddLoadPage() {
                 error
             );
 
-            alert(
-                "ثبت بار انجام نشد."
+            showError(
+                "ثبت بار انجام نشد.",
+                "خطا در ثبت بار"
             );
         }
     };
@@ -1377,14 +1395,11 @@ export default function AddLoadPage() {
 
                     <div className="load-form-actions">
 
-
                         <Link
                             href="/loads"
                             className="load-cancel-button"
                         >
-
                             انصراف
-
                         </Link>
 
 
