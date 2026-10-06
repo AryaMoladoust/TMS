@@ -57,11 +57,8 @@ export default function StatsCards() {
                 await companiesResponse.json();
 
             setCounts({
-                drivers: Array.isArray(
-                    driversData.drivers
-                )
-                    ? driversData.drivers.length
-                    : 0,
+                drivers:
+                    driversData.pagination?.total ?? 0,
 
                 companies: Array.isArray(
                     companiesData.companies
