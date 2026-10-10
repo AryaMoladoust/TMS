@@ -1,8 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
-
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
     ArrowRight,
     Clock3,
@@ -172,87 +171,77 @@ export default function DailyDriversPage() {
         setDeletingId,
     ] = useState(null);
 
-
+const [driverSearchLoading, setDriverSearchLoading] = useState(false);
+const driverSearchRef = useRef("");
+const driverSearchRequestRef = useRef(0);
     const today = getTodayKey();
 
 
     /* =====================================================
-       دریافت رانندگان اصلی
+       دریافت حداکثر ۲۰ راننده اصلی
+       جستجو در سمت سرور روی کل دیتابیس انجام می‌شود.
     ===================================================== */
 
     async function fetchDrivers({
         showLoading = false,
         showNotificationOnError = false,
+        search = driverSearchRef.current,
+        isSearchRequest = false,
     } = {}) {
+        const requestId = ++driverSearchRequestRef.current;
 
         try {
+            if (showLoading) setLoadingDrivers(true);
+            if (isSearchRequest) setDriverSearchLoading(true);
 
-            if (showLoading) {
-                setLoadingDrivers(true);
+            // همیشه فقط ۲۰ نتیجه دریافت می‌شود؛ جستجو در API و دیتابیس انجام می‌شود.
+            const params = new URLSearchParams({
+                page: "1",
+                limit: "20",
+                search: search.trim(),
+            });
+
+            const response = await fetch(`/api/drivers?${params.toString()}`, {
+                cache: "no-store",
+            });
+
+            const data = await response.json();
+
+            if (!response.ok || !data.success) {
+                throw new Error(data.message || "خطا در دریافت رانندگان");
             }
 
-
-            const response = await fetch(
-                "/api/drivers",
-                {
-                    cache: "no-store",
-                }
-            );
-
-
-            const data =
-                await response.json();
-
-
-            if (
-                !response.ok ||
-                !data.success
-            ) {
-                throw new Error(
-                    data.message ||
-                    "خطا در دریافت رانندگان"
-                );
+            // پاسخ قدیمی نباید نتیجه درخواست جدیدتر را بازنویسی کند.
+            if (requestId === driverSearchRequestRef.current) {
+                setDrivers(Array.isArray(data.drivers) ? data.drivers : []);
             }
-
-
-            setDrivers(
-                data.drivers || []
-            );
-
         } catch (err) {
-
-            console.error(
-                "Fetch drivers error:",
-                err
-            );
-
-
-            /*
-              فقط در دریافت اولیه
-              پیام خطا نمایش داده شود.
-
-              در Polling نباید هر ۵ ثانیه
-              Toast خطا نمایش داده شود.
-            */
+            console.error("Fetch drivers error:", err);
 
             if (showNotificationOnError) {
-
                 showError(
-                    err.message ||
-                    "خطا در دریافت لیست رانندگان",
+                    err.message || "خطا در دریافت لیست رانندگان",
                     "خطا در دریافت رانندگان"
                 );
-
             }
-
         } finally {
-
-            if (showLoading) {
-                setLoadingDrivers(false);
+            if (showLoading) setLoadingDrivers(false);
+            if (requestId === driverSearchRequestRef.current) {
+                setDriverSearchLoading(false);
             }
-
         }
     }
+
+    // جستجو از کامپوننت انتخاب راننده به API منتقل می‌شود.
+    const handleDriverSearch = useCallback((search) => {
+        driverSearchRef.current = search;
+        fetchDrivers({
+            search,
+            isSearchRequest: true,
+            showLoading: false,
+            showNotificationOnError: false,
+        });
+    }, []);
 
 
     /* =====================================================
@@ -1084,15 +1073,10 @@ export default function DailyDriversPage() {
 
                                     <DriverSearchSelect
                                         drivers={drivers}
-
-                                        value={
-                                            selectedDriver
-                                        }
-
-                                        onChange={
-                                            setSelectedDriver
-                                        }
-
+                                        value={selectedDriver}
+                                        onChange={setSelectedDriver}
+                                        onSearch={handleDriverSearch}
+                                        loading={driverSearchLoading}
                                         placeholder="نام راننده را جستجو کنید..."
                                     />
 

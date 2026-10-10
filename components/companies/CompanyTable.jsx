@@ -1,7 +1,8 @@
+
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   Building2,
@@ -9,81 +10,117 @@ import {
   UserRound,
   Eye,
   Pencil,
+  ChevronRight,
+  ChevronLeft,
 } from "lucide-react";
 
-export default function CompanyTable({
-  search = "",
-}) {
+const PAGE_SIZE = 50;
+
+export default function CompanyTable({ search = "" }) {
   const [companies, setCompanies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [page, setPage] = useState(1);
+  const [refreshKey, setRefreshKey] = useState(0);
 
-  // دریافت شرکت‌ها
-  async function loadCompanies({
-    showLoading = false,
-  } = {}) {
-    try {
-      if (showLoading) {
-        setLoading(true);
-      }
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: PAGE_SIZE,
+    total: 0,
+    totalPages: 0,
+    hasNextPage: false,
+    hasPreviousPage: false,
+  });
 
+  // با تغییر عبارت جستجو، به صفحه اول برگرد.
+  useEffect(() => {
+    setPage(1);
+  }, [search]);
+
+  // دریافت اطلاعات صفحه جاری از API
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadCompanies() {
+      setLoading(true);
       setError("");
 
-      const response = await fetch(
-        "/api/companies",
-        {
-          cache: "no-store",
+      try {
+        const params = new URLSearchParams({
+          page: String(page),
+          limit: String(PAGE_SIZE),
+        });
+
+        if (search.trim()) {
+          params.set("search", search.trim());
         }
-      );
 
-      const data = await response.json();
-
-      if (!response.ok || !data.success) {
-        throw new Error(
-          data.message ||
-            "خطا در دریافت شرکت‌ها"
+        const response = await fetch(
+          `/api/companies?${params.toString()}`,
+          { cache: "no-store" }
         );
-      }
 
-      setCompanies(data.companies || []);
-    } catch (error) {
-      console.error(
-        "Load companies error:",
-        error
-      );
+        const data = await response.json();
 
-      setError(
-        error.message ||
-          "خطا در دریافت لیست شرکت‌ها"
-      );
-    } finally {
-      if (showLoading) {
-        setLoading(false);
+        if (!response.ok || !data.success) {
+          throw new Error(
+            data.message || "خطا در دریافت شرکت‌ها"
+          );
+        }
+
+        if (cancelled) return;
+
+        const list = Array.isArray(data.companies)
+          ? data.companies
+          : [];
+
+        // تعداد کل باید از API و countDocuments دریافت شود.
+        const total = Number(data.pagination?.total ?? 0);
+        const limit = Number(
+          data.pagination?.limit ?? PAGE_SIZE
+        );
+        const totalPages = Number(
+          data.pagination?.totalPages ??
+            Math.ceil(total / limit)
+        );
+
+        const currentPage = Number(
+          data.pagination?.page ?? page
+        );
+
+        setCompanies(list);
+
+        setPagination({
+          page: currentPage,
+          limit,
+          total,
+          totalPages,
+          hasNextPage: currentPage < totalPages,
+          hasPreviousPage: currentPage > 1,
+        });
+      } catch (err) {
+        if (!cancelled) {
+          console.error("Load companies error:", err);
+          setError(
+            err.message || "خطا در دریافت شرکت‌ها"
+          );
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     }
-  }
 
-  // دریافت اولیه + polling + event sync
-  useEffect(() => {
-    // دریافت اولیه
-    loadCompanies({
-      showLoading: true,
-    });
+    const debounceTimer = setTimeout(loadCompanies, 350);
 
-    // هر ۵ ثانیه اطلاعات جدید را از دیتابیس بگیر
-    const pollingInterval =
-      setInterval(() => {
-        loadCompanies({
-          showLoading: false,
-        });
-      }, 5000);
+    // دریافت مجدد اطلاعات هر ۱۰ ثانیه
+    const pollingInterval = setInterval(() => {
+      loadCompanies();
+    }, 10000);
 
-    // وقتی بخش دیگری از برنامه شرکت را تغییر داد
-    // بلافاصله جدول را به‌روزرسانی کن
     function handleCompaniesUpdate() {
-      loadCompanies({
-        showLoading: false,
-      });
+      loadCompanies();
     }
 
     window.addEventListener(
@@ -91,8 +128,9 @@ export default function CompanyTable({
       handleCompaniesUpdate
     );
 
-    // cleanup
     return () => {
+      cancelled = true;
+      clearTimeout(debounceTimer);
       clearInterval(pollingInterval);
 
       window.removeEventListener(
@@ -100,66 +138,39 @@ export default function CompanyTable({
         handleCompaniesUpdate
       );
     };
-  }, []);
+  }, [page, search, refreshKey]);
 
-  const filteredCompanies = useMemo(() => {
-    const searchValue =
-      search.trim().toLowerCase();
+  const totalPages = Math.max(pagination.totalPages, 1);
 
-    if (!searchValue) {
-      return companies;
-    }
+  const startItem =
+    pagination.total === 0
+      ? 0
+      : (page - 1) * PAGE_SIZE + 1;
 
-    return companies.filter((company) => {
-      const name =
-        company.name?.toLowerCase() || "";
+  const endItem = Math.min(
+    page * PAGE_SIZE,
+    pagination.total
+  );
 
-      const manager =
-        company.managerName?.toLowerCase() || "";
-
-      const phone =
-        company.phone?.toLowerCase() || "";
-
-      const landline =
-        company.landline?.toLowerCase() || "";
-
-      return (
-        name.includes(searchValue) ||
-        manager.includes(searchValue) ||
-        phone.includes(searchValue) ||
-        landline.includes(searchValue)
-      );
-    });
-  }, [companies, search]);
+  function retryLoading() {
+    setRefreshKey((current) => current + 1);
+  }
 
   return (
     <section className="company-table-panel">
-
       <div className="company-table-header">
-
         <div>
-          <h2>
-            لیست شرکت‌ها
-          </h2>
-
-          <p>
-            شرکت‌های ثبت شده در سیستم
-          </p>
+          <h2>لیست شرکت‌ها</h2>
+          <p>شرکت‌های ثبت شده در سیستم</p>
         </div>
 
         <span className="company-count-badge">
-          {toPersianNumber(
-            filteredCompanies.length
-          )}{" "}
-          شرکت
+          {toPersianNumber(pagination.total)} شرکت
         </span>
-
       </div>
 
       <div className="company-table-wrapper">
-
         <table className="company-table">
-
           <thead>
             <tr>
               <th>شرکت</th>
@@ -171,11 +182,10 @@ export default function CompanyTable({
           </thead>
 
           <tbody>
-
             {loading && (
               <tr>
                 <td
-                  colSpan="5"
+                  colSpan={5}
                   style={{
                     textAlign: "center",
                     padding: "40px",
@@ -189,157 +199,156 @@ export default function CompanyTable({
             {!loading && error && (
               <tr>
                 <td
-                  colSpan="5"
+                  colSpan={5}
                   style={{
                     textAlign: "center",
                     padding: "40px",
                     color: "#dc2626",
                   }}
                 >
-                  {error}
+                  <p>{error}</p>
+
+                  <button
+                    type="button"
+                    onClick={retryLoading}
+                    style={{ marginTop: 12 }}
+                  >
+                    تلاش مجدد
+                  </button>
+                </td>
+              </tr>
+            )}
+
+            {!loading && !error && companies.length === 0 && (
+              <tr>
+                <td
+                  colSpan={5}
+                  style={{
+                    textAlign: "center",
+                    padding: "40px",
+                  }}
+                >
+                  {search.trim()
+                    ? "شرکتی با این مشخصات پیدا نشد."
+                    : "هنوز هیچ شرکتی ثبت نشده است."}
                 </td>
               </tr>
             )}
 
             {!loading &&
               !error &&
-              filteredCompanies.length === 0 && (
-                <tr>
-                  <td
-                    colSpan="5"
-                    style={{
-                      textAlign: "center",
-                      padding: "40px",
-                    }}
-                  >
-                    {search.trim()
-                      ? "شرکتی با این مشخصات پیدا نشد."
-                      : "هنوز هیچ شرکتی ثبت نشده است."}
+              companies.map((company) => (
+                <tr key={company._id}>
+                  <td>
+                    <div className="company-table-name">
+                      <div className="company-table-icon">
+                        <Building2 size={20} />
+                      </div>
+
+                      <div>
+                        <strong>{company.name}</strong>
+                        <span>{company._id}</span>
+                      </div>
+                    </div>
+                  </td>
+
+                  <td>
+                    <div className="company-manager">
+                      <UserRound size={17} />
+                      <span>
+                        {company.managerName || "—"}
+                      </span>
+                    </div>
+                  </td>
+
+                  <td>
+                    <div className="company-phone">
+                      <Phone size={16} />
+                      <span>{company.phone || "—"}</span>
+                    </div>
+                  </td>
+
+                  <td>
+                    <strong className="company-load-count">
+                      {toPersianNumber(0)} بار
+                    </strong>
+                  </td>
+
+                  <td>
+                    <div className="company-actions">
+                      <Link
+                        href={`/companies/${company._id}`}
+                        className="company-action-button"
+                        title="مشاهده"
+                      >
+                        <Eye size={17} />
+                      </Link>
+
+                      <Link
+                        href={`/companies/${company._id}`}
+                        className="company-action-button"
+                        title="ویرایش"
+                      >
+                        <Pencil size={17} />
+                      </Link>
+                    </div>
                   </td>
                 </tr>
-              )}
-
-            {!loading &&
-              !error &&
-              filteredCompanies.map(
-                (company) => (
-                  <tr key={company._id}>
-
-                    <td>
-
-                      <div className="company-table-name">
-
-                        <div className="company-table-icon">
-                          <Building2 size={20} />
-                        </div>
-
-                        <div>
-
-                          <strong>
-                            {company.name}
-                          </strong>
-
-                          <span>
-                            {company._id}
-                          </span>
-
-                        </div>
-
-                      </div>
-
-                    </td>
-
-                    <td>
-
-                      <div className="company-manager">
-
-                        <UserRound size={17} />
-
-                        <span>
-                          {company.managerName}
-                        </span>
-
-                      </div>
-
-                    </td>
-
-                    <td>
-
-                      <div className="company-phone">
-
-                        <Phone size={16} />
-
-                        <span>
-                          {company.phone}
-                        </span>
-
-                      </div>
-
-                    </td>
-
-                    <td>
-
-                      <strong className="company-load-count">
-                        {toPersianNumber(0)} بار
-                      </strong>
-
-                    </td>
-
-                    <td>
-
-                      <div className="company-actions">
-
-                        <Link
-                          href={`/companies/${company._id}`}
-                          className="company-action-button"
-                          title="مشاهده"
-                        >
-                          <Eye size={17} />
-                        </Link>
-
-                        <Link
-                          href={`/companies/${company._id}`}
-                          className="company-action-button"
-                          title="ویرایش"
-                        >
-                          <Pencil size={17} />
-                        </Link>
-
-                      </div>
-
-                    </td>
-
-                  </tr>
-                )
-              )}
-
+              ))}
           </tbody>
-
         </table>
-
       </div>
 
-      {!loading &&
-        !error &&
-        filteredCompanies.length > 0 && (
-          <div className="company-table-footer">
+      {!loading && !error && (
+        <div className="company-table-footer">
+          <span>
+            نمایش {toPersianNumber(startItem)} تا{" "}
+            {toPersianNumber(endItem)} از{" "}
+            {toPersianNumber(pagination.total)} شرکت
+          </span>
 
-            <span>
-              نمایش{" "}
-              {toPersianNumber(1)} تا{" "}
-              {toPersianNumber(
-                filteredCompanies.length
-              )}{" "}
-              از{" "}
-              {toPersianNumber(
-                filteredCompanies.length
-              )}{" "}
-              شرکت
+          <div className="company-pagination">
+            <button
+              type="button"
+              className="company-pagination-button"
+              disabled={page <= 1}
+              onClick={() =>
+                setPage((current) => Math.max(1, current - 1))
+              }
+              aria-label="صفحه قبلی"
+            >
+              <ChevronRight size={18} />
+              قبلی
+            </button>
+
+            <span className="company-pagination-info">
+              صفحه {toPersianNumber(page)} از{" "}
+              {toPersianNumber(totalPages)}
             </span>
 
+            <button
+              type="button"
+              className="company-pagination-button"
+              disabled={
+                page >= pagination.totalPages ||
+                pagination.totalPages === 0
+              }
+              onClick={() =>
+                setPage((current) =>
+                  Math.min(
+                    current + 1,
+                    pagination.totalPages
+                  )
+                )
+              }
+              aria-label="صفحه بعدی"
+            >
+              بعدی
+              <ChevronLeft size={18} />
+            </button>
           </div>
-        )}
-
+        </div>
+      )}
     </section>
   );
 }

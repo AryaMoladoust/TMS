@@ -4,6 +4,7 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import CompanySearchSelect from "@/components/CompanySearchSelect";
 
 import {
     ArrowRight,
@@ -113,7 +114,6 @@ export default function AddLoadPage() {
     // ===============================
     // Map States
     // ===============================
-
     const [showDestinationMap, setShowDestinationMap] =
         useState(false);
 
@@ -136,76 +136,74 @@ export default function AddLoadPage() {
     // Companies
     // ===============================
 
-    const [companies, setCompanies] = useState([]);
 
-    const [companiesLoading, setCompaniesLoading] =
-        useState(true);
+const [selectedCompany, setSelectedCompany] = useState(null);
 
 
     // ===============================
     // دریافت شرکت‌ها
     // ===============================
 
-    useEffect(() => {
+    // useEffect(() => {
 
-        async function fetchCompanies() {
+    //     async function fetchCompanies() {
 
-            try {
+    //         try {
 
-                setCompaniesLoading(true);
+    //             setCompaniesLoading(true);
 
-                const response = await fetch(
-                    "/api/companies",
-                    {
-                        cache: "no-store",
-                    }
-                );
+    //             const response = await fetch(
+    //                 "/api/companies",
+    //                 {
+    //                     cache: "no-store",
+    //                 }
+    //             );
 
-                const result =
-                    await response.json();
+    //             const result =
+    //                 await response.json();
 
-                if (!response.ok) {
+    //             if (!response.ok) {
 
-                    throw new Error(
-                        result.message ||
-                        result.error ||
-                        "خطا در دریافت شرکت‌ها"
-                    );
-                }
+    //                 throw new Error(
+    //                     result.message ||
+    //                     result.error ||
+    //                     "خطا در دریافت شرکت‌ها"
+    //                 );
+    //             }
 
-                const companyList =
-                    Array.isArray(result)
-                        ? result
-                        : Array.isArray(result.companies)
-                            ? result.companies
-                            : [];
+    //             const companyList =
+    //                 Array.isArray(result)
+    //                     ? result
+    //                     : Array.isArray(result.companies)
+    //                         ? result.companies
+    //                         : [];
 
-                setCompanies(companyList);
+    //             setCompanies(companyList);
 
-            } catch (error) {
+    //         } catch (error) {
 
-                console.error(
-                    "Fetch companies error:",
-                    error
-                );
+    //             console.error(
+    //                 "Fetch companies error:",
+    //                 error
+    //             );
 
-                setCompanies([]);
+    //             setCompanies([]);
 
-                showError(
-                    "خطا در دریافت لیست شرکت‌ها.",
-                    "خطا در دریافت شرکت‌ها"
-                );
+    //             showError(
+    //                 "خطا در دریافت لیست شرکت‌ها.",
+    //                 "خطا در دریافت شرکت‌ها"
+    //             );
 
-            } finally {
+    //         } finally {
 
-                setCompaniesLoading(false);
+    //             setCompaniesLoading(false);
 
-            }
-        }
+    //         }
+    //     }
 
-        fetchCompanies();
+    //     fetchCompanies();
 
-    }, [showError]);
+    // }, [showError]);
 
 
     // ===============================
@@ -378,25 +376,15 @@ export default function AddLoadPage() {
         // شرکت
         // =================================
 
-        const companySelect =
-            form.elements.loadCompany;
+if (!selectedCompany?._id || !selectedCompany?.name) {
+  showWarning(
+    "لطفاً یک شرکت را از فهرست انتخاب کنید.",
+    "انتخاب شرکت"
+  );
+  return;
+}
 
-
-        const companyName =
-            companySelect.options[
-                companySelect.selectedIndex
-            ]?.text || "";
-
-
-        if (!companySelect.value) {
-
-            showWarning(
-                "لطفاً شرکت را انتخاب کنید.",
-                "انتخاب شرکت"
-            );
-
-            return;
-        }
+const companyName = selectedCompany.name;
 
 
         // =================================
@@ -736,65 +724,17 @@ export default function AddLoadPage() {
                         شرکت
                     ================================== */}
 
-                    <div className="load-form-group">
+                 <div className="load-form-group">
+  <label htmlFor="loadCompany">
+    شرکت <span>*</span>
+  </label>
 
-                        <label htmlFor="loadCompany">
-
-                            شرکت <span>*</span>
-
-                        </label>
-
-
-                        <div className="load-input-wrapper">
-
-                            <Building2 size={18} />
-
-
-                            <select
-                                id="loadCompany"
-                                name="loadCompany"
-                                defaultValue=""
-                                disabled={
-                                    companiesLoading
-                                }
-                                required
-                            >
-
-                                <option
-                                    value=""
-                                    disabled
-                                >
-                                    {companiesLoading
-                                        ? "در حال دریافت شرکت‌ها..."
-                                        : "شرکت را انتخاب کنید"}
-                                </option>
-
-
-                                {!companiesLoading &&
-                                    companies.map(
-                                        (company) => (
-
-                                            <option
-                                                key={
-                                                    company._id
-                                                }
-                                                value={
-                                                    company._id
-                                                }
-                                            >
-                                                {
-                                                    company.name
-                                                }
-                                            </option>
-
-                                        )
-                                    )}
-
-                            </select>
-
-                        </div>
-
-                    </div>
+  <CompanySearchSelect
+    value={selectedCompany}
+    onChange={setSelectedCompany}
+    required
+  />
+</div>
 
 
                     {/* =================================

@@ -7,15 +7,88 @@ import { touchSyncState } from "@/lib/sync";
 // گرفتن همه بارها
 // =====================================
 
-export async function GET() {
+
+export async function GET(request) {
     try {
         await connectToDatabase();
 
-        const loads = await Load.find().sort({
-            createdAt: -1,
-        });
+        const { searchParams } = new URL(request.url);
 
-        return NextResponse.json(loads);
+        // شماره صفحه
+        const page = Math.max(
+            1,
+            parseInt(searchParams.get("page") || "1", 10) || 1
+        );
+
+        // تعداد بار در هر صفحه
+        const limit = Math.min(
+            100,
+            Math.max(
+                1,
+                parseInt(searchParams.get("limit") || "10", 10) || 10
+            )
+        );
+
+        // عبارت جست‌وجو
+        const search = (
+            searchParams.get("search") || ""
+        ).trim();
+
+        // ساخت فیلتر جست‌وجو
+        const filter = {};
+
+        if (search) {
+            // جلوگیری از تفسیر کاراکترهای ورودی به‌عنوان Regex
+            const escapedSearch = search.replace(
+                /[.*+?^${}()|[\]\\]/g,
+                "\\$&"
+            );
+
+            filter.$or = [
+                { loadId: { $regex: escapedSearch, $options: "i" } },
+                { title: { $regex: escapedSearch, $options: "i" } },
+                { barType: { $regex: escapedSearch, $options: "i" } },
+                { companyName: { $regex: escapedSearch, $options: "i" } },
+                { origin: { $regex: escapedSearch, $options: "i" } },
+                { destination: { $regex: escapedSearch, $options: "i" } },
+                { originCity: { $regex: escapedSearch, $options: "i" } },
+                { originProvince: { $regex: escapedSearch, $options: "i" } },
+                { destinationCity: { $regex: escapedSearch, $options: "i" } },
+                { destinationProvince: { $regex: escapedSearch, $options: "i" } },
+                { vehicleType: { $regex: escapedSearch, $options: "i" } },
+                { status: { $regex: escapedSearch, $options: "i" } },
+            ];
+        }
+
+        // شمارش تعداد کل نتایج مطابق جست‌وجو
+        const total = await Load.countDocuments(filter);
+
+        const totalPages = Math.max(
+            1,
+            Math.ceil(total / limit)
+        );
+
+        // اگر شماره صفحه از تعداد صفحات بیشتر باشد
+        const currentPage = Math.min(page, totalPages);
+
+        // دریافت فقط اطلاعات صفحه فعلی از دیتابیس
+        const loads = await Load.find(filter)
+            .sort({ createdAt: -1, _id: -1 })
+            .skip((currentPage - 1) * limit)
+            .limit(limit)
+            .lean();
+
+        return NextResponse.json({
+            loads,
+            pagination: {
+                page: currentPage,
+                limit,
+                total,
+                totalPages,
+                hasNextPage: currentPage < totalPages,
+                hasPrevPage: currentPage > 1,
+            },
+        });
     } catch (error) {
         console.error("GET /api/loads error:", error);
 
@@ -23,9 +96,7 @@ export async function GET() {
             {
                 message: "خطا در دریافت بارها",
             },
-            {
-                status: 500,
-            }
+            { status: 500 }
         );
     }
 }
