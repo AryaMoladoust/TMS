@@ -1,69 +1,22 @@
 "use client";
 
-import { useMemo, useState } from "react";
-
 import LoadSearch from "@/components/loads/LoadSearch";
 import LoadTable from "@/components/loads/LoadTable";
 
-export default function LoadsBoard({ loads = [] }) {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
-  const [typeFilter, setTypeFilter] = useState("");
-  const [vehicleFilter, setVehicleFilter] = useState("");
-
-  const filteredLoads = useMemo(() => {
-    const normalizedSearch = searchTerm.trim().toLowerCase();
-
-    return loads.filter((load) => {
-      if (normalizedSearch) {
-        const haystack = [
-          load.title,
-          load.companyName,
-          load.origin,
-          load.destination,
-        ]
-          .filter(Boolean)
-          .join(" ")
-          .toLowerCase();
-
-        if (!haystack.includes(normalizedSearch)) {
-          return false;
-        }
-      }
-
-      if (
-        statusFilter === "delivered" &&
-        load.status !== "delivered"
-      ) {
-        return false;
-      }
-
-      if (
-        statusFilter === "undelivered" &&
-        load.status === "delivered"
-      ) {
-        return false;
-      }
-
-      if (typeFilter && load.barType !== typeFilter) {
-        return false;
-      }
-
-      if (vehicleFilter && load.vehicleType !== vehicleFilter) {
-        return false;
-      }
-
-      return true;
-    });
-  }, [loads, searchTerm, statusFilter, typeFilter, vehicleFilter]);
-
-  function resetFilters() {
-    setSearchTerm("");
-    setStatusFilter("");
-    setTypeFilter("");
-    setVehicleFilter("");
-  }
-
+export default function LoadsBoard({
+  loads = [],
+  pagination = { page: 1, limit: 10, total: 0, totalPages: 1 },
+  onPageChange = () => {},
+  searchTerm = "",
+  onSearchChange = () => {},
+  statusFilter = "",
+  onStatusChange = () => {},
+  typeFilter = "",
+  onTypeChange = () => {},
+  vehicleFilter = "",
+  onVehicleChange = () => {},
+  onReset = () => {},
+}) {
   const isFiltering =
     Boolean(searchTerm.trim()) ||
     Boolean(statusFilter) ||
@@ -74,25 +27,27 @@ export default function LoadsBoard({ loads = [] }) {
     <>
       <LoadSearch
         searchTerm={searchTerm}
-        onSearchChange={setSearchTerm}
+        onSearchChange={onSearchChange}
         statusFilter={statusFilter}
-        onStatusChange={setStatusFilter}
+        onStatusChange={onStatusChange}
         typeFilter={typeFilter}
-        onTypeChange={setTypeFilter}
+        onTypeChange={onTypeChange}
         vehicleFilter={vehicleFilter}
-        onVehicleChange={setVehicleFilter}
-        onReset={resetFilters}
+        onVehicleChange={onVehicleChange}
+        onReset={onReset}
       />
 
       <LoadTable
-        loads={filteredLoads}
+        loads={loads}
+        pagination={pagination}
+        onPageChange={onPageChange}
         emptyTitle={
-          isFiltering && loads.length > 0
+          isFiltering
             ? "هیچ باری با این فیلترها پیدا نشد"
             : "هنوز هیچ باری ثبت نشده است"
         }
         emptySubtitle={
-          isFiltering && loads.length > 0
+          isFiltering
             ? "فیلترها را تغییر دهید یا پاک کنید."
             : "برای شروع، یک بار جدید ثبت کنید."
         }

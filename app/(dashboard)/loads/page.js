@@ -1,16 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
-import {
-  Plus,
-  Package,
-} from "lucide-react";
+import { Plus, Package } from "lucide-react";
 
 import LoadsBoard from "@/components/loads/LoadsBoard";
 import { useNotification } from "@/components/ui/NotificationProvider";
 
+const PAGE_LIMIT = 50;
 
 // =====================================
 // صفحه بارها
@@ -20,8 +18,38 @@ export default function LoadsPage() {
   const [loads, setLoads] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: PAGE_LIMIT,
+    total: 0,
+    totalPages: 1,
+  });
+
+  // فیلترها
+  const [page, setPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+  const [typeFilter, setTypeFilter] = useState("");
+  const [vehicleFilter, setVehicleFilter] = useState("");
+
   const { showError } = useNotification();
 
+  // آخرین مقدار فیلترها: Polling همیشه صفحه و فیلتر فعلی را می‌گیرد
+  // بدون اینکه useEffect مربوط به Polling تغییر کند
+  const queryRef = useRef({});
+
+  queryRef.current = {
+    page,
+    search: debouncedSearch,
+    status: statusFilter,
+    barType: typeFilter,
+    vehicleType: vehicleFilter,
+  };
+
+  // جلوگیری از اعمال پاسخ‌های قدیمی
+  const requestIdRef = useRef(0);
+  const isFirstRender = useRef(true);
 
   // =====================================
   // دریافت بارها
@@ -31,12 +59,26 @@ export default function LoadsPage() {
     showLoading = false,
     showNotificationOnError = false,
   } = {}) {
+    const requestId = ++requestIdRef.current;
+
     try {
       if (showLoading) {
         setLoading(true);
       }
 
-      const response = await fetch("/api/loads", {
+      const q = queryRef.current;
+
+      const params = new URLSearchParams({
+        page: String(q.page),
+        limit: String(PAGE_LIMIT),
+      });
+
+      if (q.search) params.set("search", q.search);
+      if (q.status) params.set("status", q.status);
+      if (q.barType) params.set("barType", q.barType);
+      if (q.vehicleType) params.set("vehicleType", q.vehicleType);
+
+      const response = await fetch(`/api/loads?${params.toString()}`, {
         cache: "no-store",
       });
 
@@ -44,35 +86,37 @@ export default function LoadsPage() {
 
       if (!response.ok) {
         throw new Error(
-          data?.message ||
-            data?.error ||
-            "خطا در دریافت بارها"
+          data?.message || data?.error || "خطا در دریافت بارها"
         );
       }
 
-      // API ممکن است مستقیماً آرایه برگرداند
-      // یا داخل loads قرار داده باشد
-      const nextLoads = Array.isArray(data)
-        ? data
-        : data?.loads || [];
+      // پاسخ قدیمی را نادیده بگیر
+      if (requestId !== requestIdRef.current) {
+        return;
+      }
+
+      const nextLoads = Array.isArray(data) ? data : data?.loads || [];
 
       setLoads(nextLoads);
 
+      if (data?.pagination) {
+        setPagination(data.pagination);
+
+        // اگر سرور شماره صفحه را اصلاح کرد (مثلاً بعد از حذف بار)
+        if (data.pagination.page !== q.page) {
+          setPage(data.pagination.page);
+        }
+      }
     } catch (error) {
-      console.error(
-        "Load loads error:",
-        error
-      );
+      console.error("Load loads error:", error);
 
       // در Polling خطا را مدام نمایش نمی‌دهیم
       if (showNotificationOnError) {
         showError(
-          error.message ||
-            "خطا در دریافت لیست بارها",
+          error.message || "خطا در دریافت لیست بارها",
           "خطا در دریافت بارها"
         );
       }
-
     } finally {
       if (showLoading) {
         setLoading(false);
@@ -80,9 +124,20 @@ export default function LoadsPage() {
     }
   }
 
+  // =====================================
+  // Debounce جستجو
+  // =====================================
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchTerm.trim());
+    }, 400);
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
 
   // =====================================
-  // دریافت اولیه + Polling
+  // دریافت اولیه + Polling (بدون تغییر)
   // =====================================
 
   useEffect(() => {
@@ -92,7 +147,6 @@ export default function LoadsPage() {
       showNotificationOnError: true,
     });
 
-
     // هر ۵ ثانیه بررسی دیتابیس
     const pollingInterval = setInterval(() => {
       loadLoads({
@@ -101,11 +155,7 @@ export default function LoadsPage() {
       });
     }, 5000);
 
-
-    // =====================================
     // بروزرسانی فوری بعد از تغییر بار
-    // =====================================
-
     function handleLoadsUpdate() {
       loadLoads({
         showLoading: false,
@@ -113,90 +163,105 @@ export default function LoadsPage() {
       });
     }
 
-    window.addEventListener(
-      "loads-data-updated",
-      handleLoadsUpdate
-    );
+    window.addEventListener("loads-data-updated", handleLoadsUpdate);
 
-
-    // =====================================
     // Cleanup
-    // =====================================
-
     return () => {
       clearInterval(pollingInterval);
 
-      window.removeEventListener(
-        "loads-data-updated",
-        handleLoadsUpdate
-      );
+      window.removeEventListener("loads-data-updated", handleLoadsUpdate);
     };
   }, []);
 
+  // =====================================
+  // دریافت مجدد با تغییر صفحه / جستجو / فیلتر
+  // =====================================
+
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+
+    loadLoads({
+      showLoading: false,
+      showNotificationOnError: true,
+    });
+  }, [page, debouncedSearch, statusFilter, typeFilter, vehicleFilter]);
 
   // =====================================
-  // آمار
+  // هندلرها (با تغییر فیلتر، برگرد به صفحه ۱)
   // =====================================
 
-  const totalLoads = loads.length;
+  function handleSearchChange(value) {
+    setSearchTerm(value);
+    setPage(1);
+  }
 
+  function handleStatusChange(value) {
+    setStatusFilter(value);
+    setPage(1);
+  }
+
+  function handleTypeChange(value) {
+    setTypeFilter(value);
+    setPage(1);
+  }
+
+  function handleVehicleChange(value) {
+    setVehicleFilter(value);
+    setPage(1);
+  }
+
+  function handleReset() {
+    setSearchTerm("");
+    setDebouncedSearch("");
+    setStatusFilter("");
+    setTypeFilter("");
+    setVehicleFilter("");
+    setPage(1);
+  }
+
+  const isFiltering =
+    Boolean(searchTerm.trim()) ||
+    Boolean(statusFilter) ||
+    Boolean(typeFilter) ||
+    Boolean(vehicleFilter);
 
   // =====================================
-  // Loading
+  // Loading اولیه
   // =====================================
 
   if (loading) {
     return (
       <main className="main-content">
-
         <div className="page-heading page-heading-with-action">
-
           <div>
             <h1>بارها</h1>
 
-            <p>
-              مدیریت و مشاهده وضعیت بارهای ثبت شده
-            </p>
+            <p>مدیریت و مشاهده وضعیت بارهای ثبت شده</p>
           </div>
 
-
-          <Link
-            href="/loads/add"
-            className="primary-action-button"
-          >
+          <Link href="/loads/add" className="primary-action-button">
             <Plus size={19} />
 
-            <span>
-              افزودن بار
-            </span>
+            <span>افزودن بار</span>
           </Link>
-
         </div>
 
-
         <section className="load-stats-grid">
-
           <div className="load-stat-card">
-
             <div className="load-stat-icon load-stat-blue">
               <Package size={22} />
             </div>
 
-
             <div>
-              <span>
-                کل بارها
-              </span>
+              <span>کل بارها</span>
 
-              <strong>
-                —
-              </strong>
+              <strong>—</strong>
             </div>
-
           </div>
-
         </section>
-
 
         <div
           style={{
@@ -206,11 +271,9 @@ export default function LoadsPage() {
         >
           در حال دریافت بارها...
         </div>
-
       </main>
     );
   }
-
 
   // =====================================
   // UI
@@ -218,84 +281,51 @@ export default function LoadsPage() {
 
   return (
     <main className="main-content">
-
-      {/* =====================================
-          Page Header
-      ====================================== */}
-
+      {/* Page Header */}
       <div className="page-heading page-heading-with-action">
-
         <div>
+          <h1>بارها</h1>
 
-          <h1>
-            بارها
-          </h1>
-
-
-          <p>
-            مدیریت و مشاهده وضعیت بارهای ثبت شده
-          </p>
-
+          <p>مدیریت و مشاهده وضعیت بارهای ثبت شده</p>
         </div>
 
-
-        <Link
-          href="/loads/add"
-          className="primary-action-button"
-        >
-
+        <Link href="/loads/add" className="primary-action-button">
           <Plus size={19} />
 
-          <span>
-            افزودن بار
-          </span>
-
+          <span>افزودن بار</span>
         </Link>
-
       </div>
 
-
-      {/* =====================================
-          Statistics
-      ====================================== */}
-
+      {/* Statistics */}
       <section className="load-stats-grid">
-
         <div className="load-stat-card">
-
           <div className="load-stat-icon load-stat-blue">
-
             <Package size={22} />
-
           </div>
-
 
           <div>
+            <span>{isFiltering ? "نتایج فیلتر" : "کل بارها"}</span>
 
-            <span>
-              کل بارها
-            </span>
-
-
-            <strong>
-              {totalLoads}
-            </strong>
-
+            <strong>{pagination.total.toLocaleString("fa-IR")}</strong>
           </div>
-
         </div>
-
       </section>
 
-
-      {/* =====================================
-          Search + Table
-      ====================================== */}
-
+      {/* Search + Table */}
       <LoadsBoard
         loads={loads}
+        pagination={pagination}
+        onPageChange={setPage}
+        searchTerm={searchTerm}
+        onSearchChange={handleSearchChange}
+        statusFilter={statusFilter}
+        onStatusChange={handleStatusChange}
+        typeFilter={typeFilter}
+        onTypeChange={handleTypeChange}
+        vehicleFilter={vehicleFilter}
+        onVehicleChange={handleVehicleChange}
+        onReset={handleReset}
       />
-
     </main>
   );
 }

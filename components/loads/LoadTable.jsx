@@ -12,9 +12,7 @@ import {
   Pencil,
 } from "lucide-react";
 
-
 const statusData = {
-
   pending: {
     label: "تحویل نشده",
     className: "load-status-undelivered",
@@ -29,125 +27,101 @@ const statusData = {
     label: "تحویل شده",
     className: "load-status-delivered",
   },
-
 };
-
 
 // =====================================
 // تبدیل نوع بار به فارسی
 // =====================================
 
 const barTypeData = {
-
   food: "مواد غذایی",
-
   industrial: "قطعات صنعتی",
-
   construction: "مصالح ساختمانی",
-
   agriculture: "محصولات کشاورزی",
-
   other: "سایر",
-
 };
-
 
 // =====================================
 // تبدیل نوع خودرو به فارسی
 // =====================================
 
 const vehicleData = {
-
   truck: "کامیون",
-
   trailer: "تریلی",
-
   pickup: "نیسان",
-
   van: "وانت",
-
 };
-
 
 // =====================================
 // تبدیل تاریخ به فارسی
 // =====================================
 
 function formatDate(date) {
-
   if (!date) {
     return "—";
   }
 
-
-  const loadDate =
-    new Date(date);
-
+  const loadDate = new Date(date);
 
   if (isNaN(loadDate.getTime())) {
     return "—";
   }
 
+  const today = new Date();
 
-  const today =
-    new Date();
-
-
-  const yesterday =
-    new Date();
-
-
-  yesterday.setDate(
-    yesterday.getDate() - 1
-  );
-
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
 
   // امروز
-
   if (
-    loadDate.getFullYear() ===
-    today.getFullYear() &&
-
-    loadDate.getMonth() ===
-    today.getMonth() &&
-
-    loadDate.getDate() ===
-    today.getDate()
+    loadDate.getFullYear() === today.getFullYear() &&
+    loadDate.getMonth() === today.getMonth() &&
+    loadDate.getDate() === today.getDate()
   ) {
-
     return "امروز";
   }
 
-
   // دیروز
-
   if (
-    loadDate.getFullYear() ===
-    yesterday.getFullYear() &&
-
-    loadDate.getMonth() ===
-    yesterday.getMonth() &&
-
-    loadDate.getDate() ===
-    yesterday.getDate()
+    loadDate.getFullYear() === yesterday.getFullYear() &&
+    loadDate.getMonth() === yesterday.getMonth() &&
+    loadDate.getDate() === yesterday.getDate()
   ) {
-
     return "دیروز";
   }
 
-
   // تاریخ فارسی
-
-  return loadDate.toLocaleDateString(
-    "fa-IR",
-    {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-    }
-  );
+  return loadDate.toLocaleDateString("fa-IR", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
 }
 
+// =====================================
+// ساخت لیست شماره صفحات (با ...)
+// =====================================
+
+function getPageNumbers(current, total) {
+  if (total <= 7) {
+    return Array.from({ length: total }, (_, i) => i + 1);
+  }
+
+  const pages = [1];
+
+  const start = Math.max(2, current - 1);
+  const end = Math.min(total - 1, current + 1);
+
+  if (start > 2) pages.push("...");
+
+  for (let i = start; i <= end; i++) pages.push(i);
+
+  if (end < total - 1) pages.push("...");
+
+  pages.push(total);
+
+  return pages;
+}
 
 // =====================================
 // LoadTable
@@ -155,137 +129,52 @@ function formatDate(date) {
 
 export default function LoadTable({
   loads = [],
+  pagination = { page: 1, limit: 10, total: 0, totalPages: 1 },
+  onPageChange = () => {},
   emptyTitle = "هنوز هیچ باری ثبت نشده است",
   emptySubtitle = "برای شروع، یک بار جدید ثبت کنید.",
 }) {
+  // مرتب‌سازی (تحویل‌نشده‌ها اول) و صفحه‌بندی سمت سرور انجام می‌شود
+  const { page, limit, total, totalPages } = pagination;
 
-
-  // =================================
-  // مرتب‌سازی
-  // بارهای تحویل نشده ابتدا
-  // =================================
-
-  const sortedLoads = [
-    ...loads,
-  ].sort((a, b) => {
-
-    if (
-      a.status !== "delivered" &&
-      b.status === "delivered"
-    ) {
-      return -1;
-    }
-
-
-    if (
-      a.status === "delivered" &&
-      b.status !== "delivered"
-    ) {
-      return 1;
-    }
-
-
-    return (
-      new Date(b.createdAt || 0) -
-      new Date(a.createdAt || 0)
-    );
-
-  });
-
+  const fromItem = total === 0 ? 0 : (page - 1) * limit + 1;
+  const toItem = (page - 1) * limit + loads.length;
 
   return (
-
     <section className="load-table-panel">
-
-
-      {/* =================================
-          Header
-      ================================== */}
-
+      {/* Header */}
       <div className="load-table-header">
-
         <div>
+          <h2>لیست بارها</h2>
 
-          <h2>
-            لیست بارها
-          </h2>
-
-
-          <p>
-            بارهای تحویل نشده در ابتدا نمایش داده می‌شوند
-          </p>
-
+          <p>بارهای تحویل نشده در ابتدا نمایش داده می‌شوند</p>
         </div>
 
-
         <span className="load-count-badge">
-
-          {loads.length.toLocaleString("fa-IR")}
-
+          {total.toLocaleString("fa-IR")}
           {" بار"}
-
         </span>
-
       </div>
 
-
-
-      {/* =================================
-          Table
-      ================================== */}
-
+      {/* Table */}
       <div className="load-table-wrapper">
-
         <table className="load-table">
-
           <thead>
-
             <tr>
-
-              <th>
-                بار
-              </th>
-
-              <th>
-                شرکت
-              </th>
-
-              <th>
-                مسیر
-              </th>
-
-              <th>
-                راننده
-              </th>
-
-              <th>
-                خودرو
-              </th>
-
-              <th>
-                تاریخ
-              </th>
-
-              <th>
-                وضعیت
-              </th>
-
-              <th>
-                عملیات
-              </th>
-
+              <th>بار</th>
+              <th>شرکت</th>
+              <th>مسیر</th>
+              <th>راننده</th>
+              <th>خودرو</th>
+              <th>تاریخ</th>
+              <th>وضعیت</th>
+              <th>عملیات</th>
             </tr>
-
           </thead>
 
-
           <tbody>
-
-
-            {sortedLoads.length === 0 ? (
-
+            {loads.length === 0 ? (
               <tr>
-
                 <td
                   colSpan={8}
                   style={{
@@ -293,7 +182,6 @@ export default function LoadTable({
                     padding: "40px",
                   }}
                 >
-
                   <div
                     style={{
                       display: "flex",
@@ -302,346 +190,179 @@ export default function LoadTable({
                       gap: "10px",
                     }}
                   >
+                    <Package size={35} />
 
-                    <Package
-                      size={35}
-                    />
+                    <strong>{emptyTitle}</strong>
 
-                    <strong>
-                      {emptyTitle}
-                    </strong>
-
-                    <span>
-                      {emptySubtitle}
-                    </span>
-
+                    <span>{emptySubtitle}</span>
                   </div>
-
                 </td>
-
               </tr>
-
             ) : (
+              loads.map((load) => {
+                const status =
+                  statusData[load.status] || statusData.pending;
 
-              sortedLoads.map(
-                (load) => {
-
-                  const status =
-                    statusData[
-                    load.status
-                    ] ||
-                    statusData.pending;
-
-
-                  return (
-
-                    <tr
-                      key={load._id}
-                    >
-
-
-                      {/* =========================
-                          Load
-                      ========================== */}
-
-                      <td>
-
-                        <div className="load-table-name">
-
-                          <div className="load-table-icon">
-
-                            <Package
-                              size={20}
-                            />
-
-                          </div>
-
-
-                          <div>
-
-                            <strong>
-                              {load.title}
-                            </strong>
-
-
-                            <span>
-                              {
-                                barTypeData[
-                                load.barType
-                                ] ||
-                                load.barType ||
-                                "—"
-                              }
-                            </span>
-
-                          </div>
-
+                return (
+                  <tr key={load._id}>
+                    {/* Load */}
+                    <td>
+                      <div className="load-table-name">
+                        <div className="load-table-icon">
+                          <Package size={20} />
                         </div>
 
-                      </td>
-
-
-
-                      {/* =========================
-                          Company
-                      ========================== */}
-
-                      <td>
-
-                        <div className="load-company">
-
-                          <Building2
-                            size={16}
-                          />
-
+                        <div>
+                          <strong>{load.title}</strong>
 
                           <span>
-
-                            {
-                              load.companyName ||
-                              "—"
-                            }
-
+                            {barTypeData[load.barType] ||
+                              load.barType ||
+                              "—"}
                           </span>
+                        </div>
+                      </div>
+                    </td>
 
+                    {/* Company */}
+                    <td>
+                      <div className="load-company">
+                        <Building2 size={16} />
+
+                        <span>{load.companyName || "—"}</span>
+                      </div>
+                    </td>
+
+                    {/* Route */}
+                    <td>
+                      <div className="load-route">
+                        <div>
+                          <MapPin size={14} />
+
+                          <span>{load.origin}</span>
                         </div>
 
-                      </td>
+                        <ArrowLeft size={15} />
 
+                        <div>
+                          <MapPin size={14} />
 
-
-                      {/* =========================
-                          Route
-                      ========================== */}
-
-                      <td>
-
-                        <div className="load-route">
-
-
-                          <div>
-
-                            <MapPin
-                              size={14}
-                            />
-
-                            <span>
-                              {load.origin}
-                            </span>
-
-                          </div>
-
-
-                          <ArrowLeft
-                            size={15}
-                          />
-
-
-                          <div>
-
-                            <MapPin
-                              size={14}
-                            />
-
-                            <span>
-                              {load.destination}
-                            </span>
-
-                          </div>
-
+                          <span>{load.destination}</span>
                         </div>
+                      </div>
+                    </td>
 
-                      </td>
+                    {/* Driver */}
+                    <td>
+                      <strong className="load-driver-name">
+                        {load.driver || "—"}
+                      </strong>
+                    </td>
 
+                    {/* Vehicle */}
+                    <td>
+                      <div className="load-vehicle">
+                        <Truck size={16} />
 
+                        {vehicleData[load.vehicleType] ||
+                          load.vehicleType ||
+                          "—"}
+                      </div>
+                    </td>
 
-                      {/* =========================
-                          Driver
-                      ========================== */}
+                    {/* Date */}
+                    <td>
+                      <span className="load-date">
+                        {formatDate(load.createdAt)}
+                      </span>
+                    </td>
 
-                      <td>
+                    {/* Status */}
+                    <td>
+                      <span
+                        className={`load-status-badge ${status.className}`}
+                      >
+                        <span className="load-status-dot" />
 
-                        <strong className="load-driver-name">
+                        {status.label}
+                      </span>
+                    </td>
 
-                          {load.driver ||
-                            "—"}
-
-                        </strong>
-
-                      </td>
-
-
-
-                      {/* =========================
-                          Vehicle
-                      ========================== */}
-
-                      <td>
-
-                        <div className="load-vehicle">
-
-                          <Truck
-                            size={16}
-                          />
-
-
-                          {
-                            vehicleData[
-                            load.vehicleType
-                            ] ||
-                            load.vehicleType ||
-                            "—"
-                          }
-
-                        </div>
-
-                      </td>
-
-
-
-                      {/* =========================
-                          Date
-                      ========================== */}
-
-                      <td>
-
-                        <span className="load-date">
-
-                          {formatDate(
-                            load.createdAt
-                          )}
-
-                        </span>
-
-                      </td>
-
-
-
-                      {/* =========================
-                          Status
-                      ========================== */}
-
-                      <td>
-
-                        <span
-                          className={`load-status-badge ${status.className}`}
+                    {/* Actions */}
+                    <td>
+                      <div className="load-actions">
+                        <Link
+                          href={`/loads/${load._id}`}
+                          className="load-action-button"
+                          title="مشاهده"
                         >
+                          <Eye size={17} />
+                        </Link>
 
-                          <span className="load-status-dot" />
-
-
-                          {status.label}
-
-                        </span>
-
-                      </td>
-
-
-
-                      {/* =========================
-                          Actions
-                      ========================== */}
-
-                      <td>
-
-                        <div className="load-actions">
-
-
-                          <Link
-                            href={`/loads/${load._id}`}
-                            className="load-action-button"
-                            title="مشاهده"
-                          >
-
-                            <Eye
-                              size={17}
-                            />
-
-                          </Link>
-
-
-                          <Link
-                            href={`/loads/${load._id}/edit`}
-                            className="load-action-button"
-                            title="ویرایش"
-                          >
-
-                            <Pencil
-                              size={17}
-                            />
-
-                          </Link>
-
-
-                        </div>
-
-                      </td>
-
-
-                    </tr>
-
-                  );
-
-                }
-              )
-
+                        <Link
+                          href={`/loads/${load._id}/edit`}
+                          className="load-action-button"
+                          title="ویرایش"
+                        >
+                          <Pencil size={17} />
+                        </Link>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })
             )}
-
           </tbody>
-
         </table>
-
       </div>
 
-
-
-      {/* =================================
-          Footer
-      ================================== */}
-
+      {/* Footer + Pagination */}
       <div className="load-table-footer">
-
         <span>
-
           نمایش{" "}
-
-          {sortedLoads.length === 0
+          {total === 0
             ? "۰"
-            : `۱ تا ${sortedLoads.length.toLocaleString("fa-IR")}`
-          }
-
+            : `${fromItem.toLocaleString("fa-IR")} تا ${toItem.toLocaleString("fa-IR")}`}
           {" از "}
-
-          {loads.length.toLocaleString("fa-IR")}
-
+          {total.toLocaleString("fa-IR")}
           {" بار"}
-
         </span>
 
-
         <div className="pagination">
-
-          <button disabled>
+          <button
+            type="button"
+            disabled={page <= 1}
+            onClick={() => onPageChange(page - 1)}
+          >
             قبلی
           </button>
 
+          {getPageNumbers(page, totalPages).map((item, index) =>
+            item === "..." ? (
+              <span key={`dots-${index}`} style={{ padding: "0 6px" }}>
+                …
+              </span>
+            ) : (
+              <button
+                type="button"
+                key={item}
+                className={item === page ? "pagination-active" : ""}
+                onClick={() => onPageChange(item)}
+              >
+                {item.toLocaleString("fa-IR")}
+              </button>
+            )
+          )}
 
-          <button className="pagination-active">
-            ۱
-          </button>
-
-
-          <button disabled>
+          <button
+            type="button"
+            disabled={page >= totalPages}
+            onClick={() => onPageChange(page + 1)}
+          >
             بعدی
           </button>
-
         </div>
-
       </div>
-
-
     </section>
-
   );
-
 }

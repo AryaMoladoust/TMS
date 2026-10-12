@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import {
     BarChart3,
@@ -87,11 +87,34 @@ function dateToNumber(value) {
     const month = Number(match[2]);
     const day = Number(match[3]);
 
-    return (
-        year * 10000 +
-        month * 100 +
-        day
-    );
+    return year * 10000 + month * 100 + day;
+}
+
+/* =========================================================
+   PAGINATION HELPERS
+========================================================= */
+
+const RESULTS_PAGE_SIZE = 50;
+
+function getPageNumbers(current, total) {
+    if (total <= 7) {
+        return Array.from({ length: total }, (_, i) => i + 1);
+    }
+
+    const pages = [1];
+
+    const start = Math.max(2, current - 1);
+    const end = Math.min(total - 1, current + 1);
+
+    if (start > 2) pages.push("...");
+
+    for (let i = start; i <= end; i++) pages.push(i);
+
+    if (end < total - 1) pages.push("...");
+
+    pages.push(total);
+
+    return pages;
 }
 
 /* =========================================================
@@ -141,9 +164,7 @@ function FilterSelect({
 
                 <select
                     value={value}
-                    onChange={(e) =>
-                        onChange(e.target.value)
-                    }
+                    onChange={(e) => onChange(e.target.value)}
                 >
                     {options.map((option) => (
                         <option
@@ -158,7 +179,6 @@ function FilterSelect({
         </div>
     );
 }
-
 
 /* =========================================================
    PRINT PREVIEW
@@ -176,15 +196,10 @@ function PrintReportPreview({
 
     useEffect(() => {
         const handleAfterPrint = () => {
-            document.body.classList.remove(
-                "printing-report"
-            );
+            document.body.classList.remove("printing-report");
         };
 
-        window.addEventListener(
-            "afterprint",
-            handleAfterPrint
-        );
+        window.addEventListener("afterprint", handleAfterPrint);
 
         return () => {
             window.removeEventListener(
@@ -192,9 +207,7 @@ function PrintReportPreview({
                 handleAfterPrint
             );
 
-            document.body.classList.remove(
-                "printing-report"
-            );
+            document.body.classList.remove("printing-report");
         };
     }, []);
 
@@ -225,19 +238,18 @@ function PrintReportPreview({
                         type="button"
                         className="reports-print-button"
                         onClick={() => {
-                            document.body.classList.add("printing-report");
+                            document.body.classList.add(
+                                "printing-report"
+                            );
 
                             setTimeout(() => {
                                 window.print();
                             }, 100);
                         }}
-
                     >
                         <Printer size={17} />
                         چاپ گزارش
                     </button>
-
-
 
                     <button
                         type="button"
@@ -266,13 +278,9 @@ function PrintReportPreview({
                             <header className="report-a4-header">
 
                                 <div>
-                                    <h1>
-                                        موسسه حمل و نقل کامران
-                                    </h1>
+                                    <h1>موسسه حمل و نقل کامران</h1>
 
-                                    <p>
-                                        گزارش عملکرد سیستم حمل‌ونقل
-                                    </p>
+                                    <p>گزارش عملکرد سیستم حمل‌ونقل</p>
                                 </div>
 
                                 <div className="report-a4-meta">
@@ -285,8 +293,8 @@ function PrintReportPreview({
 
                                     <span>
                                         صفحه{" "}
-                                        {formatNumber(pageIndex + 1)}
-                                        {" "}از{" "}
+                                        {formatNumber(pageIndex + 1)}{" "}
+                                        از{" "}
                                         {formatNumber(pages.length)}
                                     </span>
                                 </div>
@@ -352,76 +360,74 @@ function PrintReportPreview({
 
                                     <tbody>
 
-                                        {pageRows.map(
-                                            (item, rowIndex) => (
-                                                <tr
-                                                    key={
-                                                        item._id ||
-                                                        `${pageIndex}-${rowIndex}`
-                                                    }
-                                                >
-                                                    <td>
-                                                        {formatNumber(
-                                                            pageIndex *
-                                                            rowsPerPage +
-                                                            rowIndex +
-                                                            1
-                                                        )}
-                                                    </td>
+                                        {pageRows.map((item, rowIndex) => (
+                                            <tr
+                                                key={
+                                                    item._id ||
+                                                    `${pageIndex}-${rowIndex}`
+                                                }
+                                            >
+                                                <td>
+                                                    {formatNumber(
+                                                        pageIndex *
+                                                        rowsPerPage +
+                                                        rowIndex +
+                                                        1
+                                                    )}
+                                                </td>
 
-                                                    <td>
-                                                        {item.driverName || "—"}
-                                                    </td>
+                                                <td>
+                                                    {item.driverName || "—"}
+                                                </td>
 
-                                                    <td>
-                                                        {item.companyName || "—"}
-                                                    </td>
+                                                <td>
+                                                    {item.companyName || "—"}
+                                                </td>
 
-                                                    <td>
-                                                        {getLoadTypeLabel(
-                                                            item.loadType
-                                                        )}
-                                                    </td>
+                                                <td>
+                                                    {getLoadTypeLabel(
+                                                        item.loadType
+                                                    )}
+                                                </td>
 
-                                                    <td>
-                                                        {getVehicleTypeLabel(
-                                                            item.vehicleType
-                                                        )}
-                                                    </td>
+                                                <td>
+                                                    {getVehicleTypeLabel(
+                                                        item.vehicleType
+                                                    )}
+                                                </td>
 
-                                                    <td>
-                                                        <div className="report-a4-route">
-                                                            <span>
-                                                                {item.origin || "—"}
-                                                            </span>
+                                                <td>
+                                                    <div className="report-a4-route">
+                                                        <span>
+                                                            {item.origin || "—"}
+                                                        </span>
 
-                                                            <span>←</span>
+                                                        <span>←</span>
 
-                                                            <span>
-                                                                {item.destination || "—"}
-                                                            </span>
-                                                        </div>
-                                                    </td>
+                                                        <span>
+                                                            {item.destination || "—"}
+                                                        </span>
+                                                    </div>
+                                                </td>
 
-                                                    <td>
-                                                        {formatNumber(
-                                                            item.distance
-                                                        )}{" "}
-                                                        کیلومتر
-                                                    </td>
+                                                <td>
+                                                    {formatNumber(
+                                                        item.distance
+                                                    )}{" "}
+                                                    کیلومتر
+                                                </td>
 
-                                                    <td>
-                                                        {formatNumber(item.cost)}
-                                                    </td>
+                                                <td>
+                                                    {formatNumber(item.cost)}
+                                                </td>
 
-                                                    <td>
-                                                        {normalizeDateValue(
-                                                            item.date
-                                                        ) || "—"}
-                                                    </td>
-                                                </tr>
-                                            )
-                                        )}
+                                                <td>
+                                                    {normalizeDateValue(
+                                                        item.date
+                                                    ) || "—"}
+                                                </td>
+                                            </tr>
+                                        ))}
 
                                         {pageRows.length === 0 && (
                                             <tr>
@@ -447,8 +453,8 @@ function PrintReportPreview({
 
                                 <span>
                                     صفحه{" "}
-                                    {formatNumber(pageIndex + 1)}
-                                    {" "}از{" "}
+                                    {formatNumber(pageIndex + 1)}{" "}
+                                    از{" "}
                                     {formatNumber(pages.length)}
                                 </span>
                             </footer>
@@ -922,177 +928,80 @@ export default function ReportsPage() {
        REAL LOCATION DATA
     ===================================================== */
 
-    const provinces = useMemo(
-        () => getProvincesList(),
-        []
-    );
+    const provinces = useMemo(() => getProvincesList(), []);
 
     /* =====================================================
-       DATABASE DATA
+       DATABASE DATA (همه چیز از سرور می‌آید)
     ===================================================== */
 
-    const [invoices, setInvoices] =
-        useState([]);
+    const [rows, setRows] = useState([]);
 
-    const [loading, setLoading] =
-        useState(true);
+    const [summary, setSummary] = useState({
+        count: 0,
+        totalDistance: 0,
+        totalCost: 0,
+        uniqueDrivers: 0,
+        uniqueCompanies: 0,
+    });
 
-    const [error, setError] =
-        useState("");
+    const [pagination, setPagination] = useState({
+        page: 1,
+        limit: RESULTS_PAGE_SIZE,
+        total: 0,
+        totalPages: 1,
+    });
 
-    /* =====================================================
-       FILTER DATA
-    ===================================================== */
+    const [totals, setTotals] = useState({
+        invoices: 0,
+        pendingLoads: 0,
+        drivers: 0,
+        companies: 0,
+    });
 
-    const [drivers, setDrivers] =
-        useState([]);
+    const [filterOptions, setFilterOptions] = useState({
+        drivers: [],
+        companies: [],
+        vehicleTypes: [],
+        loadTypes: [],
+    });
 
-    const [companies, setCompanies] =
-        useState([]);
+    const [loading, setLoading] = useState(true);
+
+    const [error, setError] = useState("");
 
     /* =====================================================
        FILTERS
     ===================================================== */
 
-    const [filters, setFilters] =
-        useState({
-            driver: "",
-            vehicle: "",
-            company: "",
-            loadType: "",
-            originProvince: "",
-            originCity: "",
-            destinationProvince: "",
-            destinationCity: "",
-            payment: "",
-            fromDate: null,
-            toDate: null,
-        });
+    const [filters, setFilters] = useState({
+        driver: "",
+        vehicle: "",
+        company: "",
+        loadType: "",
+        originProvince: "",
+        originCity: "",
+        destinationProvince: "",
+        destinationCity: "",
+        payment: "",
+        fromDate: null,
+        toDate: null,
+    });
+
+    const [resultsPage, setResultsPage] = useState(1);
 
     const [showPrintPreview, setShowPrintPreview] =
         useState(false);
 
-    /* =====================================================
-       LOAD REAL DATA
-    ===================================================== */
+    const [printData, setPrintData] = useState([]);
 
-    useEffect(() => {
-        async function loadReportData() {
-            try {
-                setLoading(true);
-                setError("");
+    const [printLoading, setPrintLoading] = useState(false);
 
-                const [
-                    invoicesResponse,
-                    driversResponse,
-                    companiesResponse,
-                ] = await Promise.all([
-                    fetch(
-                        "/api/invoices",
-                        {
-                            cache: "no-store",
-                        }
-                    ),
+    const optionsLoadedRef = useRef(false);
 
-                    fetch(
-                        "/api/drivers",
-                        {
-                            cache: "no-store",
-                        }
-                    ),
-
-                    fetch(
-                        "/api/companies",
-                        {
-                            cache: "no-store",
-                        }
-                    ),
-                ]);
-
-                /* -----------------------------------------
-                   INVOICES
-                ----------------------------------------- */
-
-                if (invoicesResponse.ok) {
-                    const result =
-                        await invoicesResponse.json();
-
-                    const invoiceList =
-                        Array.isArray(result)
-                            ? result
-                            : Array.isArray(
-                                result.invoices
-                            )
-                                ? result.invoices
-                                : [];
-
-                    setInvoices(
-                        invoiceList
-                    );
-                }
-
-                /* -----------------------------------------
-                   DRIVERS
-                ----------------------------------------- */
-
-                if (driversResponse.ok) {
-                    const result =
-                        await driversResponse.json();
-
-                    const driverList =
-                        Array.isArray(result)
-                            ? result
-                            : Array.isArray(
-                                result.drivers
-                            )
-                                ? result.drivers
-                                : [];
-
-                    setDrivers(
-                        driverList
-                    );
-                }
-
-                /* -----------------------------------------
-                   COMPANIES
-                ----------------------------------------- */
-
-                if (companiesResponse.ok) {
-                    const result =
-                        await companiesResponse.json();
-
-                    const companyList =
-                        Array.isArray(result)
-                            ? result
-                            : Array.isArray(
-                                result.companies
-                            )
-                                ? result.companies
-                                : [];
-
-                    setCompanies(
-                        companyList
-                    );
-                }
-            } catch (err) {
-                console.error(
-                    "Reports data error:",
-                    err
-                );
-
-                setError(
-                    "دریافت اطلاعات گزارشات انجام نشد."
-                );
-            } finally {
-                setLoading(false);
-            }
-        }
-
-        loadReportData();
-    }, []);
+    const requestIdRef = useRef(0);
 
     /* =====================================================
-       ORIGIN CITIES
+       ORIGIN / DESTINATION CITIES
     ===================================================== */
 
     const originCities = useMemo(() => {
@@ -1100,153 +1009,226 @@ export default function ReportsPage() {
             return [];
         }
 
-        return getCities(
-            filters.originProvince
-        );
+        return getCities(filters.originProvince);
     }, [filters.originProvince]);
-
-    /* =====================================================
-       DESTINATION CITIES
-    ===================================================== */
 
     const destinationCities = useMemo(() => {
         if (!filters.destinationProvince) {
             return [];
         }
 
-        return getCities(
-            filters.destinationProvince
-        );
-    }, [
-        filters.destinationProvince,
-    ]);
+        return getCities(filters.destinationProvince);
+    }, [filters.destinationProvince]);
 
     /* =====================================================
-       REAL FILTER OPTIONS
+       BUILD REQUEST BODY
     ===================================================== */
 
-    const driverOptions = useMemo(() => {
-        return [
-            {
-                value: "",
-                label: "همه رانندگان",
-            },
+    function buildQuery(page, limit, includeOptions = false) {
+        return {
+            page,
+            limit,
+            includeOptions,
 
-            ...drivers.map((driver) => ({
-                value:
-                    driver._id ||
-                    driver.name ||
-                    "",
+            driver: filters.driver,
+            vehicle: filters.vehicle,
+            company: filters.company,
+            loadType: filters.loadType,
+            payment: filters.payment,
 
-                label:
-                    driver.name ||
-                    "بدون نام",
-            })),
-        ];
-    }, [drivers]);
+            originCity: filters.originCity,
+            originCities:
+                filters.originProvince && !filters.originCity
+                    ? originCities.map((city) => city.fa)
+                    : [],
 
-    const companyOptions = useMemo(() => {
-        return [
-            {
-                value: "",
-                label: "همه شرکت‌ها",
-            },
+            destinationCity: filters.destinationCity,
+            destinationCities:
+                filters.destinationProvince &&
+                !filters.destinationCity
+                    ? destinationCities.map((city) => city.fa)
+                    : [],
 
-            ...companies.map((company) => ({
-                value:
-                    company._id ||
-                    company.name ||
-                    "",
+            fromDate: dateToNumber(filters.fromDate),
+            toDate: dateToNumber(filters.toDate),
+        };
+    }
 
-                label:
-                    company.name ||
-                    "بدون نام",
-            })),
-        ];
-    }, [companies]);
+    async function requestReport(query) {
+        const response = await fetch("/api/reports", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(query),
+            cache: "no-store",
+        });
 
-    const vehicleOptions = useMemo(() => {
-        const values = [
-            ...new Set(
-                invoices
-                    .map(
-                        (invoice) =>
-                            invoice.vehicleType
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+            throw new Error(
+                data?.message || "دریافت اطلاعات گزارشات انجام نشد."
+            );
+        }
+
+        return data;
+    }
+
+    /* =====================================================
+       LOAD REPORT (با تغییر فیلتر یا صفحه)
+    ===================================================== */
+
+    // با تغییر فیلتر، برگرد به صفحه ۱
+    useEffect(() => {
+        setResultsPage(1);
+    }, [filters]);
+
+    useEffect(() => {
+        const requestId = ++requestIdRef.current;
+
+        const timer = setTimeout(async () => {
+            try {
+                setLoading(true);
+                setError("");
+
+                const data = await requestReport(
+                    buildQuery(
+                        resultsPage,
+                        RESULTS_PAGE_SIZE,
+                        !optionsLoadedRef.current
                     )
-                    .filter(Boolean)
-            ),
-        ];
+                );
 
-        return [
-            {
-                value: "",
-                label: "همه ماشین‌ها",
-            },
+                // پاسخ قدیمی را نادیده بگیر
+                if (requestId !== requestIdRef.current) {
+                    return;
+                }
 
-            ...values.map((value) => ({
+                setRows(data.rows);
+                setSummary(data.summary);
+                setPagination(data.pagination);
+
+                if (data.totals) {
+                    setTotals(data.totals);
+                }
+
+                if (data.filterOptions) {
+                    setFilterOptions(data.filterOptions);
+                    optionsLoadedRef.current = true;
+                }
+
+                if (data.pagination.page !== resultsPage) {
+                    setResultsPage(data.pagination.page);
+                }
+            } catch (err) {
+                if (requestId !== requestIdRef.current) {
+                    return;
+                }
+
+                console.error("Reports data error:", err);
+
+                setError("دریافت اطلاعات گزارشات انجام نشد.");
+            } finally {
+                if (requestId === requestIdRef.current) {
+                    setLoading(false);
+                }
+            }
+        }, 150);
+
+        return () => clearTimeout(timer);
+    }, [filters, resultsPage]);
+
+    /* =====================================================
+       PRINT PREVIEW (همه نتایج فیلترشده)
+    ===================================================== */
+
+    async function handlePrintPreview() {
+        try {
+            setPrintLoading(true);
+
+            const all = [];
+            const printLimit = 1000;
+
+            for (let page = 1; page <= 500; page++) {
+                const data = await requestReport(
+                    buildQuery(page, printLimit, false)
+                );
+
+                all.push(...data.rows);
+
+                if (page >= data.pagination.totalPages) {
+                    break;
+                }
+            }
+
+            setPrintData(all);
+            setShowPrintPreview(true);
+        } catch (err) {
+            console.error("Print data error:", err);
+
+            setError("دریافت اطلاعات چاپ انجام نشد.");
+        } finally {
+            setPrintLoading(false);
+        }
+    }
+
+    /* =====================================================
+       FILTER OPTIONS
+    ===================================================== */
+
+    const driverOptions = useMemo(
+        () => [
+            { value: "", label: "همه رانندگان" },
+            ...filterOptions.drivers,
+        ],
+        [filterOptions.drivers]
+    );
+
+    const companyOptions = useMemo(
+        () => [
+            { value: "", label: "همه شرکت‌ها" },
+            ...filterOptions.companies,
+        ],
+        [filterOptions.companies]
+    );
+
+    const vehicleOptions = useMemo(
+        () => [
+            { value: "", label: "همه ماشین‌ها" },
+            ...filterOptions.vehicleTypes.map((value) => ({
                 value,
                 label: getVehicleTypeLabel(value),
             })),
-        ];
-    }, [invoices]);
+        ],
+        [filterOptions.vehicleTypes]
+    );
 
-    const loadTypeOptions = useMemo(() => {
-        const values = [
-            ...new Set(
-                invoices
-                    .map(
-                        (invoice) =>
-                            invoice.loadType
-                    )
-                    .filter(Boolean)
-            ),
-        ];
-
-        return [
-            {
-                value: "",
-                label: "همه انواع بار",
-            },
-
-            ...values.map((value) => ({
+    const loadTypeOptions = useMemo(
+        () => [
+            { value: "", label: "همه انواع بار" },
+            ...filterOptions.loadTypes.map((value) => ({
                 value,
                 label: getLoadTypeLabel(value),
             })),
-        ];
-    }, [invoices]);
+        ],
+        [filterOptions.loadTypes]
+    );
 
     const paymentOptions = [
-        {
-            value: "",
-            label: "همه",
-        },
-        {
-            value: "اعتباری",
-            label: "اعتباری",
-        },
-        {
-            value: "نقد",
-            label: "نقد",
-        },
+        { value: "", label: "همه" },
+        { value: "اعتباری", label: "اعتباری" },
+        { value: "نقد", label: "نقد" },
     ];
 
     /* =====================================================
-       FILTER UPDATE
+       FILTER UPDATE / RESET
     ===================================================== */
 
-    function updateFilter(
-        field,
-        value
-    ) {
+    function updateFilter(field, value) {
         setFilters((previous) => ({
             ...previous,
             [field]: value,
         }));
     }
-
-    /* =====================================================
-       RESET FILTERS
-    ===================================================== */
 
     function resetFilters() {
         setFilters({
@@ -1265,226 +1247,33 @@ export default function ReportsPage() {
     }
 
     /* =====================================================
-       FILTERED REPORT
+       SUMMARY + PAGINATION (از پاسخ سرور)
     ===================================================== */
 
-    const filteredData = useMemo(() => {
-        const fromDate =
-            dateToNumber(
-                filters.fromDate
-            );
+    const isFiltering = Object.values(filters).some(Boolean);
 
-        const toDate =
-            dateToNumber(
-                filters.toDate
-            );
+    const subtitleStyle = {
+        display: "block",
+        marginTop: 4,
+        fontSize: 11,
+        opacity: 0.7,
+    };
 
-        return invoices.filter(
-            (invoice) => {
+    const totalDistance = summary.totalDistance;
+    const totalCost = summary.totalCost;
+    const uniqueDrivers = summary.uniqueDrivers;
+    const uniqueCompanies = summary.uniqueCompanies;
 
-                /* -----------------------------------------
-                   DRIVER
-                ----------------------------------------- */
+    const currentResultsPage = pagination.page;
+    const totalResultsPages = pagination.totalPages;
 
-                if (
-                    filters.driver &&
-                    String(
-                        invoice.driverId?._id ||
-                        invoice.driverId ||
-                        ""
-                    ) !==
-                    String(
-                        filters.driver
-                    ) &&
-                    String(
-                        invoice.driverName ||
-                        ""
-                    ) !==
-                    String(
-                        filters.driver
-                    )
-                ) {
-                    return false;
-                }
+    const resultsFrom =
+        summary.count === 0
+            ? 0
+            : (pagination.page - 1) * pagination.limit + 1;
 
-                /* -----------------------------------------
-                   VEHICLE
-                ----------------------------------------- */
-
-                if (
-                    filters.vehicle &&
-                    invoice.vehicleType !==
-                    filters.vehicle
-                ) {
-                    return false;
-                }
-
-                /* -----------------------------------------
-                   COMPANY
-                ----------------------------------------- */
-
-                if (
-                    filters.company &&
-                    String(
-                        invoice.companyId?._id ||
-                        invoice.companyId ||
-                        ""
-                    ) !==
-                    String(
-                        filters.company
-                    ) &&
-                    String(
-                        invoice.companyName ||
-                        ""
-                    ) !==
-                    String(
-                        filters.company
-                    )
-                ) {
-                    return false;
-                }
-
-                /* -----------------------------------------
-                   LOAD TYPE
-                ----------------------------------------- */
-
-                if (
-                    filters.loadType &&
-                    invoice.loadType !==
-                    filters.loadType
-                ) {
-                    return false;
-                }
-
-                /* -----------------------------------------
-                   ORIGIN CITY
-                ----------------------------------------- */
-
-                if (
-                    filters.originCity &&
-                    invoice.origin !==
-                    filters.originCity
-                ) {
-                    return false;
-                }
-
-                /* -----------------------------------------
-                   DESTINATION CITY
-                ----------------------------------------- */
-
-                if (
-                    filters.destinationCity &&
-                    invoice.destination !==
-                    filters.destinationCity
-                ) {
-                    return false;
-                }
-
-                /* -----------------------------------------
-                   PAYMENT
-                ----------------------------------------- */
-
-                if (
-                    filters.payment &&
-                    invoice.costType !==
-                    filters.payment
-                ) {
-                    return false;
-                }
-
-                /* -----------------------------------------
-                   DATE
-                ----------------------------------------- */
-
-                if (
-                    fromDate ||
-                    toDate
-                ) {
-                    const invoiceDate =
-                        normalizeDateValue(
-                            invoice.date
-                        );
-
-                    const invoiceDateNumber =
-                        dateToNumber(
-                            invoiceDate
-                        );
-
-                    if (
-                        invoiceDateNumber ===
-                        null
-                    ) {
-                        return false;
-                    }
-
-                    if (
-                        fromDate &&
-                        invoiceDateNumber <
-                        fromDate
-                    ) {
-                        return false;
-                    }
-
-                    if (
-                        toDate &&
-                        invoiceDateNumber >
-                        toDate
-                    ) {
-                        return false;
-                    }
-                }
-
-                return true;
-            }
-        );
-    }, [
-        invoices,
-        filters,
-    ]);
-
-    /* =====================================================
-       SUMMARY
-    ===================================================== */
-
-    const totalDistance =
-        filteredData.reduce(
-            (sum, item) =>
-                sum +
-                Number(
-                    item.distance || 0
-                ),
-            0
-        );
-
-    const totalCost =
-        filteredData.reduce(
-            (sum, item) =>
-                sum +
-                Number(
-                    item.cost || 0
-                ),
-            0
-        );
-
-    const uniqueDrivers =
-        new Set(
-            filteredData.map(
-                (item) =>
-                    item.driverName ||
-                    item.driverId?._id ||
-                    item.driverId
-            )
-        ).size;
-
-    const uniqueCompanies =
-        new Set(
-            filteredData.map(
-                (item) =>
-                    item.companyName ||
-                    item.companyId?._id ||
-                    item.companyId
-            )
-        ).size;
+    const resultsTo =
+        (pagination.page - 1) * pagination.limit + rows.length;
 
     /* =====================================================
        RENDER
@@ -1493,25 +1282,19 @@ export default function ReportsPage() {
     return (
         <main className="main-content reports-page">
 
-            {/* =================================================
-                HEADER
-            ================================================= */}
+            {/* HEADER */}
 
             <div className="reports-page-header">
 
                 <div className="reports-heading">
 
                     <div className="reports-heading-icon">
-                        <BarChart3
-                            size={24}
-                        />
+                        <BarChart3 size={24} />
                     </div>
 
                     <div>
 
-                        <h1>
-                            گزارشات
-                        </h1>
+                        <h1>گزارشات</h1>
 
                         <p>
                             دریافت گزارش بر اساس اطلاعات ثبت‌شده در سیستم
@@ -1523,9 +1306,7 @@ export default function ReportsPage() {
 
             </div>
 
-            {/* =================================================
-                FILTERS
-            ================================================= */}
+            {/* FILTERS */}
 
             <section className="reports-filter-panel">
 
@@ -1534,16 +1315,12 @@ export default function ReportsPage() {
                     <div className="reports-section-title">
 
                         <div className="reports-section-icon">
-                            <ClipboardList
-                                size={19}
-                            />
+                            <ClipboardList size={19} />
                         </div>
 
                         <div>
 
-                            <h2>
-                                فیلتر گزارش
-                            </h2>
+                            <h2>فیلتر گزارش</h2>
 
                             <p>
                                 اطلاعات مورد نظر برای گزارش را انتخاب کنید
@@ -1562,18 +1339,11 @@ export default function ReportsPage() {
                     <FilterSelect
                         icon={User}
                         label="راننده"
-                        value={
-                            filters.driver
-                        }
+                        value={filters.driver}
                         onChange={(value) =>
-                            updateFilter(
-                                "driver",
-                                value
-                            )
+                            updateFilter("driver", value)
                         }
-                        options={
-                            driverOptions
-                        }
+                        options={driverOptions}
                     />
 
                     {/* VEHICLE */}
@@ -1581,18 +1351,11 @@ export default function ReportsPage() {
                     <FilterSelect
                         icon={Truck}
                         label="نوع ماشین"
-                        value={
-                            filters.vehicle
-                        }
+                        value={filters.vehicle}
                         onChange={(value) =>
-                            updateFilter(
-                                "vehicle",
-                                value
-                            )
+                            updateFilter("vehicle", value)
                         }
-                        options={
-                            vehicleOptions
-                        }
+                        options={vehicleOptions}
                     />
 
                     {/* COMPANY */}
@@ -1600,18 +1363,11 @@ export default function ReportsPage() {
                     <FilterSelect
                         icon={Building2}
                         label="شرکت"
-                        value={
-                            filters.company
-                        }
+                        value={filters.company}
                         onChange={(value) =>
-                            updateFilter(
-                                "company",
-                                value
-                            )
+                            updateFilter("company", value)
                         }
-                        options={
-                            companyOptions
-                        }
+                        options={companyOptions}
                     />
 
                     {/* LOAD TYPE */}
@@ -1619,18 +1375,11 @@ export default function ReportsPage() {
                     <FilterSelect
                         icon={Package}
                         label="نوع بار"
-                        value={
-                            filters.loadType
-                        }
+                        value={filters.loadType}
                         onChange={(value) =>
-                            updateFilter(
-                                "loadType",
-                                value
-                            )
+                            updateFilter("loadType", value)
                         }
-                        options={
-                            loadTypeOptions
-                        }
+                        options={loadTypeOptions}
                     />
 
                     {/* ORIGIN PROVINCE */}
@@ -1638,35 +1387,24 @@ export default function ReportsPage() {
                     <FilterSelect
                         icon={MapPin}
                         label="استان مبدا"
-                        value={
-                            filters.originProvince
-                        }
+                        value={filters.originProvince}
                         onChange={(value) => {
-                            setFilters(
-                                (previous) => ({
-                                    ...previous,
-                                    originProvince:
-                                        value,
-                                    originCity:
-                                        "",
-                                })
-                            );
+                            setFilters((previous) => ({
+                                ...previous,
+                                originProvince: value,
+                                originCity: "",
+                            }));
                         }}
                         options={[
                             {
                                 value: "",
-                                label:
-                                    "همه استان‌ها",
+                                label: "همه استان‌ها",
                             },
 
-                            ...provinces.map(
-                                (province) => ({
-                                    value:
-                                        province.en,
-                                    label:
-                                        province.fa,
-                                })
-                            ),
+                            ...provinces.map((province) => ({
+                                value: province.en,
+                                label: province.fa,
+                            })),
                         ]}
                     />
 
@@ -1675,32 +1413,22 @@ export default function ReportsPage() {
                     <FilterSelect
                         icon={MapPin}
                         label="شهر مبدا"
-                        value={
-                            filters.originCity
-                        }
+                        value={filters.originCity}
                         onChange={(value) =>
-                            updateFilter(
-                                "originCity",
-                                value
-                            )
+                            updateFilter("originCity", value)
                         }
                         options={[
                             {
                                 value: "",
-                                label:
-                                    filters.originProvince
-                                        ? "همه شهرها"
-                                        : "ابتدا استان",
+                                label: filters.originProvince
+                                    ? "همه شهرها"
+                                    : "ابتدا استان",
                             },
 
-                            ...originCities.map(
-                                (city) => ({
-                                    value:
-                                        city.fa,
-                                    label:
-                                        city.fa,
-                                })
-                            ),
+                            ...originCities.map((city) => ({
+                                value: city.fa,
+                                label: city.fa,
+                            })),
                         ]}
                     />
 
@@ -1709,35 +1437,24 @@ export default function ReportsPage() {
                     <FilterSelect
                         icon={Navigation}
                         label="استان مقصد"
-                        value={
-                            filters.destinationProvince
-                        }
+                        value={filters.destinationProvince}
                         onChange={(value) => {
-                            setFilters(
-                                (previous) => ({
-                                    ...previous,
-                                    destinationProvince:
-                                        value,
-                                    destinationCity:
-                                        "",
-                                })
-                            );
+                            setFilters((previous) => ({
+                                ...previous,
+                                destinationProvince: value,
+                                destinationCity: "",
+                            }));
                         }}
                         options={[
                             {
                                 value: "",
-                                label:
-                                    "همه استان‌ها",
+                                label: "همه استان‌ها",
                             },
 
-                            ...provinces.map(
-                                (province) => ({
-                                    value:
-                                        province.en,
-                                    label:
-                                        province.fa,
-                                })
-                            ),
+                            ...provinces.map((province) => ({
+                                value: province.en,
+                                label: province.fa,
+                            })),
                         ]}
                     />
 
@@ -1746,32 +1463,22 @@ export default function ReportsPage() {
                     <FilterSelect
                         icon={Navigation}
                         label="شهر مقصد"
-                        value={
-                            filters.destinationCity
-                        }
+                        value={filters.destinationCity}
                         onChange={(value) =>
-                            updateFilter(
-                                "destinationCity",
-                                value
-                            )
+                            updateFilter("destinationCity", value)
                         }
                         options={[
                             {
                                 value: "",
-                                label:
-                                    filters.destinationProvince
-                                        ? "همه شهرها"
-                                        : "ابتدا استان",
+                                label: filters.destinationProvince
+                                    ? "همه شهرها"
+                                    : "ابتدا استان",
                             },
 
-                            ...destinationCities.map(
-                                (city) => ({
-                                    value:
-                                        city.fa,
-                                    label:
-                                        city.fa,
-                                })
-                            ),
+                            ...destinationCities.map((city) => ({
+                                value: city.fa,
+                                label: city.fa,
+                            })),
                         ]}
                     />
 
@@ -1780,43 +1487,27 @@ export default function ReportsPage() {
                     <FilterSelect
                         icon={CreditCard}
                         label="نوع پرداخت"
-                        value={
-                            filters.payment
-                        }
+                        value={filters.payment}
                         onChange={(value) =>
-                            updateFilter(
-                                "payment",
-                                value
-                            )
+                            updateFilter("payment", value)
                         }
-                        options={
-                            paymentOptions
-                        }
+                        options={paymentOptions}
                     />
 
                     {/* FROM DATE */}
 
                     <div className="report-filter-item">
 
-                        <label>
-                            از تاریخ
-                        </label>
+                        <label>از تاریخ</label>
 
                         <div className="report-date-wrapper">
 
-                            <CalendarDays
-                                size={17}
-                            />
+                            <CalendarDays size={17} />
 
                             <PersianDatePicker
-                                value={
-                                    filters.fromDate
-                                }
+                                value={filters.fromDate}
                                 onChange={(value) =>
-                                    updateFilter(
-                                        "fromDate",
-                                        value
-                                    )
+                                    updateFilter("fromDate", value)
                                 }
                                 placeholder="انتخاب تاریخ شروع"
                             />
@@ -1829,25 +1520,16 @@ export default function ReportsPage() {
 
                     <div className="report-filter-item">
 
-                        <label>
-                            تا تاریخ
-                        </label>
+                        <label>تا تاریخ</label>
 
                         <div className="report-date-wrapper">
 
-                            <CalendarDays
-                                size={17}
-                            />
+                            <CalendarDays size={17} />
 
                             <PersianDatePicker
-                                value={
-                                    filters.toDate
-                                }
+                                value={filters.toDate}
                                 onChange={(value) =>
-                                    updateFilter(
-                                        "toDate",
-                                        value
-                                    )
+                                    updateFilter("toDate", value)
                                 }
                                 placeholder="انتخاب تاریخ پایان"
                             />
@@ -1863,13 +1545,9 @@ export default function ReportsPage() {
                     <button
                         type="button"
                         className="reports-reset-button"
-                        onClick={
-                            resetFilters
-                        }
+                        onClick={resetFilters}
                     >
-                        <RotateCcw
-                            size={16}
-                        />
+                        <RotateCcw size={16} />
 
                         پاک کردن فیلترها
                     </button>
@@ -1878,9 +1556,7 @@ export default function ReportsPage() {
                         type="button"
                         className="reports-generate-button"
                     >
-                        <Search
-                            size={17}
-                        />
+                        <Search size={17} />
 
                         دریافت گزارش
                     </button>
@@ -1889,31 +1565,37 @@ export default function ReportsPage() {
 
             </section>
 
-            {/* =================================================
-                SUMMARY
-            ================================================= */}
+            {/* SUMMARY */}
 
             <section className="reports-summary">
 
                 <div className="reports-summary-card">
 
                     <div className="reports-summary-icon blue">
-                        <FileText
-                            size={20}
-                        />
+                        <FileText size={20} />
                     </div>
 
                     <div>
 
                         <span>
-                            تعداد بار
+                            {isFiltering
+                                ? "بارهای فاکتورشده"
+                                : "بارهای فاکتورنشده"}
                         </span>
 
                         <strong>
                             {formatNumber(
-                                filteredData.length
+                                isFiltering
+                                    ? summary.count
+                                    : totals.pendingLoads
                             )}
                         </strong>
+
+                        <small style={subtitleStyle}>
+                            {isFiltering
+                                ? `از ${formatNumber(totals.invoices)} فاکتور ثبت‌شده`
+                                : "بار موجود در لیست بارها"}
+                        </small>
 
                     </div>
 
@@ -1922,22 +1604,15 @@ export default function ReportsPage() {
                 <div className="reports-summary-card">
 
                     <div className="reports-summary-icon orange">
-                        <Route
-                            size={20}
-                        />
+                        <Route size={20} />
                     </div>
 
                     <div>
 
-                        <span>
-                            مسافت کل
-                        </span>
+                        <span>مسافت کل</span>
 
                         <strong>
-                            {formatNumber(
-                                totalDistance
-                            )}{" "}
-                            کیلومتر
+                            {formatNumber(totalDistance)} کیلومتر
                         </strong>
 
                     </div>
@@ -1947,22 +1622,15 @@ export default function ReportsPage() {
                 <div className="reports-summary-card">
 
                     <div className="reports-summary-icon green">
-                        <Wallet
-                            size={20}
-                        />
+                        <Wallet size={20} />
                     </div>
 
                     <div>
 
-                        <span>
-                            هزینه کل
-                        </span>
+                        <span>هزینه کل</span>
 
                         <strong>
-                            {formatNumber(
-                                totalCost
-                            )}{" "}
-                            تومان
+                            {formatNumber(totalCost)} تومان
                         </strong>
 
                     </div>
@@ -1972,22 +1640,26 @@ export default function ReportsPage() {
                 <div className="reports-summary-card">
 
                     <div className="reports-summary-icon purple">
-                        <Users
-                            size={20}
-                        />
+                        <Users size={20} />
                     </div>
 
                     <div>
 
-                        <span>
-                            رانندگان
-                        </span>
+                        <span>رانندگان</span>
 
                         <strong>
                             {formatNumber(
-                                uniqueDrivers
+                                isFiltering
+                                    ? uniqueDrivers
+                                    : totals.drivers
                             )}
                         </strong>
+
+                        {isFiltering && (
+                            <small style={subtitleStyle}>
+                                از {formatNumber(totals.drivers)} راننده ثبت‌شده
+                            </small>
+                        )}
 
                     </div>
 
@@ -1996,22 +1668,26 @@ export default function ReportsPage() {
                 <div className="reports-summary-card">
 
                     <div className="reports-summary-icon cyan">
-                        <Building2
-                            size={20}
-                        />
+                        <Building2 size={20} />
                     </div>
 
                     <div>
 
-                        <span>
-                            شرکت‌ها
-                        </span>
+                        <span>شرکت‌ها</span>
 
                         <strong>
                             {formatNumber(
-                                uniqueCompanies
+                                isFiltering
+                                    ? uniqueCompanies
+                                    : totals.companies
                             )}
                         </strong>
+
+                        {isFiltering && (
+                            <small style={subtitleStyle}>
+                                از {formatNumber(totals.companies)} شرکت ثبت‌شده
+                            </small>
+                        )}
 
                     </div>
 
@@ -2019,9 +1695,7 @@ export default function ReportsPage() {
 
             </section>
 
-            {/* =================================================
-                RESULTS
-            ================================================= */}
+            {/* RESULTS */}
 
             <section className="reports-results">
 
@@ -2029,15 +1703,11 @@ export default function ReportsPage() {
 
                     <div>
 
-                        <h2>
-                            نتایج گزارش
-                        </h2>
+                        <h2>نتایج گزارش</h2>
 
                         <p>
-                            {formatNumber(
-                                filteredData.length
-                            )}{" "}
-                            مورد مطابق فیلترهای انتخاب‌شده
+                            {formatNumber(summary.count)} مورد
+                            مطابق فیلترهای انتخاب‌شده
                         </p>
 
                     </div>
@@ -2045,12 +1715,13 @@ export default function ReportsPage() {
                     <button
                         type="button"
                         className="reports-export-button"
-                        onClick={() =>
-                            setShowPrintPreview(true)
-                        }
+                        onClick={handlePrintPreview}
+                        disabled={printLoading || summary.count === 0}
                     >
                         <Printer size={16} />
-                        پیش‌نمایش چاپ
+                        {printLoading
+                            ? "در حال آماده‌سازی..."
+                            : "پیش‌نمایش چاپ"}
                     </button>
 
                 </div>
@@ -2059,13 +1730,9 @@ export default function ReportsPage() {
 
                     <div className="reports-empty">
 
-                        <Search
-                            size={35}
-                        />
+                        <Search size={35} />
 
-                        <strong>
-                            در حال دریافت اطلاعات...
-                        </strong>
+                        <strong>در حال دریافت اطلاعات...</strong>
 
                     </div>
 
@@ -2073,17 +1740,15 @@ export default function ReportsPage() {
 
                     <div className="reports-empty">
 
-                        <Search
-                            size={35}
-                        />
+                        <Search size={35} />
 
-                        <strong>
-                            {error}
-                        </strong>
+                        <strong>{error}</strong>
 
                     </div>
 
-                ) : filteredData.length > 0 ? (
+                ) : summary.count > 0 ? (
+
+                    <>
 
                     <div className="reports-table-wrapper">
 
@@ -2092,148 +1757,108 @@ export default function ReportsPage() {
                             <thead>
 
                                 <tr>
-                                    <th>
-                                        راننده
-                                    </th>
-
-                                    <th>
-                                        شرکت
-                                    </th>
-
-                                    <th>
-                                        نوع بار
-                                    </th>
-
-                                    <th>
-                                        ماشین
-                                    </th>
-
-                                    <th>
-                                        مسیر
-                                    </th>
-
-                                    <th>
-                                        مسافت
-                                    </th>
-
-                                    <th>
-                                        هزینه
-                                    </th>
-
-                                    <th>
-                                        تاریخ
-                                    </th>
+                                    <th>راننده</th>
+                                    <th>شرکت</th>
+                                    <th>نوع بار</th>
+                                    <th>ماشین</th>
+                                    <th>مسیر</th>
+                                    <th>مسافت</th>
+                                    <th>هزینه</th>
+                                    <th>تاریخ</th>
                                 </tr>
 
                             </thead>
 
                             <tbody>
 
-                                {filteredData.map(
-                                    (
-                                        item,
-                                        index
-                                    ) => (
+                                {rows.map((item, index) => (
 
-                                        <tr
-                                            key={
-                                                item._id ||
-                                                item.invoiceNumber ||
-                                                index
-                                            }
-                                        >
+                                    <tr
+                                        key={
+                                            item._id ||
+                                            item.invoiceNumber ||
+                                            index
+                                        }
+                                    >
 
-                                            <td>
+                                        <td>
 
-                                                <span className="report-driver-name">
-                                                    {item.driverName ||
-                                                        "—"}
-                                                </span>
+                                            <span className="report-driver-name">
+                                                {item.driverName || "—"}
+                                            </span>
 
-                                            </td>
+                                        </td>
 
-                                            <td>
-                                                {item.companyName ||
-                                                    "—"}
-                                            </td>
+                                        <td>
+                                            {item.companyName || "—"}
+                                        </td>
 
-                                            <td>
-                                                {getLoadTypeLabel(
-                                                    item.loadType
+                                        <td>
+                                            {getLoadTypeLabel(
+                                                item.loadType
+                                            )}
+                                        </td>
+
+                                        <td>
+
+                                            <span className="report-vehicle">
+
+                                                <Truck size={14} />
+
+                                                {getVehicleTypeLabel(
+                                                    item.vehicleType
                                                 )}
-                                            </td>
 
-                                            <td>
+                                            </span>
 
-                                                <span className="report-vehicle">
+                                        </td>
 
-                                                    <Truck
-                                                        size={14}
-                                                    />
+                                        <td>
 
-                                                    {getVehicleTypeLabel(
-                                                        item.vehicleType
-                                                    )}
+                                            <div className="report-route-cell">
 
+                                                <span>
+                                                    {item.origin || "—"}
                                                 </span>
 
-                                            </td>
+                                                <span>←</span>
 
-                                            <td>
+                                                <span>
+                                                    {item.destination || "—"}
+                                                </span>
 
-                                                <div className="report-route-cell">
+                                            </div>
 
-                                                    <span>
-                                                        {item.origin ||
-                                                            "—"}
-                                                    </span>
+                                        </td>
 
-                                                    <span>
-                                                        ←
-                                                    </span>
+                                        <td>
 
-                                                    <span>
-                                                        {item.destination ||
-                                                            "—"}
-                                                    </span>
+                                            {formatNumber(
+                                                item.distance
+                                            )}{" "}
+                                            کیلومتر
 
-                                                </div>
+                                        </td>
 
-                                            </td>
+                                        <td>
 
-                                            <td>
+                                            <strong className="report-cost">
+                                                {formatNumber(item.cost)}
+                                            </strong>
 
-                                                {formatNumber(
-                                                    item.distance
-                                                )}{" "}
-                                                کیلومتر
+                                        </td>
 
-                                            </td>
+                                        <td>
 
-                                            <td>
+                                            {normalizeDateValue(
+                                                item.date
+                                            ) || "—"}
 
-                                                <strong className="report-cost">
+                                        </td>
 
-                                                    {formatNumber(
-                                                        item.cost
-                                                    )}
+                                    </tr>
 
-                                                </strong>
-
-                                            </td>
-
-                                            <td>
-
-                                                {normalizeDateValue(
-                                                    item.date
-                                                ) || "—"}
-
-                                            </td>
-
-                                        </tr>
-
-                                    )
-                                )}
+                                ))}
 
                             </tbody>
 
@@ -2241,13 +1866,79 @@ export default function ReportsPage() {
 
                     </div>
 
+                    <div className="reports-pagination-bar">
+
+                        <span>
+                            نمایش{" "}
+                            {formatNumber(resultsFrom)} تا{" "}
+                            {formatNumber(resultsTo)} از{" "}
+                            {formatNumber(summary.count)} مورد
+                        </span>
+
+                        <div className="reports-pagination">
+
+                            <button
+                                type="button"
+                                disabled={currentResultsPage <= 1}
+                                onClick={() =>
+                                    setResultsPage(currentResultsPage - 1)
+                                }
+                            >
+                                قبلی
+                            </button>
+
+                            {getPageNumbers(
+                                currentResultsPage,
+                                totalResultsPages
+                            ).map((item, index) =>
+                                item === "..." ? (
+                                    <span
+                                        key={`dots-${index}`}
+                                        className="reports-pagination-dots"
+                                    >
+                                        …
+                                    </span>
+                                ) : (
+                                    <button
+                                        type="button"
+                                        key={item}
+                                        className={
+                                            item === currentResultsPage
+                                                ? "reports-pagination-active"
+                                                : ""
+                                        }
+                                        onClick={() =>
+                                            setResultsPage(item)
+                                        }
+                                    >
+                                        {formatNumber(item)}
+                                    </button>
+                                )
+                            )}
+
+                            <button
+                                type="button"
+                                disabled={
+                                    currentResultsPage >= totalResultsPages
+                                }
+                                onClick={() =>
+                                    setResultsPage(currentResultsPage + 1)
+                                }
+                            >
+                                بعدی
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                    </>
+
                 ) : (
 
                     <div className="reports-empty">
 
-                        <Search
-                            size={35}
-                        />
+                        <Search size={35} />
 
                         <strong>
                             گزارشی با این فیلترها پیدا نشد
@@ -2263,16 +1954,63 @@ export default function ReportsPage() {
 
             </section>
 
+            <style jsx global>{`
+    .reports-pagination-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+        padding: 16px 4px 4px;
+        direction: rtl;
+        font-size: 13px;
+        color: var(--text-secondary, #6b7280);
+    }
+
+    .reports-pagination {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+
+    .reports-pagination button {
+        min-width: 38px;
+        height: 38px;
+        padding: 0 12px;
+        border: 1px solid var(--border-color, #e5e7eb);
+        border-radius: 10px;
+        background: var(--card-bg, #ffffff);
+        color: var(--text-primary, #111827);
+        cursor: pointer;
+        font-family: inherit;
+    }
+
+    .reports-pagination button:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+    }
+
+    .reports-pagination button.reports-pagination-active {
+        background: #2563eb;
+        border-color: #2563eb;
+        color: #ffffff;
+        font-weight: 700;
+    }
+
+    .reports-pagination-dots {
+        padding: 0 6px;
+    }
+`}</style>
+
             {showPrintPreview && (
                 <PrintReportPreview
-                    data={filteredData}
+                    data={printData}
                     totalDistance={totalDistance}
                     totalCost={totalCost}
                     uniqueDrivers={uniqueDrivers}
                     uniqueCompanies={uniqueCompanies}
-                    onClose={() =>
-                        setShowPrintPreview(false)
-                    }
+                    onClose={() => setShowPrintPreview(false)}
                 />
             )}
 
