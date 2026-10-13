@@ -49,7 +49,6 @@ export async function GET(request) {
 
     // پارامترهای جستجو و فیلتر
     const search = (searchParams.get("search") || "").trim();
-    const status = searchParams.get("status") || "";
     const barType = searchParams.get("barType") || "";
     const vehicleType = searchParams.get("vehicleType") || "";
 
@@ -74,15 +73,7 @@ export async function GET(request) {
         { destinationCity: regex },
         { destinationProvince: regex },
         { vehicleType: regex },
-        { status: regex },
       ];
-    }
-
-    // فیلتر وضعیت
-    if (status === "delivered") {
-      filter.status = "delivered";
-    } else if (status === "undelivered") {
-      filter.status = { $ne: "delivered" };
     }
 
     // فیلتر نوع بار و نوع خودرو
@@ -104,20 +95,12 @@ export async function GET(request) {
     // اگر شماره صفحه از تعداد صفحات بیشتر باشد
     const currentPage = Math.min(page, totalPages);
 
-    // بارهای تحویل‌نشده اول، بعد جدیدترین
+    // جدیدترین بارها اول
     const loads = await Load.aggregate([
       { $match: filter },
-      {
-        $addFields: {
-          deliveredOrder: {
-            $cond: [{ $eq: ["$status", "delivered"] }, 1, 0],
-          },
-        },
-      },
-      { $sort: { deliveredOrder: 1, createdAt: -1, _id: -1 } },
+      { $sort: { createdAt: -1, _id: -1 } },
       { $skip: (currentPage - 1) * limit },
       { $limit: limit },
-      { $project: { deliveredOrder: 0 } },
     ]);
 
     return NextResponse.json({
@@ -262,13 +245,9 @@ export async function POST(request) {
 
       price: body.price !== undefined ? Number(body.price) : 0,
 
-      description: body.description || "",
-
       vehicleType: body.vehicleType || null,
 
       provinceStatus: body.provinceStatus || null,
-
-      status: body.status || "pending",
     });
 
     // اعلام تغییر به تمام کلاینت‌ها

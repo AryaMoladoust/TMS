@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import PersianDatePicker from "@/components/drivers/PersianDatePicker";
 import InvoicePreview from "@/components/invoices/InvoicePreview";
@@ -220,6 +220,8 @@ export default function AddInvoicePage() {
     /* =======================================================
        GENERAL STATE
     ======================================================= */
+
+    const startTimeRef = useRef(null);
 
     const [preview, setPreview] = useState(false);
 
@@ -442,7 +444,7 @@ export default function AddInvoicePage() {
                 ? "خارج استان"
                 : load.provinceStatus === "inside"
                 ? "داخل استان"
-                : load.status || "";
+                : "";
 
         setLoadData({
             loadId: load._id || "",
@@ -1339,9 +1341,28 @@ export default function AddInvoicePage() {
 
                         <div className="invoice-input-wrapper">
 
-                            <Clock3 size={18} />
+                            <button
+                                type="button"
+                                className="invoice-time-icon-button"
+                                aria-label="انتخاب ساعت شروع"
+                                onClick={() => {
+                                    const input = startTimeRef.current;
+                                    if (!input) return;
+                                    input.focus();
+                                    if (typeof input.showPicker === "function") {
+                                        try {
+                                            input.showPicker();
+                                        } catch (error) {
+                                            /* مرورگر اجازه نداد؛ فوکوس کافی است */
+                                        }
+                                    }
+                                }}
+                            >
+                                <Clock3 size={18} />
+                            </button>
 
                             <input
+                                ref={startTimeRef}
                                 type="time"
                                 value={
                                     invoiceData.startTime

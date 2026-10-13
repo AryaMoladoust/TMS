@@ -29,7 +29,6 @@ export default function LoadsPage() {
   const [page, setPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
   const [typeFilter, setTypeFilter] = useState("");
   const [vehicleFilter, setVehicleFilter] = useState("");
 
@@ -42,7 +41,6 @@ export default function LoadsPage() {
   queryRef.current = {
     page,
     search: debouncedSearch,
-    status: statusFilter,
     barType: typeFilter,
     vehicleType: vehicleFilter,
   };
@@ -74,7 +72,6 @@ export default function LoadsPage() {
       });
 
       if (q.search) params.set("search", q.search);
-      if (q.status) params.set("status", q.status);
       if (q.barType) params.set("barType", q.barType);
       if (q.vehicleType) params.set("vehicleType", q.vehicleType);
 
@@ -187,7 +184,7 @@ export default function LoadsPage() {
       showLoading: false,
       showNotificationOnError: true,
     });
-  }, [page, debouncedSearch, statusFilter, typeFilter, vehicleFilter]);
+  }, [page, debouncedSearch, typeFilter, vehicleFilter]);
 
   // =====================================
   // هندلرها (با تغییر فیلتر، برگرد به صفحه ۱)
@@ -195,11 +192,6 @@ export default function LoadsPage() {
 
   function handleSearchChange(value) {
     setSearchTerm(value);
-    setPage(1);
-  }
-
-  function handleStatusChange(value) {
-    setStatusFilter(value);
     setPage(1);
   }
 
@@ -216,7 +208,6 @@ export default function LoadsPage() {
   function handleReset() {
     setSearchTerm("");
     setDebouncedSearch("");
-    setStatusFilter("");
     setTypeFilter("");
     setVehicleFilter("");
     setPage(1);
@@ -224,7 +215,6 @@ export default function LoadsPage() {
 
   const isFiltering =
     Boolean(searchTerm.trim()) ||
-    Boolean(statusFilter) ||
     Boolean(typeFilter) ||
     Boolean(vehicleFilter);
 
@@ -318,8 +308,6 @@ export default function LoadsPage() {
         onPageChange={setPage}
         searchTerm={searchTerm}
         onSearchChange={handleSearchChange}
-        statusFilter={statusFilter}
-        onStatusChange={handleStatusChange}
         typeFilter={typeFilter}
         onTypeChange={handleTypeChange}
         vehicleFilter={vehicleFilter}

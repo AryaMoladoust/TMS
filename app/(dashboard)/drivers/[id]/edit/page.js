@@ -44,7 +44,6 @@ export default function EditDriverPage() {
         vehicleType: "",
         vehiclePlate: "",
         licenseNumber: "",
-        status: "available",
     });
 
     const [licenseExpiry, setLicenseExpiry] =
@@ -85,9 +84,6 @@ export default function EditDriverPage() {
                         loadedDriver.vehiclePlate || "",
                     licenseNumber:
                         loadedDriver.licenseNumber || "",
-                    status:
-                        loadedDriver.status ||
-                        "available",
                 });
 
                 if (loadedDriver.licenseExpiry) {
@@ -269,11 +265,14 @@ export default function EditDriverPage() {
         <main className="main-content">
             <div className="page-heading">
                 <div>
-                    <div className="page-back-link">
+                    <div className="driver-back-wrap">
                         <Link
                             href={`/drivers/${params.id}`}
+                            className="driver-back-button"
                         >
-                            <ArrowRight size={17} />
+                            <span className="driver-back-icon">
+                                <ArrowRight size={16} />
+                            </span>
                             بازگشت به پرونده راننده
                         </Link>
                     </div>
@@ -543,38 +542,6 @@ export default function EditDriverPage() {
                                 }
                                 placeholder="تاریخ اعتبار را انتخاب کنید"
                             />
-                        </div>
-                    </div>
-
-                    <div className="driver-form-group">
-                        <label htmlFor="status">
-                            وضعیت راننده
-                        </label>
-
-                        <div className="driver-input-wrapper">
-                            <UserRound size={18} />
-
-                            <select
-                                id="status"
-                                value={
-                                    formData.status
-                                }
-                                onChange={
-                                    handleChange
-                                }
-                            >
-                                <option value="available">
-                                    آماده
-                                </option>
-
-                                <option value="busy">
-                                    مشغول
-                                </option>
-
-                                <option value="inactive">
-                                    غیرفعال
-                                </option>
-                            </select>
                         </div>
                     </div>
 

@@ -83,8 +83,7 @@ function normalizeInvoice(invoice) {
         id:
             invoice?.invoiceNumber ||
             invoice?.invoiceId ||
-            mongoId ||
-            "",
+            "—",
 
         mongoId,
 
@@ -1230,10 +1229,6 @@ export default function InvoicesPage() {
                                 <tr>
 
                                     <th>
-                                        شماره فاکتور
-                                    </th>
-
-                                    <th>
                                         تاریخ
                                     </th>
 
@@ -1278,18 +1273,6 @@ export default function InvoicesPage() {
                                                 invoice.id
                                             }
                                         >
-
-                                            <td>
-
-                                                <strong className="invoice-number">
-
-                                                    {
-                                                        invoice.id
-                                                    }
-
-                                                </strong>
-
-                                            </td>
 
                                             <td>
 

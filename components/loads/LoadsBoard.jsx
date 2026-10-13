@@ -9,8 +9,6 @@ export default function LoadsBoard({
   onPageChange = () => {},
   searchTerm = "",
   onSearchChange = () => {},
-  statusFilter = "",
-  onStatusChange = () => {},
   typeFilter = "",
   onTypeChange = () => {},
   vehicleFilter = "",
@@ -19,7 +17,6 @@ export default function LoadsBoard({
 }) {
   const isFiltering =
     Boolean(searchTerm.trim()) ||
-    Boolean(statusFilter) ||
     Boolean(typeFilter) ||
     Boolean(vehicleFilter);
 
@@ -28,8 +25,6 @@ export default function LoadsBoard({
       <LoadSearch
         searchTerm={searchTerm}
         onSearchChange={onSearchChange}
-        statusFilter={statusFilter}
-        onStatusChange={onStatusChange}
         typeFilter={typeFilter}
         onTypeChange={onTypeChange}
         vehicleFilter={vehicleFilter}

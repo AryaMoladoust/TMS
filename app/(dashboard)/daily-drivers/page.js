@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
     ArrowRight,
     Clock3,
@@ -176,6 +176,37 @@ const driverSearchRef = useRef("");
 const driverSearchRequestRef = useRef(0);
     const today = getTodayKey();
 
+    /* =====================================================
+       رانندگان اصلی که امروز ورود خورده‌اند
+       این رانندگان از لیست پیشنهاد جستجو حذف می‌شوند.
+    ===================================================== */
+
+    const enteredDriverIds = useMemo(() => {
+        const ids = new Set();
+
+        dailyDrivers.forEach((entry) => {
+            if (entry?.type !== "main") return;
+
+            const id = entry?.driverId?._id || entry?.driverId;
+
+            if (id) ids.add(String(id));
+        });
+
+        return ids;
+    }, [dailyDrivers]);
+
+    // برای اینکه بعد از حذف رانندگان واردشده هنوز ۲۰ نتیجه داشته باشیم
+    const enteredCountRef = useRef(0);
+    enteredCountRef.current = enteredDriverIds.size;
+
+    const availableDrivers = useMemo(
+        () =>
+            drivers
+                .filter((driver) => !enteredDriverIds.has(String(driver._id)))
+                .slice(0, 20),
+        [drivers, enteredDriverIds]
+    );
+
 
     /* =====================================================
        دریافت حداکثر ۲۰ راننده اصلی
@@ -197,7 +228,7 @@ const driverSearchRequestRef = useRef(0);
             // همیشه فقط ۲۰ نتیجه دریافت می‌شود؛ جستجو در API و دیتابیس انجام می‌شود.
             const params = new URLSearchParams({
                 page: "1",
-                limit: "20",
+                limit: String(Math.min(20 + enteredCountRef.current, 100)),
                 search: search.trim(),
             });
 
@@ -1072,7 +1103,7 @@ const driverSearchRequestRef = useRef(0);
                                 ) : (
 
                                     <DriverSearchSelect
-                                        drivers={drivers}
+                                        drivers={availableDrivers}
                                         value={selectedDriver}
                                         onChange={setSelectedDriver}
                                         onSearch={handleDriverSearch}

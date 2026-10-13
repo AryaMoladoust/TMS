@@ -12,7 +12,6 @@ import {
   MapPin,
   Route,
   Truck,
-  FileText,
   Save,
   Navigation,
   Tag,
@@ -192,11 +191,6 @@ export default function EditLoadForm({ load }) {
         formData.get(
           "loadVehicleType"
         ),
-
-      description:
-        formData.get(
-          "loadDescription"
-        ),
     };
 
     // =======================================================
@@ -280,16 +274,16 @@ export default function EditLoadForm({ load }) {
 
         <div>
 
-          <div className="page-back-link">
-
+          <div className="driver-back-wrap">
             <Link
               href={`/loads/${load._id}`}
+              className="driver-back-button"
             >
-              <ArrowRight size={17} />
-
+              <span className="driver-back-icon">
+                <ArrowRight size={16} />
+              </span>
               بازگشت به جزئیات بار
             </Link>
-
           </div>
 
           <h1>
@@ -784,42 +778,6 @@ export default function EditLoadForm({ load }) {
                 </option>
 
               </select>
-
-            </div>
-
-          </div>
-
-          {/* توضیحات */}
-
-          <div className="load-form-section-title load-form-full">
-
-            <FileText size={19} />
-
-            <span>
-              توضیحات
-            </span>
-
-          </div>
-
-          <div className="load-form-group load-form-full">
-
-            <label htmlFor="loadDescription">
-              توضیحات بار
-            </label>
-
-            <div className="load-input-wrapper load-textarea-wrapper">
-
-              <FileText size={18} />
-
-              <textarea
-                id="loadDescription"
-                name="loadDescription"
-                rows={4}
-                defaultValue={
-                  load.description ||
-                  ""
-                }
-              />
 
             </div>
 

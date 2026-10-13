@@ -247,7 +247,6 @@ export default function CompanyTable({ search = "" }) {
 
                       <div>
                         <strong>{company.name}</strong>
-                        <span>{company._id}</span>
                       </div>
                     </div>
                   </td>

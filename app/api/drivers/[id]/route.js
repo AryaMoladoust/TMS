@@ -77,7 +77,6 @@ export async function PUT(request, { params }) {
             vehiclePlate,
             licenseNumber,
             licenseExpiry,
-            status,
         } = body;
 
         if (
@@ -134,10 +133,9 @@ export async function PUT(request, { params }) {
                 vehiclePlate,
                 licenseNumber,
                 licenseExpiry: licenseExpiry || "",
-                status: status || "available",
             },
             {
-                new: true,
+                returnDocument: "after",
                 runValidators: true,
             }
         ).lean();

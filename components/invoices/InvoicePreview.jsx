@@ -25,6 +25,17 @@ function getCargoTypeLabel(value) {
   return cargoTypeLabels[value] || value || "—";
 }
 
+const vehicleTypeLabels = {
+  truck: "کامیون",
+  trailer: "تریلی",
+  pickup: "نیسان",
+  van: "وانت",
+};
+
+function getVehicleTypeLabel(value) {
+  return vehicleTypeLabels[value] || value || "—";
+}
+
 const paymentTypeLabels = {
   credit: "اعتباری",
   cash: "نقد",
@@ -548,7 +559,7 @@ export default function InvoicePreview({ invoice, onClose }) {
                   <strong>
                     خودرو:
                   </strong>{" "}
-                  {invoice.vehicle}
+                  {getVehicleTypeLabel(invoice.vehicle)}
                 </p>
 
                 <p>

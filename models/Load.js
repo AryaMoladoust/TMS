@@ -110,12 +110,6 @@ const LoadSchema = new mongoose.Schema(
             default: 0,
         },
 
-        description: {
-            type: String,
-            default: "",
-            trim: true,
-        },
-
         vehicleType: {
             type: String,
             enum: ["truck", "trailer", "pickup", "van"],
@@ -126,12 +120,6 @@ const LoadSchema = new mongoose.Schema(
             type: String,
             enum: ["inside", "outside"],
             default: null,
-        },
-
-        status: {
-            type: String,
-            enum: ["pending", "assigned", "delivered"],
-            default: "pending",
         },
     },
     {

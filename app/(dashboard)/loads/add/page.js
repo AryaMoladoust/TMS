@@ -13,7 +13,6 @@ import {
     MapPin,
     Route,
     Truck,
-    FileText,
     Save,
     Navigation,
     Tag,
@@ -508,11 +507,6 @@ const companyName = selectedCompany.name;
                 formData.get(
                     "loadVehicleType"
                 ),
-
-            description:
-                formData.get(
-                    "loadDescription"
-                ),
         };
 
 
@@ -578,7 +572,7 @@ const companyName = selectedCompany.name;
 
 
             showSuccess(
-                `بار با موفقیت ثبت شد. شناسه بار: ${result.loadId}`,
+                "بار با موفقیت ثبت شد.",
                 "ثبت بار موفق"
             );
 
@@ -616,16 +610,16 @@ const companyName = selectedCompany.name;
 
                 <div>
 
-                    <div className="page-back-link">
-
-                        <Link href="/loads">
-
-                            <ArrowRight size={17} />
-
+                    <div className="driver-back-wrap">
+                        <Link
+                            href="/loads"
+                            className="driver-back-button"
+                        >
+                            <span className="driver-back-icon">
+                                <ArrowRight size={16} />
+                            </span>
                             بازگشت به بارها
-
                         </Link>
-
                     </div>
 
 
@@ -1282,47 +1276,6 @@ const companyName = selectedCompany.name;
                                 </option>
 
                             </select>
-
-                        </div>
-
-                    </div>
-
-
-                    {/* =================================
-                        توضیحات
-                    ================================== */}
-
-                    <div className="load-form-section-title load-form-full">
-
-                        <FileText size={19} />
-
-                        <span>
-                            توضیحات
-                        </span>
-
-                    </div>
-
-
-                    <div className="load-form-group load-form-full">
-
-                        <label htmlFor="loadDescription">
-
-                            توضیحات بار
-
-                        </label>
-
-
-                        <div className="load-input-wrapper load-textarea-wrapper">
-
-                            <FileText size={18} />
-
-
-                            <textarea
-                                id="loadDescription"
-                                name="loadDescription"
-                                rows={4}
-                                placeholder="توضیحات اضافی درباره بار..."
-                            />
 
                         </div>
 

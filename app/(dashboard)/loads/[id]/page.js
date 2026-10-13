@@ -7,7 +7,6 @@ import {
   MapPin,
   Route,
   Truck,
-  FileText,
   Pencil,
 } from "lucide-react";
 
@@ -66,9 +65,11 @@ export default async function LoadDetailsPage({ params }) {
       {/* Header */}
       <div className="page-heading page-heading-with-action">
         <div>
-          <div className="page-back-link">
-            <Link href="/loads">
-              <ArrowRight size={17} />
+          <div className="driver-back-wrap">
+            <Link href="/loads" className="driver-back-button">
+              <span className="driver-back-icon">
+                <ArrowRight size={16} />
+              </span>
               بازگشت به بارها
             </Link>
           </div>
@@ -142,15 +143,6 @@ export default async function LoadDetailsPage({ params }) {
             </div>
           </div>
 
-        </div>
-
-        <div className="details-description">
-          <div className="details-title">
-            <FileText size={18} />
-            <span>توضیحات</span>
-          </div>
-
-          <p>{load.description || "توضیحی ثبت نشده است."}</p>
         </div>
       </section>
     </main>

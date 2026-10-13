@@ -116,7 +116,7 @@ export async function PUT(request, { params }) {
                     description: description?.trim() || "",
                 },
                 {
-                    new: true,
+                    returnDocument: "after",
                     runValidators: true,
                 }
             );

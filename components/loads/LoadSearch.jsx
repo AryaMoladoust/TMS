@@ -9,8 +9,6 @@ import {
 export default function LoadSearch({
   searchTerm = "",
   onSearchChange = () => {},
-  statusFilter = "",
-  onStatusChange = () => {},
   typeFilter = "",
   onTypeChange = () => {},
   vehicleFilter = "",
@@ -41,16 +39,6 @@ export default function LoadSearch({
             placeholder="جستجو بر اساس شماره بار، شرکت، مبدا یا مقصد..."
           />
         </div>
-
-        <select
-          className="load-status-select"
-          value={statusFilter}
-          onChange={(event) => onStatusChange(event.target.value)}
-        >
-          <option value="">همه وضعیت‌ها</option>
-          <option value="undelivered">تحویل نشده</option>
-          <option value="delivered">تحویل شده</option>
-        </select>
 
         <select
           className="load-type-select"

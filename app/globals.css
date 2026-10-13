@@ -2194,7 +2194,7 @@ body {
 
 .driver-table {
   width: 100%;
-  min-width: 950px;
+  min-width: 1150px;
   border-collapse: collapse;
 }
 
@@ -2214,8 +2214,14 @@ body {
   padding: 10px 18px;
   border-top: 1px solid var(--border);
   color: var(--text-secondary);
-  font-size: 12px;
+  font-size: 15px;
   white-space: nowrap;
+}
+
+.driver-table td strong {
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 700;
 }
 
 .driver-table tbody tr {
@@ -2583,7 +2589,7 @@ body {
 
 .load-search-form {
   display: grid;
-  grid-template-columns: minmax(240px, 1fr) 170px 180px 160px auto;
+  grid-template-columns: minmax(240px, 1fr) 180px 160px auto;
   gap: 12px;
   align-items: center;
 }
@@ -7486,7 +7492,7 @@ body {
 
 .reports-table {
   width: 100%;
-  min-width: 1100px;
+  min-width: 1250px;
   border-collapse: collapse;
 }
 
@@ -7506,7 +7512,7 @@ body {
   padding: 7px 13px;
   border-top: 1px solid var(--border);
   color: var(--text-secondary);
-  font-size: 10px;
+  font-size: 13px;
   white-space: nowrap;
 }
 
@@ -7546,7 +7552,7 @@ body {
 
 .report-cost {
   color: var(--text-primary);
-  font-size: 10px;
+  font-size: 13px;
 }
 
 /* =========================================
@@ -12966,6 +12972,10 @@ html.dark .driver-delete-button:hover {
   font-size: 14px;
 }
 
+.driver-detail-header h2:last-child {
+  margin-bottom: 0;
+}
+
 .driver-detail-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -13224,7 +13234,7 @@ html.dark .driver-license-expired {
   gap: 6px;
   padding: 6px 14px;
   border-radius: 999px;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   white-space: nowrap;
 }
@@ -13266,10 +13276,11 @@ html.dark .driver-license-expired {
   background-color: #22c55e;
 }
 .details-card {
-  background: #fff;
-  border: 1px solid #e5e7eb;
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 18px;
   padding: 24px;
+  box-shadow: var(--shadow);
 }
 
 .details-grid {
@@ -13283,19 +13294,24 @@ html.dark .driver-license-expired {
   align-items: center;
   gap: 12px;
   padding: 14px;
-  border: 1px solid #eef2f7;
+  border: 1px solid var(--border);
   border-radius: 12px;
-  background: #fafcff;
+  background: var(--surface-soft);
+}
+
+.details-item > svg {
+  flex-shrink: 0;
+  color: var(--primary);
 }
 
 .details-item span {
   display: block;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 13px;
 }
 
 .details-item strong {
-  color: #111827;
+  color: var(--text);
   font-size: 15px;
 }
 
@@ -19091,7 +19107,7 @@ html.dark .change-password-message.error {
 
 .invoice-table {
     width: 100%;
-    min-width: 1100px;
+    min-width: 1280px;
     border-collapse: collapse;
     table-layout: fixed;
     direction: rtl;
@@ -19123,7 +19139,7 @@ html.dark .change-password-message.error {
     padding: 8px 12px;
     border-bottom: 1px solid var(--border);
     color: var(--text-secondary);
-    font-size: 10px;
+    font-size: 13px;
     text-align: center;
     vertical-align: middle;
     white-space: nowrap;
@@ -19148,44 +19164,44 @@ html.dark .change-password-message.error {
 /* شماره فاکتور */
 .invoice-table th:nth-child(1),
 .invoice-table td:nth-child(1) {
-    width: 170px;
+    width: 190px;
 }
 
 /* تاریخ */
 .invoice-table th:nth-child(2),
 .invoice-table td:nth-child(2) {
-    width: 90px;
+    width: 110px;
 }
 
 /* راننده */
 .invoice-table th:nth-child(3),
 .invoice-table td:nth-child(3) {
-    width: 145px;
+    width: 160px;
 }
 
 /* شرکت */
 .invoice-table th:nth-child(4),
 .invoice-table td:nth-child(4) {
-    width: 135px;
+    width: 150px;
 }
 
 /* ثبت‌کننده */
 .invoice-table th:nth-child(5),
 .invoice-table td:nth-child(5) {
-    width: 120px;
-    min-width: 120px;
+    width: 140px;
+    min-width: 140px;
 }
 
 /* مسیر */
 .invoice-table th:nth-child(6),
 .invoice-table td:nth-child(6) {
-    width: 180px;
+    width: 230px;
 }
 
 /* مبلغ */
 .invoice-table th:nth-child(7),
 .invoice-table td:nth-child(7) {
-    width: 120px;
+    width: 150px;
 }
 
 /* عملیات */
@@ -19200,7 +19216,7 @@ html.dark .change-password-message.error {
 
 .invoice-number {
     color: #2563eb;
-    font-size: 10px;
+    font-size: 13px;
     font-weight: 800;
     white-space: nowrap;
 }
@@ -19230,7 +19246,7 @@ html.dark .change-password-message.error {
     border-radius: 8px;
     background: rgba(37, 99, 235, 0.08);
     color: #2563eb;
-    font-size: 10px;
+    font-size: 13px;
     font-weight: 800;
     white-space: nowrap;
 }
@@ -19259,7 +19275,7 @@ html.dark .change-password-message.error {
 
 .invoice-route-arrow {
     color: #2563eb;
-    font-size: 13px;
+    font-size: 16px;
     font-weight: 800;
 }
 
@@ -19269,14 +19285,14 @@ html.dark .change-password-message.error {
 
 .invoice-amount {
     color: var(--text-primary);
-    font-size: 10px;
+    font-size: 13px;
     font-weight: 800;
     white-space: nowrap;
 }
 
 .invoice-amount small {
     color: var(--text-secondary);
-    font-size: 8px;
+    font-size: 11px;
     font-weight: 600;
 }
 
@@ -19329,16 +19345,16 @@ html.dark .change-password-message.error {
     }
 
     .invoice-table {
-        min-width: 1100px;
+        min-width: 1280px;
     }
 
     .invoice-table th,
     .invoice-table td {
-        font-size: 9px;
+        font-size: 12px;
     }
 
     .invoice-creator-list {
-        font-size: 9px;
+        font-size: 12px;
         padding: 4px 8px;
     }
 }
@@ -20654,4 +20670,196 @@ html.dark .change-password-message.error {
     padding: 0 9px;
     font-size: 12px;
   }
+}
+
+/* =========================================================
+   DRIVER BACK BUTTON
+   دکمه بازگشت در صفحه جزئیات و ویرایش راننده
+   ========================================================= */
+
+.driver-back-wrap {
+  margin-bottom: 14px;
+}
+
+.driver-back-button {
+  min-height: 42px;
+  padding: 0 16px 0 14px;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+
+  border: 1px solid var(--border);
+  border-radius: 12px;
+
+  background: var(--surface);
+  color: var(--text-secondary);
+
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+
+  box-shadow: var(--shadow);
+
+  transition:
+    background 0.18s ease,
+    color 0.18s ease,
+    border-color 0.18s ease,
+    transform 0.18s ease;
+}
+
+.driver-back-icon {
+  width: 26px;
+  height: 26px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  border-radius: 8px;
+
+  background: var(--primary-soft);
+  color: var(--primary);
+
+  transition:
+    background 0.18s ease,
+    color 0.18s ease,
+    transform 0.18s ease;
+}
+
+.driver-back-button:hover {
+  color: var(--primary);
+  border-color: var(--primary);
+  background: var(--primary-soft);
+  transform: translateY(-1px);
+}
+
+.driver-back-button:hover .driver-back-icon {
+  background: var(--primary);
+  color: #fff;
+  transform: translateX(2px);
+}
+
+.driver-back-button:active {
+  transform: translateY(0);
+}
+
+.driver-back-button:focus-visible {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-soft);
+}
+
+html.dark .driver-back-button:hover {
+  background: var(--surface-soft);
+}
+
+/* =========================================================
+   COMPANY SELECT — THEME (light / dark)
+   متغیرهای --input-bg و --card-bg و --border-color در تم تعریف
+   نشده بودند و باکس همیشه سفید می‌ماند؛ اینجا به متغیرهای تم وصل شد.
+   ========================================================= */
+
+.company-select__input-wrap {
+  background: var(--background);
+  border-color: var(--border);
+}
+
+.company-select__input-wrap--open {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-soft);
+}
+
+.company-select__input-wrap input {
+  color: var(--text-primary);
+}
+
+.company-select__input-wrap input::placeholder {
+  color: var(--text-muted);
+}
+
+.company-select__search-icon,
+.company-select__chevron,
+.company-select__icon-button {
+  color: var(--text-secondary);
+}
+
+.company-select__icon-button:hover {
+  background: var(--surface-soft);
+  color: #ef4444;
+}
+
+.company-select__dropdown {
+  background: var(--surface);
+  border-color: var(--border);
+  box-shadow: var(--shadow);
+}
+
+.company-select__option {
+  color: var(--text-primary);
+}
+
+.company-select__option:hover {
+  background: var(--surface-soft);
+}
+
+.company-select__option--selected {
+  background: var(--primary-soft);
+  color: var(--primary);
+}
+
+.company-select__building {
+  background: var(--primary-soft);
+  color: var(--primary);
+}
+
+.company-select__message {
+  color: var(--text-secondary);
+}
+
+.company-select__error button {
+  background: var(--primary-soft);
+  color: var(--primary);
+}
+
+
+/* =========================================================
+   TIME INPUT ICON — THEME (light / dark)
+   آیکون پیش‌فرض مرورگر (همیشه مشکی) مخفی شد و به‌جایش
+   آیکون ساعت خود پروژه که با تم هماهنگ است قابل‌کلیک شد.
+   ========================================================= */
+
+.invoice-input-wrapper input[type="time"]::-webkit-calendar-picker-indicator {
+  display: none;
+  -webkit-appearance: none;
+}
+
+.invoice-input-wrapper input[type="time"] {
+  color-scheme: light;
+}
+
+html.dark .invoice-input-wrapper input[type="time"] {
+  color-scheme: dark;
+}
+
+.invoice-time-icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  transition: color 0.18s ease;
+}
+
+.invoice-time-icon-button:hover,
+.invoice-time-icon-button:focus-visible {
+  color: var(--primary);
+  outline: none;
 }

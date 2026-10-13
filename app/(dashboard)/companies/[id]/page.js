@@ -297,9 +297,14 @@ export default function CompanyDetailsPage() {
         return (
             <main className="main-content">
                 <div className="page-heading">
-                    <div className="page-back-link">
-                        <Link href="/companies">
-                            <ArrowRight size={17} />
+                    <div className="driver-back-wrap">
+                        <Link
+                            href="/companies"
+                            className="driver-back-button"
+                        >
+                            <span className="driver-back-icon">
+                                <ArrowRight size={16} />
+                            </span>
                             بازگشت به شرکت‌ها
                         </Link>
                     </div>
@@ -319,9 +324,14 @@ export default function CompanyDetailsPage() {
         <main className="main-content">
             <div className="page-heading page-heading-with-action">
                 <div>
-                    <div className="page-back-link">
-                        <Link href="/companies">
-                            <ArrowRight size={17} />
+                    <div className="driver-back-wrap">
+                        <Link
+                            href="/companies"
+                            className="driver-back-button"
+                        >
+                            <span className="driver-back-icon">
+                                <ArrowRight size={16} />
+                            </span>
                             بازگشت به شرکت‌ها
                         </Link>
                     </div>

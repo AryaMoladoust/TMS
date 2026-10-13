@@ -6,7 +6,6 @@ import {
     Package,
     UserCheck,
     Truck,
-    MapPin,
 } from "lucide-react";
 
 /* =========================================================
@@ -39,20 +38,6 @@ function getVehicleTypeLabel(type) {
     };
 
     return vehicleTypes[type] || type || "—";
-}
-
-function getLoadStatus(status) {
-    if (status === "delivered") {
-        return {
-            label: "تحویل شده",
-            className: "delivered",
-        };
-    }
-
-    return {
-        label: "تحویل نشده",
-        className: "undelivered",
-    };
 }
 
 /* =========================================================
@@ -153,34 +138,12 @@ export default function DisplayPage() {
 
                 /*
                  * ترتیب بارها:
-                 *
-                 * 1. تحویل نشده
-                 * 2. تحویل شده
-                 *
-                 * داخل هر بخش:
                  * جدیدترین بار اول
                  */
 
                 const sortedLoads =
                     [...loadsList].sort(
                         (a, b) => {
-                            const aDelivered =
-                                a.status ===
-                                "delivered";
-
-                            const bDelivered =
-                                b.status ===
-                                "delivered";
-
-                            if (
-                                aDelivered !==
-                                bDelivered
-                            ) {
-                                return aDelivered
-                                    ? 1
-                                    : -1;
-                            }
-
                             const aTime =
                                 new Date(
                                     a.createdAt || 0
@@ -344,10 +307,6 @@ export default function DisplayPage() {
                     font-size: 22px;
                 }
 
-                .display-panel-loads .display-item-title span {
-                    font-size: 14px;
-                }
-
                 .display-panel-loads .display-company {
                     font-size: 17px;
                 }
@@ -357,10 +316,6 @@ export default function DisplayPage() {
                 }
 
                 .display-panel-loads .display-load-meta {
-                    font-size: 16px;
-                }
-
-                .display-panel-loads .display-load-status {
                     font-size: 16px;
                 }
 
@@ -574,11 +529,6 @@ export default function DisplayPage() {
                         {loads.map(
                             (load) => {
 
-                                const status =
-                                    getLoadStatus(
-                                        load.status
-                                    );
-
                                 return (
                                     <div
                                         className="display-load-item"
@@ -604,11 +554,6 @@ export default function DisplayPage() {
                                                         {load.title ||
                                                             "بدون عنوان"}
                                                     </strong>
-
-                                                    <span>
-                                                        {load.loadId ||
-                                                            "—"}
-                                                    </span>
 
                                                 </div>
 
@@ -654,25 +599,6 @@ export default function DisplayPage() {
                                                     {getVehicleTypeLabel(
                                                         load.vehicleType
                                                     )}
-                                                </span>
-
-                                            </div>
-
-                                            <div>
-
-                                                <MapPin
-                                                    size={15}
-                                                />
-
-                                                <span
-                                                    className={
-                                                        status.className ===
-                                                        "delivered"
-                                                            ? "display-load-status delivered"
-                                                            : "display-load-status"
-                                                    }
-                                                >
-                                                    {status.label}
                                                 </span>
 
                                             </div>

@@ -12,23 +12,6 @@ import {
   Pencil,
 } from "lucide-react";
 
-const statusData = {
-  pending: {
-    label: "تحویل نشده",
-    className: "load-status-undelivered",
-  },
-
-  assigned: {
-    label: "در حال ارسال",
-    className: "load-status-undelivered",
-  },
-
-  delivered: {
-    label: "تحویل شده",
-    className: "load-status-delivered",
-  },
-};
-
 // =====================================
 // تبدیل نوع بار به فارسی
 // =====================================
@@ -134,7 +117,7 @@ export default function LoadTable({
   emptyTitle = "هنوز هیچ باری ثبت نشده است",
   emptySubtitle = "برای شروع، یک بار جدید ثبت کنید.",
 }) {
-  // مرتب‌سازی (تحویل‌نشده‌ها اول) و صفحه‌بندی سمت سرور انجام می‌شود
+  // مرتب‌سازی (جدیدترین اول) و صفحه‌بندی سمت سرور انجام می‌شود
   const { page, limit, total, totalPages } = pagination;
 
   const fromItem = total === 0 ? 0 : (page - 1) * limit + 1;
@@ -147,7 +130,7 @@ export default function LoadTable({
         <div>
           <h2>لیست بارها</h2>
 
-          <p>بارهای تحویل نشده در ابتدا نمایش داده می‌شوند</p>
+          <p>جدیدترین بارها در ابتدا نمایش داده می‌شوند</p>
         </div>
 
         <span className="load-count-badge">
@@ -167,7 +150,6 @@ export default function LoadTable({
               <th>راننده</th>
               <th>خودرو</th>
               <th>تاریخ</th>
-              <th>وضعیت</th>
               <th>عملیات</th>
             </tr>
           </thead>
@@ -176,7 +158,7 @@ export default function LoadTable({
             {loads.length === 0 ? (
               <tr>
                 <td
-                  colSpan={8}
+                  colSpan={7}
                   style={{
                     textAlign: "center",
                     padding: "40px",
@@ -200,9 +182,6 @@ export default function LoadTable({
               </tr>
             ) : (
               loads.map((load) => {
-                const status =
-                  statusData[load.status] || statusData.pending;
-
                 return (
                   <tr key={load._id}>
                     {/* Load */}
@@ -274,17 +253,6 @@ export default function LoadTable({
                     <td>
                       <span className="load-date">
                         {formatDate(load.createdAt)}
-                      </span>
-                    </td>
-
-                    {/* Status */}
-                    <td>
-                      <span
-                        className={`load-status-badge ${status.className}`}
-                      >
-                        <span className="load-status-dot" />
-
-                        {status.label}
                       </span>
                     </td>
 

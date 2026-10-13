@@ -143,16 +143,6 @@ export default function DriverDetailsPage() {
         return types[type] || type;
     }
 
-    function getStatus(status) {
-        const statuses = {
-            available: "آماده",
-            busy: "مشغول",
-            inactive: "غیرفعال",
-        };
-
-        return statuses[status] || status;
-    }
-
     if (loading) {
         return (
             <main className="main-content">
@@ -194,9 +184,14 @@ export default function DriverDetailsPage() {
         <main className="main-content">
             <div className="page-heading page-heading-with-action">
                 <div>
-                    <div className="page-back-link">
-                        <Link href="/drivers">
-                            <ArrowRight size={17} />
+                    <div className="driver-back-wrap">
+                        <Link
+                            href="/drivers"
+                            className="driver-back-button"
+                        >
+                            <span className="driver-back-icon">
+                                <ArrowRight size={16} />
+                            </span>
                             بازگشت به رانندگان
                         </Link>
                     </div>
@@ -247,13 +242,6 @@ export default function DriverDetailsPage() {
 
                     <div>
                         <h2>{driver.name}</h2>
-
-                        <span>
-                            وضعیت:{" "}
-                            {getStatus(
-                                driver.status
-                            )}
-                        </span>
                     </div>
                 </div>
 

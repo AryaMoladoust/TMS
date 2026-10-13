@@ -236,9 +236,6 @@ export async function POST(request) {
       vehicleType,
       address,
       description,
-
-      // وضعیت اولیه راننده
-      status: "available",
     });
 
     // --------------------------------------------------------

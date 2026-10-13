@@ -55,12 +55,6 @@ const DriverSchema = new mongoose.Schema(
       default: "",
       trim: true,
     },
-
-    status: {
-      type: String,
-      enum: ["available", "busy", "inactive"],
-      default: "available",
-    },
   },
   {
     timestamps: true,
