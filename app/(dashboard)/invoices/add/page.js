@@ -37,7 +37,7 @@ import {
 const vehicleTypeLabels = {
     truck: "کامیون",
     trailer: "تریلی",
-    pickup: "وانت",
+    pickup: "نیسان",
     van: "وانت",
     کامیون: "کامیون",
     تریلی: "تریلی",

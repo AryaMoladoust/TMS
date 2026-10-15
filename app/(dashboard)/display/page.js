@@ -33,8 +33,8 @@ function getVehicleTypeLabel(type) {
     const vehicleTypes = {
         truck: "کامیون",
         trailer: "تریلی",
-        pickup: "وانت",
-        van: "ون",
+        pickup: "نیسان",
+        van: "وانت",
     };
 
     return vehicleTypes[type] || type || "—";

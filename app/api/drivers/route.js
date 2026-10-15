@@ -67,38 +67,43 @@ export async function GET(request) {
     const filter = {};
 
     if (search) {
+      const escapedSearch = search.replace(
+        /[.*+?^${}()|[\]\\]/g,
+        "\\$&"
+      );
+
       filter.$or = [
         {
           name: {
-            $regex: search,
+            $regex: escapedSearch,
             $options: "i",
           },
         },
 
         {
           nationalId: {
-            $regex: search,
+            $regex: escapedSearch,
             $options: "i",
           },
         },
 
         {
           phone: {
-            $regex: search,
+            $regex: escapedSearch,
             $options: "i",
           },
         },
 
         {
           vehiclePlate: {
-            $regex: search,
+            $regex: escapedSearch,
             $options: "i",
           },
         },
 
         {
           licenseNumber: {
-            $regex: search,
+            $regex: escapedSearch,
             $options: "i",
           },
         },

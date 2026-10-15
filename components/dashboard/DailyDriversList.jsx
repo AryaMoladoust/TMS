@@ -20,11 +20,11 @@ const vehicleTypes = [
     },
     {
         value: "pickup",
-        label: "وانت",
+        label: "نیسان",
     },
     {
         value: "van",
-        label: "ون",
+        label: "وانت",
     },
 ];
 

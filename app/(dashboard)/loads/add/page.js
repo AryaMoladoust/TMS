@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import CompanySearchSelect from "@/components/CompanySearchSelect";
 
@@ -126,6 +126,8 @@ export default function AddLoadPage() {
 
     const [calculatedDistance, setCalculatedDistance] =
         useState("");
+
+    const distanceWarningShownRef = useRef(false);
 
     const [distanceLoading, setDistanceLoading] =
         useState(false);
@@ -253,6 +255,8 @@ const [selectedCompany, setSelectedCompany] = useState(null);
     // ===============================
 
     useEffect(() => {
+
+        distanceWarningShownRef.current = false;
 
         if (!destinationLocation) {
 
@@ -411,6 +415,40 @@ const companyName = selectedCompany.name;
             return;
         }
 
+
+        // =================================
+        // هشدار نبودن مسافت (انتخاب مقصد روی نقشه)
+        // =================================
+
+        if (distanceLoading) {
+            showWarning(
+                "محاسبه مسافت هنوز تمام نشده است. لطفاً چند لحظه صبر کنید و دوباره ثبت کنید.",
+                "در حال محاسبه مسافت"
+            );
+
+            return;
+        }
+
+        const hasDistance =
+            Number(
+                calculatedDistance ||
+                formData.get("loadDistance") ||
+                0
+            ) > 0;
+
+        if (
+            !hasDistance &&
+            !distanceWarningShownRef.current
+        ) {
+            distanceWarningShownRef.current = true;
+
+            showWarning(
+                "مقصد روی نقشه انتخاب نشده یا مسافت محاسبه نشده است. در این حالت فاصلهٔ این بار نامشخص می‌ماند و در فاکتور نمایش داده نمی‌شود. برای انتخاب مقصد، روی نقشه کلیک کنید؛ در غیر این صورت دوباره دکمهٔ ثبت را بزنید تا بدون مسافت ثبت شود.",
+                "مسافت مشخص نیست"
+            );
+
+            return;
+        }
 
         // =================================
         // فاصله

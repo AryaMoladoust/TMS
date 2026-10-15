@@ -20,6 +20,13 @@ import { useParams, useRouter } from "next/navigation";
 
 import { useNotification } from "@/components/ui/NotificationProvider";
 
+const VEHICLE_TYPE_LABELS = {
+    truck: "کامیون",
+    trailer: "تریلی",
+    pickup: "نیسان",
+    van: "وانت",
+};
+
 function toPersianDigits(value) {
     if (value === null || value === undefined) {
         return "";
@@ -365,6 +372,9 @@ export default function InvoicePreviewPage() {
                             icon={Car}
                             label="نوع خودرو"
                             value={
+                                VEHICLE_TYPE_LABELS[
+                                    invoice.vehicleType
+                                ] ||
                                 invoice.vehicleType
                             }
                         />

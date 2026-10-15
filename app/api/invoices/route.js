@@ -8,34 +8,15 @@ import Company from "@/models/Company";
 
 import { getUserFromSessionToken } from "@/lib/auth";
 import { touchSyncState } from "@/lib/sync";
+import { getTehranDateKey } from "@/lib/tehranDate";
 
 function getTodayKey() {
-    const today = new Date();
-
-    const year = today.getFullYear();
-    const month = String(
-        today.getMonth() + 1
-    ).padStart(2, "0");
-    const day = String(
-        today.getDate()
-    ).padStart(2, "0");
-
-    return `${year}-${month}-${day}`;
+    return getTehranDateKey();
 }
 
 async function generateInvoiceNumber() {
-    const today = new Date();
-
-    const year = today.getFullYear();
-    const month = String(
-        today.getMonth() + 1
-    ).padStart(2, "0");
-    const day = String(
-        today.getDate()
-    ).padStart(2, "0");
-
     const datePrefix =
-        `${year}${month}${day}`;
+        getTehranDateKey().replace(/-/g, "");
 
     const prefix =
         `INV-${datePrefix}-`;
@@ -139,6 +120,11 @@ export async function GET(request) {
 
         const filter = {};
 
+        const escapedSearch = search.replace(
+            /[.*+?^${}()|[\]\\]/g,
+            "\\$&"
+        );
+
         /*
          * جستجو در کل دیتابیس
          */
@@ -146,43 +132,43 @@ export async function GET(request) {
             filter.$or = [
                 {
                     invoiceNumber: {
-                        $regex: search,
+                        $regex: escapedSearch,
                         $options: "i",
                     },
                 },
                 {
                     driverName: {
-                        $regex: search,
+                        $regex: escapedSearch,
                         $options: "i",
                     },
                 },
                 {
                     companyName: {
-                        $regex: search,
+                        $regex: escapedSearch,
                         $options: "i",
                     },
                 },
                 {
                     createdByUserName: {
-                        $regex: search,
+                        $regex: escapedSearch,
                         $options: "i",
                     },
                 },
                 {
                     origin: {
-                        $regex: search,
+                        $regex: escapedSearch,
                         $options: "i",
                     },
                 },
                 {
                     destination: {
-                        $regex: search,
+                        $regex: escapedSearch,
                         $options: "i",
                     },
                 },
                 {
                     driverPhone: {
-                        $regex: search,
+                        $regex: escapedSearch,
                         $options: "i",
                     },
                 },
@@ -804,9 +790,7 @@ export async function POST(
            Create Invoice
         ========================= */
 
-        const invoice =
-            await Invoice.create({
-                invoiceNumber,
+        const invoicePayload = {
 
                 createdByUserId,
 
@@ -913,7 +897,40 @@ export async function POST(
 
                 qrCode:
                     qrCode?.trim() || "",
-            });
+            };
+
+        /*
+         * جلوگیری از Race Condition در شمارهٔ فاکتور:
+         * اگر دو درخواست هم‌زمان یک شماره بگیرند، ایندکس unique
+         * دومی را رد می‌کند و اینجا با شمارهٔ جدید دوباره تلاش می‌شود.
+         */
+        let currentInvoiceNumber = invoiceNumber;
+        let invoice = null;
+
+        for (let attempt = 0; attempt < 5; attempt++) {
+            try {
+                invoice = await Invoice.create({
+                    ...invoicePayload,
+                    invoiceNumber: currentInvoiceNumber,
+                });
+
+                break;
+            } catch (createError) {
+                const isDuplicateNumber =
+                    createError?.code === 11000 &&
+                    (createError?.keyPattern?.invoiceNumber ||
+                        /invoiceNumber/.test(
+                            createError?.message || ""
+                        ));
+
+                if (!isDuplicateNumber || attempt === 4) {
+                    throw createError;
+                }
+
+                currentInvoiceNumber =
+                    await generateInvoiceNumber();
+            }
+        }
 
         /* =========================
            Delete Load

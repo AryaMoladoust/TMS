@@ -209,11 +209,10 @@ export async function POST(request) {
     }
 
     // ساخت شناسه بار
-    const loadId = await generateLoadId();
+    let loadId = await generateLoadId();
 
     // ساخت اطلاعات بار
-    const load = await Load.create({
-      loadId,
+    const loadPayload = {
       title: body.title,
       barType: body.barType,
       companyName: body.companyName,
@@ -248,7 +247,28 @@ export async function POST(request) {
       vehicleType: body.vehicleType || null,
 
       provinceStatus: body.provinceStatus || null,
-    });
+    };
+
+    // جلوگیری از Race Condition در شناسهٔ بار (ثبت هم‌زمان دو بار)
+    let load = null;
+
+    for (let attempt = 0; attempt < 5; attempt++) {
+      try {
+        load = await Load.create({ ...loadPayload, loadId });
+        break;
+      } catch (createError) {
+        const isDuplicateLoadId =
+          createError?.code === 11000 &&
+          (createError?.keyPattern?.loadId ||
+            /loadId/.test(createError?.message || ""));
+
+        if (!isDuplicateLoadId || attempt === 4) {
+          throw createError;
+        }
+
+        loadId = await generateLoadId();
+      }
+    }
 
     // اعلام تغییر به تمام کلاینت‌ها
     await touchSyncState();

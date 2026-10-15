@@ -5,15 +5,10 @@ import Driver from "@/models/Driver";
 import DailyDriver from "@/models/DailyDriver";
 import Load from "@/models/Load";
 import Company from "@/models/Company";
+import { getTehranDateKey } from "@/lib/tehranDate";
 
 function getTodayKey() {
-    const today = new Date();
-
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, "0");
-    const day = String(today.getDate()).padStart(2, "0");
-
-    return `${year}-${month}-${day}`;
+    return getTehranDateKey();
 }
 
 export async function GET(request, { params }) {
