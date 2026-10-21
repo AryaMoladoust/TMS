@@ -1,5 +1,7 @@
 "use client";
 
+import { SkeletonTable } from "@/components/ui/Skeleton";
+
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import {
@@ -1728,13 +1730,7 @@ export default function ReportsPage() {
 
                 {loading ? (
 
-                    <div className="reports-empty">
-
-                        <Search size={35} />
-
-                        <strong>در حال دریافت اطلاعات...</strong>
-
-                    </div>
+                    <SkeletonTable bare rows={6} cols={6} />
 
                 ) : error ? (
 

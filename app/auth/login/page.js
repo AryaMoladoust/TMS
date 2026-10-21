@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { LoginScene, LoginTruck } from "@/components/auth/LoginScene";
 
 function IconUser(props) {
     return (
@@ -93,112 +94,6 @@ function IconArrow(props) {
     );
 }
 
-function LogoMark() {
-    return (
-        <svg viewBox="0 0 64 64" width="100%" height="100%">
-            <defs>
-                <linearGradient id="logoGrad" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0" stopColor="#2f6fef" />
-                    <stop offset="1" stopColor="#0b1f3d" />
-                </linearGradient>
-            </defs>
-            <rect width="64" height="64" rx="18" fill="url(#logoGrad)" />
-            <path d="M14 48 L30 16 L38 16 L22 48 Z" fill="#ffffff" />
-            <path d="M30 48 L46 16 L54 16 L38 48 Z" fill="#ffffff" opacity="0.5" />
-            <rect x="15" y="41.5" width="15" height="4" rx="2" fill="#0b1f3d" transform="rotate(-27 15 41.5)" />
-        </svg>
-    );
-}
-
-function HeroIllustration() {
-    const doors = Array.from({ length: 6 });
-    return (
-        <svg
-            className="login-hero-svg"
-            viewBox="0 0 1440 900"
-            preserveAspectRatio="xMidYMid slice"
-            xmlns="http://www.w3.org/2000/svg"
-        >
-            <defs>
-                <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0" stopColor="#bfe0f5" />
-                    <stop offset="0.6" stopColor="#dcecf8" />
-                    <stop offset="1" stopColor="#eef5fa" />
-                </linearGradient>
-                <radialGradient id="sunGlow" cx="50%" cy="50%" r="50%">
-                    <stop offset="0%" stopColor="#ffffff" stopOpacity="0.65" />
-                    <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
-                </radialGradient>
-            </defs>
-
-            <rect width="1440" height="900" fill="url(#skyGrad)" />
-            <circle cx="1080" cy="150" r="220" fill="url(#sunGlow)" />
-            <ellipse cx="260" cy="130" rx="90" ry="24" fill="#ffffff" opacity="0.55" />
-            <ellipse cx="420" cy="170" rx="60" ry="16" fill="#ffffff" opacity="0.45" />
-
-            {/* mountains */}
-            <path
-                d="M0,430 L140,340 L280,410 L420,320 L560,420 L720,330 L880,410 L1020,350 L1180,420 L1320,360 L1440,420 L1440,540 L0,540 Z"
-                fill="#b7c9dd"
-                opacity="0.7"
-            />
-            <path
-                d="M0,470 L160,410 L320,460 L480,390 L640,460 L800,400 L960,470 L1120,410 L1280,470 L1440,440 L1440,560 L0,560 Z"
-                fill="#93a8c4"
-                opacity="0.85"
-            />
-
-            {/* warehouse */}
-            <rect x="60" y="560" width="1320" height="190" fill="#e3e8ee" />
-            <rect x="60" y="560" width="1320" height="12" fill="#c3cdd9" />
-            <rect x="60" y="598" width="1320" height="10" fill="var(--primary, #2563eb)" opacity="0.85" />
-            {doors.map((_, i) => (
-                <rect key={i} x={130 + i * 200} y="648" width="120" height="95" rx="6" fill="#c7d0da" />
-            ))}
-
-            {/* gate */}
-            <rect x="640" y="470" width="24" height="280" fill="#4b5b70" />
-            <rect x="800" y="470" width="24" height="280" fill="#4b5b70" />
-            <rect x="622" y="458" width="220" height="16" rx="4" fill="#3a4a5e" />
-            <rect x="650" y="480" width="170" height="44" rx="8" fill="#0f1f3d" opacity="0.92" />
-            <text x="735" y="508" textAnchor="middle" fontSize="15" fontWeight="700" fill="#ffffff" style={{ fontFamily: "inherit" }}>
-                شهرک صنعتی رشت
-            </text>
-
-            {/* flag */}
-            <line x1="880" y1="468" x2="880" y2="560" stroke="#4b5b70" strokeWidth="4" />
-            <rect x="882" y="468" width="46" height="10" fill="#1f8a4c" />
-            <rect x="882" y="478" width="46" height="10" fill="#f4f7fb" />
-            <rect x="882" y="488" width="46" height="10" fill="#c0392b" />
-
-            {/* ground */}
-            <rect x="0" y="700" width="1440" height="200" fill="#c9d0d8" />
-            <path
-                d="M0,780 C 260,720 480,830 860,760 C 1140,710 1280,790 1440,740 L1440,900 L0,900 Z"
-                fill="#0c1526"
-            />
-
-            {/* truck */}
-            <g>
-                <rect x="120" y="628" width="330" height="132" rx="14" fill="#f5f7fb" />
-                <rect x="120" y="682" width="330" height="15" fill="var(--primary, #2563eb)" opacity="0.85" />
-                <path
-                    d="M450 760 V676 a12 12 0 0 1 12-12 h44 a17 17 0 0 1 14 8 l30 42 a12 12 0 0 1 2 6.6 V760 Z"
-                    fill="#f5f7fb"
-                />
-                <rect x="474" y="684" width="38" height="30" rx="5" fill="#0f1f3d" opacity="0.78" />
-                <circle cx="524" cy="712" r="7" fill="var(--primary, #2563eb)" />
-                <circle cx="196" cy="768" r="26" fill="#0f1f3d" />
-                <circle cx="196" cy="768" r="10" fill="#3a4a63" />
-                <circle cx="392" cy="768" r="26" fill="#0f1f3d" />
-                <circle cx="392" cy="768" r="10" fill="#3a4a63" />
-                <circle cx="484" cy="768" r="22" fill="#0f1f3d" />
-                <circle cx="484" cy="768" r="8" fill="#3a4a63" />
-            </g>
-        </svg>
-    );
-}
-
 export default function LoginPage() {
     const router = useRouter();
 
@@ -243,11 +138,18 @@ export default function LoginPage() {
 
     return (
         <main className="login-hero">
-            <HeroIllustration />
+            <LoginScene />
+            <div className="login-road" aria-hidden="true" />
+            <LoginTruck />
 
             <div className="login-hero-content">
                 <div className="login-logo">
-                    <LogoMark />
+                    <img
+                        src="/icons/icon-192.png"
+                        alt="لوگوی موسسه حمل و نقل کامران"
+                        width="84"
+                        height="84"
+                    />
                 </div>
 
                 <h1 className="login-hero-title">باربری</h1>

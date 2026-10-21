@@ -1,6 +1,8 @@
 
 "use client";
 
+import { Skeleton } from "@/components/ui/Skeleton";
+
 import Link from "next/link";
 import AnimatedTruck from "./AnimatedTruck";
 import { useCallback, useEffect, useState } from "react";
@@ -137,7 +139,7 @@ export default function StatsCards() {
 
         const value =
           loading || count === null
-            ? "..."
+            ? <Skeleton width={56} height={26} radius={8} />
             : count.toLocaleString("fa-IR");
 
         return (

@@ -1,5 +1,7 @@
 "use client";
 
+import { Skeleton, SkeletonTable } from "@/components/ui/Skeleton";
+
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -1094,11 +1096,7 @@ const driverSearchRequestRef = useRef(0);
 
                                 {loadingDrivers ? (
 
-                                    <div className="daily-driver-loading">
-
-                                        در حال دریافت رانندگان...
-
-                                    </div>
+                                    <Skeleton height={46} radius={12} />
 
                                 ) : (
 
@@ -1400,15 +1398,7 @@ const driverSearchRequestRef = useRef(0);
 
                 {loadingDailyDrivers ? (
 
-                    <div className="daily-driver-empty">
-
-                        <Clock3 size={30} />
-
-                        <strong>
-                            در حال دریافت اطلاعات...
-                        </strong>
-
-                    </div>
+                    <SkeletonTable bare rows={4} cols={5} />
 
                 ) : dailyDrivers.length === 0 ? (
 

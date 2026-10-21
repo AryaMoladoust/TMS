@@ -1,5 +1,7 @@
 "use client";
 
+import { SkeletonList } from "@/components/ui/Skeleton";
+
 import { useEffect, useState } from "react";
 
 import {
@@ -50,6 +52,7 @@ export default function DisplayPage() {
 
     const [currentDate, setCurrentDate] = useState("");
     const [lastUpdate, setLastUpdate] = useState("");
+    const [loaded, setLoaded] = useState(false);
 
     /* =====================================================
        LOAD DATABASE DATA
@@ -184,6 +187,8 @@ export default function DisplayPage() {
                 "Display data error:",
                 error
             );
+        } finally {
+            setLoaded(true);
         }
     }
 
@@ -379,6 +384,8 @@ export default function DisplayPage() {
 
                     <div className="display-list">
 
+                        {!loaded && <SkeletonList rows={4} />}
+
                         {dailyDrivers.map(
                             (driver, index) => {
 
@@ -462,7 +469,7 @@ export default function DisplayPage() {
 
                     </div>
 
-                    {dailyDrivers.length === 0 && (
+                    {loaded && dailyDrivers.length === 0 && (
 
                         <div className="display-empty">
 
@@ -525,6 +532,8 @@ export default function DisplayPage() {
                     </div>
 
                     <div className="display-list">
+
+                        {!loaded && <SkeletonList rows={4} />}
 
                         {loads.map(
                             (load) => {
@@ -612,7 +621,7 @@ export default function DisplayPage() {
 
                     </div>
 
-                    {loads.length === 0 && (
+                    {loaded && loads.length === 0 && (
 
                         <div className="display-empty">
 

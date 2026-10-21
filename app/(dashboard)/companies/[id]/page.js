@@ -1,5 +1,7 @@
 "use client";
 
+import { SkeletonForm } from "@/components/ui/Skeleton";
+
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
@@ -279,16 +281,7 @@ export default function CompanyDetailsPage() {
     if (loading) {
         return (
             <main className="main-content">
-                <div className="company-form-panel">
-                    <p
-                        style={{
-                            textAlign: "center",
-                            padding: "40px",
-                        }}
-                    >
-                        در حال دریافت اطلاعات شرکت...
-                    </p>
-                </div>
+                <SkeletonForm fields={6} />
             </main>
         );
     }

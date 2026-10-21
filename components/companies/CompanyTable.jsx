@@ -1,6 +1,8 @@
 
 "use client";
 
+import { SkeletonRow } from "@/components/ui/Skeleton";
+
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -182,19 +184,14 @@ export default function CompanyTable({ search = "" }) {
           </thead>
 
           <tbody>
-            {loading && (
-              <tr>
-                <td
-                  colSpan={5}
-                  style={{
-                    textAlign: "center",
-                    padding: "40px",
-                  }}
-                >
-                  در حال دریافت اطلاعات شرکت‌ها...
-                </td>
-              </tr>
-            )}
+            {loading &&
+              Array.from({ length: 6 }).map((_, index) => (
+                <tr key={`skeleton-${index}`}>
+                  <td colSpan={5}>
+                    <SkeletonRow cols={5} seed={index} />
+                  </td>
+                </tr>
+              ))}
 
             {!loading && error && (
               <tr>

@@ -1,5 +1,7 @@
 "use client";
 
+import { SkeletonStats, SkeletonTable } from "@/components/ui/Skeleton";
+
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
@@ -239,28 +241,9 @@ export default function LoadsPage() {
           </Link>
         </div>
 
-        <section className="load-stats-grid">
-          <div className="load-stat-card">
-            <div className="load-stat-icon load-stat-blue">
-              <Package size={22} />
-            </div>
+        <SkeletonStats count={1} />
 
-            <div>
-              <span>کل بارها</span>
-
-              <strong>—</strong>
-            </div>
-          </div>
-        </section>
-
-        <div
-          style={{
-            padding: "40px 20px",
-            textAlign: "center",
-          }}
-        >
-          در حال دریافت بارها...
-        </div>
+        <SkeletonTable rows={7} cols={6} />
       </main>
     );
   }

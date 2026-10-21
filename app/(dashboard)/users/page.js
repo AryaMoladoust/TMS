@@ -1,5 +1,7 @@
 "use client";
 
+import { SkeletonTable } from "@/components/ui/Skeleton";
+
 import {
     UserPlus,
     Users,
@@ -423,9 +425,7 @@ export default function UsersPage() {
 
 
                 {loading ? (
-                    <div className="users-empty">
-                        در حال دریافت کاربران...
-                    </div>
+                    <SkeletonTable bare rows={4} cols={4} />
                 ) : users.length === 0 ? (
                     <div className="users-empty">
                         کاربری وجود ندارد.
@@ -475,7 +475,7 @@ export default function UsersPage() {
                                                 }
                                             >
 
-                                                <td>
+                                                <td data-label="نام کاربری">
 
                                                     <div className="users-name-cell">
 
@@ -502,7 +502,7 @@ export default function UsersPage() {
                                                 </td>
 
 
-                                                <td>
+                                                <td data-label="نوع حساب">
 
                                                     {isOwner ? (
                                                         <span className="users-role owner">
@@ -523,7 +523,7 @@ export default function UsersPage() {
                                                 </td>
 
 
-                                                <td>
+                                                <td data-label="وضعیت">
 
                                                     <span className="users-active-status">
                                                         فعال
@@ -532,7 +532,7 @@ export default function UsersPage() {
                                                 </td>
 
 
-                                                <td>
+                                                <td data-label="عملیات">
 
                                                     {!isOwner &&
                                                     !isCurrent ? (

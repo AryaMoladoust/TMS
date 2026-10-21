@@ -1,5 +1,7 @@
 "use client";
 
+import { Skeleton } from "@/components/ui/Skeleton";
+
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
@@ -947,22 +949,11 @@ export default function AddInvoicePage() {
 
 
                 {dataLoading && (
-
-                    <div
-                        style={{
-                            padding: "14px 18px",
-                            margin: "0 0 10px",
-                            borderRadius: "12px",
-                            background:
-                                "var(--surface-soft)",
-                            color:
-                                "var(--text-secondary)",
-                            textAlign: "center",
-                        }}
-                    >
-                        در حال دریافت اطلاعات رانندگان و بارها...
-                    </div>
-
+                    <Skeleton
+                        height={44}
+                        radius={12}
+                        style={{ margin: "0 0 10px" }}
+                    />
                 )}
 
 

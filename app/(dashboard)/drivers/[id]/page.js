@@ -1,5 +1,7 @@
 "use client";
 
+import { SkeletonDetails } from "@/components/ui/Skeleton";
+
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -146,16 +148,7 @@ export default function DriverDetailsPage() {
     if (loading) {
         return (
             <main className="main-content">
-                <div className="driver-loading">
-                    <LoaderCircle
-                        size={28}
-                        className="loading-spinner"
-                    />
-
-                    <span>
-                        در حال دریافت اطلاعات راننده...
-                    </span>
-                </div>
+                <SkeletonDetails cards={2} fields={6} />
             </main>
         );
     }

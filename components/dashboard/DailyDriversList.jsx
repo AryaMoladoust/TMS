@@ -1,5 +1,7 @@
 "use client";
 
+import { SkeletonTable } from "@/components/ui/Skeleton";
+
 import { useEffect, useState } from "react";
 
 import {
@@ -147,15 +149,7 @@ export default function DailyDriversList() {
 
             {loading ? (
 
-                <div className="daily-drivers-list-empty">
-
-                    <Users size={30} />
-
-                    <strong>
-                        در حال دریافت لیست رانندگان...
-                    </strong>
-
-                </div>
+                <SkeletonTable bare rows={4} cols={4} />
 
             ) : dailyDrivers.length === 0 ? (
 

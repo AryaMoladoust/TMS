@@ -1,5 +1,7 @@
 "use client";
 
+import { SkeletonTable } from "@/components/ui/Skeleton";
+
 import Link from "next/link";
 
 import { useEffect, useMemo, useState } from "react";
@@ -748,11 +750,7 @@ const [drivers, setDrivers] =
 
       {loading ? (
 
-        <div className="driver-loading">
-
-          در حال دریافت لیست رانندگان...
-
-        </div>
+        <SkeletonTable rows={7} cols={6} />
 
       ) : (
 

@@ -1,5 +1,7 @@
 "use client";
 
+import { SkeletonTable } from "@/components/ui/Skeleton";
+
 import {
     FileText,
     Plus,
@@ -1184,17 +1186,7 @@ export default function InvoicesPage() {
 
                 {loading ? (
 
-                    <div className="invoice-empty">
-
-                        <FileText
-                            size={42}
-                        />
-
-                        <h3>
-                            در حال دریافت فاکتورها...
-                        </h3>
-
-                    </div>
+                    <SkeletonTable bare rows={7} cols={7} />
 
                 ) : error ? (
 
@@ -1274,7 +1266,7 @@ export default function InvoicesPage() {
                                             }
                                         >
 
-                                            <td>
+                                            <td data-label="تاریخ">
 
                                                 {
                                                     invoice.date
@@ -1282,7 +1274,7 @@ export default function InvoicesPage() {
 
                                             </td>
 
-                                            <td>
+                                            <td data-label="راننده">
 
                                                 <span className="invoice-driver">
 
@@ -1294,7 +1286,7 @@ export default function InvoicesPage() {
 
                                             </td>
 
-                                            <td>
+                                            <td data-label="شرکت">
 
                                                 {
                                                     invoice.company
@@ -1302,7 +1294,7 @@ export default function InvoicesPage() {
 
                                             </td>
 
-                                            <td>
+                                            <td data-label="ثبت‌کننده">
 
                                                 <span className="invoice-creator-list">
 
@@ -1314,7 +1306,7 @@ export default function InvoicesPage() {
 
                                             </td>
 
-                                            <td>
+                                            <td data-label="مسیر">
 
                                                 <div className="invoice-route">
 
@@ -1338,7 +1330,7 @@ export default function InvoicesPage() {
 
                                             </td>
 
-                                            <td>
+                                            <td data-label="مبلغ">
 
                                                 <strong className="invoice-amount">
 
@@ -1355,7 +1347,7 @@ export default function InvoicesPage() {
 
                                             </td>
 
-                                            <td>
+                                            <td data-label="عملیات">
 
                                                 <div className="invoice-actions">
 

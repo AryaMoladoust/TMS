@@ -5,6 +5,7 @@ import Sidebar from "@/components/layout/Sidebar";
 import Header from "@/components/layout/Header";
 import SyncPolling from "@/components/SyncPolling";
 import AuthGuard from "@/components/AuthGuard";
+import PageTransition from "@/components/layout/PageTransition";
 
 export default function DashboardLayout({ children }) {
     const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -53,7 +54,7 @@ export default function DashboardLayout({ children }) {
 
                 <AuthGuard />
 
-                {children}
+                <PageTransition>{children}</PageTransition>
             </div>
         </div>
     );

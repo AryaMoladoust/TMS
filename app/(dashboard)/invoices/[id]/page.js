@@ -1,5 +1,7 @@
 "use client";
 
+import { SkeletonDetails } from "@/components/ui/Skeleton";
+
 import {
     ArrowRight,
     CalendarDays,
@@ -133,18 +135,7 @@ export default function InvoicePreviewPage() {
     if (loading) {
         return (
             <main className="main-content">
-                <div className="invoice-preview-empty">
-                    <FileText size={48} />
-
-                    <h2>
-                        در حال دریافت فاکتور...
-                    </h2>
-
-                    <p>
-                        اطلاعات فاکتور در حال دریافت
-                        است.
-                    </p>
-                </div>
+                <SkeletonDetails cards={2} fields={6} />
             </main>
         );
     }
