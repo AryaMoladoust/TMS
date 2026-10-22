@@ -1,8 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { LoginScene, LoginTruck } from "@/components/auth/LoginScene";
+import LoginLoader from "@/components/auth/LoginLoader";
+
+// Timing of the "drive away" sequence after a successful login (ms).
+const DRIVE_MS = 1150;
+const LOADER_MS = 1000;
+const WHEEL_RADIUS = 38; // in the truck drawing
+const TRUCK_DRAWING_WIDTH = 540;
 
 function IconUser(props) {
     return (
@@ -103,11 +110,60 @@ export default function LoginPage() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
+    // idle -> leaving (truck drives off) -> loading (loader) -> dashboard
+    const [phase, setPhase] = useState("idle");
+    const heroRef = useRef(null);
+    const timers = useRef([]);
+
+    useEffect(() => {
+        const pending = timers.current;
+
+        return () => pending.forEach(clearTimeout);
+    }, []);
+
+    function startExitSequence() {
+        router.prefetch("/dashboard");
+
+        const reduceMotion = window.matchMedia(
+            "(prefers-reduced-motion: reduce)"
+        ).matches;
+
+        const driveMs = reduceMotion ? 120 : DRIVE_MS;
+        const hero = heroRef.current;
+        const truck = hero?.querySelector(".login-truck");
+
+        if (!reduceMotion && hero && truck) {
+            // distance to clear the right edge, and how far the wheels must
+            // turn for that distance (so they never slip)
+            const distance = window.innerWidth - truck.offsetLeft + 40;
+            const scale = truck.offsetWidth / TRUCK_DRAWING_WIDTH;
+            const circumference = 2 * Math.PI * WHEEL_RADIUS * scale;
+            const degrees = (distance / circumference) * 360;
+
+            hero.style.setProperty("--drive-x", `${Math.round(distance)}px`);
+            hero.style.setProperty("--drive-deg", `${Math.round(degrees)}deg`);
+            hero.style.setProperty("--drive-ms", `${driveMs}ms`);
+        }
+
+        setPhase("leaving");
+
+        timers.current.push(setTimeout(() => setPhase("loading"), driveMs));
+
+        timers.current.push(
+            setTimeout(() => {
+                router.replace("/dashboard");
+                router.refresh();
+            }, driveMs + (reduceMotion ? 300 : LOADER_MS))
+        );
+    }
+
     async function handleLogin(event) {
         event.preventDefault();
 
         setLoading(true);
         setError("");
+
+        let succeeded = false;
 
         try {
             const response = await fetch("/api/auth/login", {
@@ -127,17 +183,23 @@ export default function LoginPage() {
                 throw new Error(data.message || "ورود ناموفق بود.");
             }
 
-            router.replace("/dashboard");
-            router.refresh();
+            succeeded = true;
+            startExitSequence();
         } catch (error) {
             setError(error.message || "خطا در ورود به سیستم.");
         } finally {
-            setLoading(false);
+            // on success the form stays locked until the dashboard opens
+            if (!succeeded) setLoading(false);
         }
     }
 
     return (
-        <main className="login-hero">
+        <main
+            ref={heroRef}
+            className={`login-hero${phase !== "idle" ? " is-leaving" : ""}${
+                phase === "loading" ? " is-loading" : ""
+            }`}
+        >
             <LoginScene />
             <div className="login-road" aria-hidden="true" />
             <LoginTruck />
@@ -238,6 +300,8 @@ export default function LoginPage() {
                     <p className="login-hero-tagline">همراه در مسیر توسعه کسب‌وکار شما</p>
                 </div>
             </div>
+
+            {phase === "loading" && <LoginLoader />}
         </main>
     );
 }

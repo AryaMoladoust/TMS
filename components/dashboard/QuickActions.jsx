@@ -1,5 +1,7 @@
+import Link from "next/link";
+
 import {
-  Plus,
+  ChevronLeft,
   Users,
   Package,
   Building2,
@@ -7,93 +9,88 @@ import {
   UserCheck,
 } from "lucide-react";
 
+// سه کار اصلی روزانه بزرگ‌تر نمایش داده می‌شوند
 const actions = [
   {
+    title: "ورود روزانه رانندگان",
+    description: "ثبت رانندگانی که امروز آمده‌اند",
+    icon: UserCheck,
+    href: "/daily-drivers",
+    type: "teal",
+    primary: true,
+  },
+  {
+    title: "افزودن بار",
+    description: "ثبت یک بار جدید",
+    icon: Package,
+    href: "/loads/add",
+    type: "orange",
+    primary: true,
+  },
+  {
+    title: "ثبت فاکتور",
+    description: "صدور فاکتور برای بار",
+    icon: FileText,
+    href: "/invoices/add",
+    type: "green",
+    primary: true,
+  },
+  {
     title: "افزودن راننده",
+    description: "ثبت راننده جدید در سیستم",
     icon: Users,
     href: "/drivers/add",
     type: "blue",
   },
   {
-    title: "افزودن بار",
-    icon: Package,
-    href: "/loads/add",
-    type: "orange",
-  },
-  {
     title: "افزودن شرکت",
+    description: "ثبت شرکت طرف قرارداد",
     icon: Building2,
     href: "/companies/add",
     type: "purple",
-  },
-  {
-    title: "ثبت فاکتور",
-    icon: FileText,
-    href: "/invoices/add",
-    type: "green",
-  },
-  {
-    title: "ورود روزانه رانندگان",
-    icon: UserCheck,
-    href: "/daily-drivers",
-    type: "cyan",
   },
 ];
 
 export default function QuickActions() {
   return (
-    <section className="quick-actions-section">
+    <section className="dash-section">
+      <div className="dash-section-head">
+        <h2>کارهای روزانه</h2>
 
-      <div className="section-heading">
-        <div>
-          <h2>دسترسی سریع</h2>
-
-          <p>
-            عملیات پرکاربرد سیستم
-          </p>
-        </div>
+        <p>برای شروع روی یکی از دکمه‌ها بزنید</p>
       </div>
 
-      <div className="quick-actions-grid">
-
+      <div className="dash-actions">
         {actions.map((action) => {
           const Icon = action.icon;
 
           return (
-            <a
+            <Link
               href={action.href}
-              className="quick-action-card"
+              className={`dash-action ${
+                action.primary ? "" : "dash-action-secondary"
+              }`}
               key={action.title}
             >
-
               <div
-                className={`quick-action-icon quick-${action.type}`}
+                className={`dash-action-icon dash-action-icon-${action.type}`}
               >
-                <Icon size={24} />
+                <Icon size={30} strokeWidth={1.9} />
               </div>
 
-              <div className="quick-action-content">
+              <div className="dash-action-text">
+                <span className="dash-action-title">{action.title}</span>
 
-                <span>
-                  {action.title}
+                <span className="dash-action-desc">
+                  {action.description}
                 </span>
-
-                <small>
-                  برای ورود به بخش
-                </small>
-
               </div>
 
-              <div className="quick-action-plus">
-                <Plus size={19} />
-              </div>
-
-            </a>
+              <ChevronLeft size={24} className="dash-action-go" />
+            </Link>
           );
         })}
-
       </div>
-
     </section>
   );
 }

@@ -21526,3 +21526,739 @@ td > .sk-tr {
     animation: none;
   }
 }
+
+/* =========================================================
+   DASHBOARD REDESIGN — بزرگ، ساده و خوانا
+   همه کلاس‌ها با پیشوند dash- هستند و فقط روی صفحه اصلی اثر دارند.
+   ========================================================= */
+
+.dash-page {
+  --dash-ease: cubic-bezier(0.23, 1, 0.32, 1);
+
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* ---------- صحنه متحرک بالای صفحه (بدون متن) ---------- */
+
+.dash-scene {
+  width: 100%;
+  aspect-ratio: 960 / 200;
+  max-height: 230px;
+  overflow: hidden;
+  background: var(--primary-soft);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+}
+
+.dash-scene svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* چرخه ۱۲ ثانیه‌ای: ورود ← بارگیری ← حرکت مستقیم ← تحویل ← خروج */
+.dash-scene-truck {
+  transform: translateX(1000px);
+  animation: dash-truck-drive 12s infinite;
+}
+
+.dash-scene-crate {
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: dash-crate-ride 12s infinite;
+}
+
+@keyframes dash-truck-drive {
+  0% {
+    transform: translateX(1000px);
+    animation-timing-function: cubic-bezier(0.77, 0, 0.175, 1);
+  }
+  18% {
+    transform: translateX(719px);
+  }
+  28% {
+    transform: translateX(719px);
+    animation-timing-function: cubic-bezier(0.77, 0, 0.175, 1);
+  }
+  58% {
+    transform: translateX(39px);
+  }
+  68% {
+    transform: translateX(39px);
+    animation-timing-function: cubic-bezier(0.77, 0, 0.175, 1);
+  }
+  86%,
+  100% {
+    transform: translateX(-200px);
+  }
+}
+
+@keyframes dash-crate-ride {
+  0%,
+  20% {
+    opacity: 0;
+    transform: translateY(-34px) scale(0.8);
+    animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+  }
+  25%,
+  60% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+  }
+  65%,
+  100% {
+    opacity: 0;
+    transform: translateY(-34px) scale(0.8);
+  }
+}
+
+/* ---------- عنوان بخش‌ها ---------- */
+
+.dash-section-head {
+  margin-bottom: 16px;
+}
+
+.dash-section-head h2 {
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1.5;
+  color: var(--text-primary);
+}
+
+.dash-section-head p {
+  margin-top: 2px;
+  font-size: 15px;
+  color: var(--text-secondary);
+}
+
+/* ---------- دکمه‌های کارهای روزانه ---------- */
+
+.dash-actions {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.dash-action {
+  grid-column: span 2;
+  min-height: 108px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  color: var(--text-primary);
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    border-color 150ms var(--dash-ease),
+    box-shadow 150ms var(--dash-ease),
+    transform 120ms var(--dash-ease);
+}
+
+.dash-action-secondary {
+  grid-column: span 3;
+  min-height: 88px;
+}
+
+.dash-action-icon {
+  width: 62px;
+  height: 62px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  color: #fff;
+}
+
+.dash-action-secondary .dash-action-icon {
+  width: 54px;
+  height: 54px;
+}
+
+.dash-action-icon-teal   { background: #0d9488; }
+.dash-action-icon-orange { background: #ea580c; }
+.dash-action-icon-green  { background: #16a34a; }
+.dash-action-icon-blue   { background: #2563eb; }
+.dash-action-icon-purple { background: #7c3aed; }
+
+.dash-action-text {
+  min-width: 0;
+  flex: 1;
+}
+
+.dash-action-title {
+  display: block;
+  font-size: 19px;
+  font-weight: 800;
+  line-height: 1.6;
+  color: var(--text-primary);
+}
+
+.dash-action-desc {
+  display: block;
+  margin-top: 1px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+}
+
+.dash-action-go {
+  flex-shrink: 0;
+  color: var(--text-muted);
+  transition: color 150ms ease;
+}
+
+.dash-action:active,
+.dash-stat:active {
+  transform: scale(0.98);
+}
+
+.dash-action:focus-visible,
+.dash-stat:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 3px;
+}
+
+/* ---------- کارت‌های آمار ---------- */
+
+.dash-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.dash-stat {
+  padding: 22px 24px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  color: var(--text-primary);
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    border-color 150ms var(--dash-ease),
+    box-shadow 150ms var(--dash-ease),
+    transform 120ms var(--dash-ease);
+}
+
+.dash-stat-icon {
+  width: 58px;
+  height: 58px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+}
+
+.dash-stat-icon-blue {
+  background: var(--primary-soft);
+  color: var(--primary);
+}
+
+.dash-stat-icon-purple {
+  background: var(--purple-soft);
+  color: var(--purple);
+}
+
+.dash-stat-body {
+  min-width: 0;
+  flex: 1;
+}
+
+.dash-stat-body span {
+  display: block;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.dash-stat-body strong {
+  display: block;
+  margin: 2px 0;
+  font-size: 36px;
+  font-weight: 800;
+  line-height: 1.3;
+  color: var(--text-primary);
+}
+
+.dash-stat-body small {
+  display: block;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.dash-stat-go {
+  flex-shrink: 0;
+  color: var(--text-muted);
+  transition: color 150ms ease;
+}
+
+/* hover فقط برای ماوس؛ روی لمسی اشتباهی فعال نمی‌شود */
+@media (hover: hover) and (pointer: fine) {
+  .dash-action:hover,
+  .dash-stat:hover {
+    border-color: var(--primary);
+    box-shadow: 0 6px 20px rgba(16, 24, 40, 0.1);
+  }
+
+  .dash-action:hover .dash-action-go,
+  .dash-stat:hover .dash-stat-go {
+    color: var(--primary);
+  }
+}
+
+/* ---------- پنل «رانندگان امروز»: فونت‌های بزرگ‌تر ---------- */
+
+.dash-page .daily-drivers-list-panel {
+  margin-top: 0;
+  border-width: 1.5px;
+}
+
+.dash-page .daily-drivers-list-header {
+  min-height: 88px;
+  padding: 20px 24px;
+}
+
+.dash-page .daily-drivers-list-icon {
+  width: 50px;
+  height: 50px;
+}
+
+.dash-page .daily-drivers-list-heading h2 {
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.dash-page .daily-drivers-list-heading p {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.dash-page .daily-drivers-list-count {
+  padding: 8px 14px;
+  font-size: 14px;
+}
+
+.dash-page .daily-drivers-manage-button {
+  min-height: 44px;
+  padding: 0 16px;
+  font-size: 15px;
+}
+
+.dash-page .daily-drivers-list-empty strong {
+  font-size: 18px;
+}
+
+.dash-page .daily-drivers-list-empty span {
+  font-size: 15px;
+  color: var(--text-secondary);
+}
+
+.dash-page .daily-drivers-empty-button {
+  min-height: 48px;
+  margin-top: 16px;
+  padding: 0 22px;
+  font-size: 16px;
+  font-weight: 700;
+  border-radius: 10px;
+}
+
+.dash-page .daily-drivers-mini-table th {
+  height: 48px;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.dash-page .daily-drivers-mini-table td {
+  height: 66px;
+  font-size: 16px;
+}
+
+.dash-page .daily-drivers-mini-name strong {
+  font-size: 16px;
+}
+
+.dash-page .daily-drivers-mini-name span {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.dash-page .daily-drivers-mini-avatar {
+  width: 40px;
+  height: 40px;
+}
+
+.dash-page .daily-driver-mini-type {
+  min-width: 56px;
+  padding: 6px 12px;
+  font-size: 14px;
+}
+
+/* ---------- ریسپانسیو ---------- */
+
+@media (max-width: 1100px) {
+  .dash-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .dash-action,
+  .dash-action-secondary {
+    grid-column: auto;
+  }
+
+  .dash-action:last-child {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 700px) {
+  .dash-page {
+    gap: 26px;
+  }
+
+  .dash-scene {
+    display: none;
+  }
+
+  .dash-stats {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .dash-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .dash-action:last-child {
+    grid-column: auto;
+  }
+}
+
+/* حرکت کمتر: فقط فیدِ رنگ و سایه می‌ماند، جابه‌جایی حذف می‌شود */
+@media (prefers-reduced-motion: reduce) {
+  .dash-action:active,
+  .dash-stat:active {
+    transform: none;
+  }
+
+  /* فریم ثابت: کامیون با بار وسط مسیر */
+  .dash-scene-truck {
+    animation: none;
+    transform: translateX(379px);
+  }
+
+  .dash-scene-crate {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+
+/* =========================================================
+   LOGIN – exit drive + loader
+========================================================= */
+
+.login-hero {
+  --drive-x: 120vw;
+  --drive-deg: 3000deg;
+  --drive-ms: 1150ms;
+  /* ease-in-circ: a truck pulling away starts slow and ends flat out */
+  --lt-accel: cubic-bezier(0.6, 0.04, 0.98, 0.335);
+}
+
+/* streaks and dust only exist while leaving */
+.lt-streaks,
+.lt-dust {
+  position: absolute;
+  pointer-events: none;
+}
+
+.lt-streaks {
+  right: 100%;
+  top: 22%;
+  width: 0;
+  height: 56%;
+  opacity: 0;
+}
+
+.lt-streaks i {
+  position: absolute;
+  right: 0;
+  height: 3px;
+  border-radius: 3px;
+  background: linear-gradient(
+    270deg,
+    rgba(255, 255, 255, 0.95),
+    rgba(255, 255, 255, 0)
+  );
+  box-shadow: 0 1px 2px rgba(10, 22, 48, 0.25);
+  transform-origin: right center;
+}
+
+.lt-streaks i:nth-child(1) { top: 6%;  width: calc(var(--tw) * 0.3); }
+.lt-streaks i:nth-child(2) { top: 44%; width: calc(var(--tw) * 0.44); }
+.lt-streaks i:nth-child(3) { top: 80%; width: calc(var(--tw) * 0.24); }
+
+.lt-dust {
+  left: 4%;
+  bottom: 3%;
+  width: 0;
+  height: 0;
+}
+
+.lt-dust i {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  opacity: 0;
+  background: radial-gradient(
+    circle,
+    rgba(232, 237, 244, 0.9),
+    rgba(232, 237, 244, 0) 70%
+  );
+}
+
+.lt-dust i:nth-child(2) { width: 64px; height: 64px; }
+.lt-dust i:nth-child(3) { width: 38px; height: 38px; }
+
+/* the hero locks the scene: card fades, truck launches */
+.login-hero.is-leaving .login-hero-content > :not(.login-hero-footer) {
+  opacity: 0;
+  transform: translateY(-12px) scale(0.985);
+  pointer-events: none;
+  transition:
+    opacity 0.26s ease-out,
+    transform 0.3s var(--lt-ease);
+}
+
+.login-hero.is-leaving .login-truck {
+  animation: lt-drive var(--drive-ms) var(--lt-accel) both;
+}
+
+.login-hero.is-leaving .lt-wheel {
+  animation: lt-drive-spin var(--drive-ms) var(--lt-accel) both;
+}
+
+.login-hero.is-leaving .lt-body {
+  animation: lt-launch var(--drive-ms) ease-out both;
+}
+
+.login-hero.is-leaving .lt-puff {
+  animation: none;
+  opacity: 0;
+}
+
+.login-hero.is-leaving .lt-streaks {
+  animation: lt-streak var(--drive-ms) var(--lt-accel) both;
+}
+
+/* the dust cloud stays where the truck was: it travels the same distance
+   backwards with the same easing, so the net movement is zero */
+.login-hero.is-leaving .lt-dust {
+  animation: lt-dust-stay var(--drive-ms) var(--lt-accel) both;
+}
+
+.login-hero.is-leaving .lt-dust i {
+  animation: lt-dust-puff 0.9s var(--lt-ease) both;
+}
+
+.login-hero.is-leaving .lt-dust i:nth-child(2) { animation-delay: 0.1s; }
+.login-hero.is-leaving .lt-dust i:nth-child(3) { animation-delay: 0.2s; }
+
+@keyframes lt-drive {
+  from { transform: translateX(0); }
+  to   { transform: translateX(var(--drive-x)); }
+}
+
+@keyframes lt-drive-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(var(--drive-deg)); }
+}
+
+/* nose lifts as the rear squats under power */
+@keyframes lt-launch {
+  0%   { transform: rotate(0deg); }
+  24%  { transform: rotate(-1.4deg); }
+  62%  { transform: rotate(-0.4deg); }
+  100% { transform: rotate(0deg); }
+}
+
+@keyframes lt-streak {
+  0%, 30% { opacity: 0; transform: scaleX(0.25); }
+  100%    { opacity: 0.9; transform: scaleX(1); }
+}
+
+@keyframes lt-dust-stay {
+  from { transform: translateX(0); }
+  to   { transform: translateX(calc(var(--drive-x) * -1)); }
+}
+
+@keyframes lt-dust-puff {
+  0%   { opacity: 0; transform: translate(0, 0) scale(0.4); }
+  20%  { opacity: 0.8; }
+  100% { opacity: 0; transform: translate(-44px, -20px) scale(2.4); }
+}
+
+/* ---------- loader ---------- */
+
+.login-loader {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: radial-gradient(
+    ellipse at 50% 46%,
+    rgba(8, 20, 46, 0.16),
+    rgba(8, 20, 46, 0.5)
+  );
+  animation: lt-loader-bg 0.3s ease-out both;
+}
+
+.login-loader-card {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  min-width: min(300px, 100%);
+  padding: 32px 44px 28px;
+  border-radius: 28px;
+  background: #ffffff;
+  text-align: center;
+  box-shadow: 0 30px 70px rgba(5, 12, 28, 0.42);
+  animation: lt-loader-in 0.34s var(--lt-ease) both;
+}
+
+.login-loader-card h2 {
+  margin: 6px 0 0;
+  color: #0f1f3d;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.login-loader-card p {
+  margin: 0;
+  color: #5b6b86;
+  font-size: 13.5px;
+}
+
+.login-loader-badge {
+  position: relative;
+  width: 124px;
+  height: 124px;
+  display: grid;
+  place-items: center;
+}
+
+.login-loader-track,
+.login-loader-ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.login-loader-ring {
+  animation: lt-ring 1.15s linear infinite;
+}
+
+.login-loader-logo {
+  width: 76px;
+  height: 76px;
+  border-radius: 22px;
+  overflow: hidden;
+  box-shadow: 0 10px 22px rgba(15, 31, 61, 0.22);
+  animation: lt-bob 1.1s ease-in-out infinite;
+}
+
+.login-loader-logo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* three boxes hop one after another */
+.login-loader-boxes {
+  display: flex;
+  gap: 7px;
+  margin-top: 14px;
+}
+
+.login-loader-boxes i {
+  width: 11px;
+  height: 11px;
+  border-radius: 3px;
+  background: #2563eb;
+  animation: lt-box 0.9s ease-in-out infinite;
+}
+
+.login-loader-boxes i:nth-child(2) {
+  background: #27d9ab;
+  animation-delay: 0.12s;
+}
+
+.login-loader-boxes i:nth-child(3) {
+  background: #f5a524;
+  animation-delay: 0.24s;
+}
+
+@keyframes lt-loader-bg {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes lt-loader-in {
+  from { opacity: 0; transform: translateY(14px) scale(0.94); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes lt-ring {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes lt-bob {
+  0%, 100% { transform: translateY(1.5px); }
+  50%      { transform: translateY(-2.5px); }
+}
+
+@keyframes lt-box {
+  0%, 60%, 100% { transform: translateY(0); }
+  30%           { transform: translateY(-9px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .login-hero.is-leaving .login-truck,
+  .login-hero.is-leaving .lt-wheel,
+  .login-hero.is-leaving .lt-body,
+  .login-hero.is-leaving .lt-streaks,
+  .login-hero.is-leaving .lt-dust,
+  .login-hero.is-leaving .lt-dust i {
+    animation: none;
+  }
+
+  .login-loader-ring,
+  .login-loader-logo,
+  .login-loader-boxes i {
+    animation: none;
+  }
+}

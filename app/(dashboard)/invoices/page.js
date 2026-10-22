@@ -21,6 +21,7 @@ import {
 import PersianDatePicker from "@/components/drivers/PersianDatePicker";
 import InvoicePreview from "@/components/invoices/InvoicePreview";
 import { useNotification } from "@/components/ui/NotificationProvider";
+import { numberToPersianWords } from "@/lib/numberToPersianWords";
 
 /* =========================
    Persian Digits
@@ -321,9 +322,12 @@ function makePreviewInvoice(
         total:
             formatAmount(total),
 
+        // مبلغ به حروف در دیتابیس ذخیره نمی‌شود؛ از روی جمع کل محاسبه می‌شود
         totalInWords:
             invoice?.totalInWords ||
-            "—",
+            (total > 0
+                ? `${numberToPersianWords(total)} تومان`
+                : "—"),
 
         receiverName:
             invoice?.receiverName ||

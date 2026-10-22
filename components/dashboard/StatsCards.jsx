@@ -4,13 +4,12 @@
 import { Skeleton } from "@/components/ui/Skeleton";
 
 import Link from "next/link";
-import AnimatedTruck from "./AnimatedTruck";
 import { useCallback, useEffect, useState } from "react";
 
 import {
   Users,
   Building2,
-  ArrowUpLeft,
+  ChevronLeft,
 } from "lucide-react";
 
 const statsConfig = [
@@ -131,7 +130,7 @@ export default function StatsCards() {
   }, [loadCounts]);
 
   return (
-    <section className="stats-grid">
+    <section className="dash-stats" aria-label="آمار کلی">
       {statsConfig.map((stat) => {
         const Icon = stat.icon;
 
@@ -139,39 +138,31 @@ export default function StatsCards() {
 
         const value =
           loading || count === null
-            ? <Skeleton width={56} height={26} radius={8} />
+            ? <Skeleton width={64} height={32} radius={8} />
             : count.toLocaleString("fa-IR");
 
         return (
           <Link
             href={stat.href}
-            className="stat-card stat-card-clickable"
+            className="dash-stat"
             key={stat.key}
           >
-            <div className="stat-card-top">
-              <div
-                className={`stat-icon stat-icon-${stat.type}`}
-              >
-                <Icon size={22} />
-              </div>
-
-              <div className="stat-arrow">
-                <ArrowUpLeft size={16} />
-              </div>
+            <div className={`dash-stat-icon dash-stat-icon-${stat.type}`}>
+              <Icon size={28} />
             </div>
 
-            <div className="stat-info">
+            <div className="dash-stat-body">
               <span>{stat.title}</span>
 
               <strong>{value}</strong>
 
               <small>{stat.description}</small>
             </div>
+
+            <ChevronLeft size={22} className="dash-stat-go" />
           </Link>
         );
       })}
-
-      <AnimatedTruck />
     </section>
   );
 }

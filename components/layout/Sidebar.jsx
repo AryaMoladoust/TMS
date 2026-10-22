@@ -100,7 +100,7 @@ export default function Sidebar({
             </div>
 
             <div className="brand-text">
-              <h2>موسسه حمل و نقل کامران</h2>
+              <h2>باربری کامران</h2>
 
               <span></span>
             </div>
@@ -152,20 +152,6 @@ export default function Sidebar({
             );
           })}
         </nav>
-
-        {/* Bottom */}
-
-        <div className="sidebar-bottom">
-          <div className="sidebar-footer">
-            <div className="server-status-dot" />
-
-            <div>
-              <span>وضعیت سرور</span>
-
-              <strong>متصل</strong>
-            </div>
-          </div>
-        </div>
       </aside>
     </>
   );

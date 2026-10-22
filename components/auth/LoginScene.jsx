@@ -264,6 +264,16 @@ export function LoginTruck() {
     if (NISSAN_PHOTO) {
         return (
             <div className="login-truck login-truck--photo" aria-hidden="true">
+                <span className="lt-streaks">
+                    <i />
+                    <i />
+                    <i />
+                </span>
+                <span className="lt-dust">
+                    <i />
+                    <i />
+                    <i />
+                </span>
                 <img className="login-truck-img" src={NISSAN_PHOTO} alt="" />
             </div>
         );
@@ -271,6 +281,16 @@ export function LoginTruck() {
 
     return (
         <div className="login-truck" aria-hidden="true">
+            <span className="lt-streaks">
+                <i />
+                <i />
+                <i />
+            </span>
+            <span className="lt-dust">
+                <i />
+                <i />
+                <i />
+            </span>
             <svg className="login-truck-svg" viewBox="0 0 540 260" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <defs>
             <linearGradient id="nzBody" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#58a2fa"/><stop offset="0.3" stopColor="#2a82e8"/><stop offset="0.7" stopColor="#1c66cc"/><stop offset="1" stopColor="#114391"/></linearGradient>

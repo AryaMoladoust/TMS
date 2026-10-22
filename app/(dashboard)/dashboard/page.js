@@ -1,22 +1,17 @@
 import StatsCards from "@/components/dashboard/StatsCards";
 import QuickActions from "@/components/dashboard/QuickActions";
 import DailyDriversList from "@/components/dashboard/DailyDriversList";
+import DeliveryScene from "@/components/dashboard/DeliveryScene";
 
 export default function DashboardPage() {
   return (
-    <main className="main-content">
+    <main className="main-content dash-page">
 
-      <div className="page-heading">
-        <h1>صفحه اصلی</h1>
-
-        <p>
-          مدیریت روزانه سرویس حمل‌ونقل باربری
-        </p>
-      </div>
-
-      <StatsCards />
+      <DeliveryScene />
 
       <QuickActions />
+
+      <StatsCards />
 
       <DailyDriversList />
 
